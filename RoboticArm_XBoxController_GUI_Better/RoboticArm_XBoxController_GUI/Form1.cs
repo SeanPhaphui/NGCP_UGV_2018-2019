@@ -51,12 +51,17 @@ namespace RoboticArm_XBoxController_GUI
       private bool PackageRecieved = false;
       private int RightEncoder = 0;
       private int LeftEnconder = 0;
+      private int LidarDistance = 0;
       private bool track = false;
       private int xDir = 0;
       private int yDir = 0;
       private bool found = false; 
       UdpClientSocket udp_camera { get; set; }
-      private bool leftpan = true;
+      UdpClientSocket udp_cam2 { get; set; }
+      UdpClientSocket udp_cam3 { get; set; }
+      UdpClientSocket udp_cam4 { get; set; }
+      UdpClientSocket udp_cam5 { get; set; }
+        private bool leftpan = true;
       private bool rightpan = false; 
         private void trackBar_armX_ValueChanged(object sender, EventArgs e)
         {
@@ -134,8 +139,13 @@ namespace RoboticArm_XBoxController_GUI
         /// </summary>
         private const int Xthreshold = 30, Ythreshold = 30;
 
-        private int LidarDistance;
-        Serial fpga = new Serial("COM10", 9600);  // use 9600 for FPGA, use 57600
+        private int BottleData;
+        private int BottleX;
+        private int BottleY;
+        private int BallX;
+        private int BallY;
+
+        Serial fpga = new Serial("COM10", 9600);  // use 9600 for FPGA, use 57600, andre code 115200 
 
         public Form1()
         {
@@ -185,23 +195,55 @@ namespace RoboticArm_XBoxController_GUI
          //start    
          
          udp_camera = new UdpClientSocket(
-         System.Net.IPAddress.Parse("127.0.0.1"), 8008);
-         //define call back
-         udp_camera.PackageReceived = (bytes =>
+         System.Net.IPAddress.Parse("127.0.0.1"), 6789);
+             //define call back
+            udp_camera.PackageReceived = (bytes =>
          {
-            xDir = BitConverter.ToInt32(bytes, 0);
-            yDir = BitConverter.ToInt32(bytes, sizeof(int));
-            //y_mainpayload = BitConverter.ToInt32(bytes, (sizeof(int) + sizeof(bool)));
-            if (track) 
-                  GimbalTracking(xDir, yDir);
-             
+            BottleData = BitConverter.ToInt32(bytes, 0);
+                         
          });
          udp_camera.Start();
-      
-         fpga.Start();
+
+            udp_cam2 = new UdpClientSocket(
+            System.Net.IPAddress.Parse("127.0.0.1"), 6790);
+
+            udp_cam2.PackageReceived = (bytes =>
+            {
+                BottleX = BitConverter.ToInt32(bytes, 0);
+                
+            });
+            udp_cam2.Start();
+
+            udp_cam3 = new UdpClientSocket(
+                System.Net.IPAddress.Parse("127.0.0.1"), 6791);
+
+            udp_cam3.PackageReceived = (bytes =>
+            {
+                BottleY = BitConverter.ToInt32(bytes, 0);
+            });
+            udp_cam3.Start();
+
+            udp_cam4 = new UdpClientSocket(
+            System.Net.IPAddress.Parse("127.0.0.1"), 6792);
+            udp_cam4.PackageReceived = (bytes =>
+            {
+                BallX = BitConverter.ToInt32(bytes, 0);
+            });
+            udp_cam4.Start();
+
+           udp_cam5 = new UdpClientSocket(
+            System.Net.IPAddress.Parse("127.0.0.1"), 6793);
+            udp_cam5.PackageReceived = (bytes =>
+            {
+                BallY = BitConverter.ToInt32(bytes, 0);
+            });
+
+            udp_cam5.Start();
+
+            //fpga.Start();
 
             // set timer event to start reading and updating from the controller
-         timer1.Start();
+            timer1.Start();
         }
 
         /// <summary>
@@ -252,216 +294,144 @@ namespace RoboticArm_XBoxController_GUI
          }
       }
 
-      void TurrentServo(int turrentServo)
-      {
-         byte checkSum;
-         byte[] turrentServoByte = Encoding.ASCII.GetBytes(turrentServo.ToString());
-         List<byte> turrentServoList = turrentServoByte.ToList();  //  MSB = index0,  LSB = index1,                  
-         if (turrentServoList.Count == 1)
-         {
-            turrentServoList.Insert(0, 0x30);                     // add 0 in ascii to first item in list
-            turrentServoList.Insert(0, 0x30);
-         }
-         else if (turrentServoList.Count == 2)
-            turrentServoList.Insert(0, 0x30);
-         byte[] _turrentServoPackage = new byte[] {
+        void TurrentServo(int turrentServo)
+        {
+            byte[] turrentServobytes = ConvertInt32ToByteArray(turrentServo);//  MSB = index1,  LSB = index0
+            byte[] _turrentServoPackage = new byte[] {
                 0x01,                                   // Start of Transmission
-                0x45,                                   // ID of Device to be controlled (ALPHABETIC)
-                0x02,                                   // Start of Data (Parameters of Device)
-                turrentServoList[0],           // MSB Digit in degrees  
-                turrentServoList[1],           // Second Digit in degrees  ###### Check ORDER!!
-                turrentServoList[2],           // LSB Third Digit in degrees
-                0x03,                                   // End of Data
-                0x00,                                   // Checksum = ~(ID + DATA) 1 BYTE!
+                0xFD,                                   // Header always 0xFD
+                0xBA,                                   // ID of Device to be controlled (ALPHABETIC) ***NEW****
+                turrentServobytes[1],                   // MSB Digit in degrees  
+                turrentServobytes[0],                   // Second Digit in degrees  ###### Check ORDER!!
                 0x04                                    // End of Transmission
                 };
 
-         checkSum = (byte)(~(0x45 + turrentServoList[0] + turrentServoList[1] + turrentServoList[2]));
+            fpga.Send(_turrentServoPackage);
+        }
 
-         _turrentServoPackage.SetValue(checkSum, 7);
-         fpga.Send(_turrentServoPackage);
-      }
-
-      void ArmYSend(int armY)
-      {
-         byte checkSum;
-         byte[] armYByte = Encoding.ASCII.GetBytes(armY.ToString());
-         List<byte> armYList = armYByte.ToList();  //  MSB = index0,  LSB = index1,                  
-         if (armYList.Count == 2)
-            armYList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-         else if (armYList.Count == 1)
-         {
-            armYList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-            armYList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-         }
-         byte[] _armYPackage = new byte[] {
+        void ArmYSend(int armY)
+        {
+            byte[] ArmYServobytes = ConvertInt32ToByteArray(armY);//  MSB = index1,  LSB = index0         
+            byte[] _armYPackage = new byte[] {
                   0x01,                                   // Start of Transmission
-                  0x43,                                   // ID of Device to be controlled (ALPHABETIC)
-                  0x02,                                   // Start of Data (Parameters of Device)
-                  armYList[0],           // MSB Digit in Milimeters  
-                  armYList[1],           // Second Digit in Milimeters  ###### Check ORDER!!
-                  armYList[2],           // LSB Third Digit in Milimeters
-                  0x03,                                   // End of Data
-                  0x00,                                   // Checksum = ~(ID + DATA) 1 BYTE!
+                  0xFD,                                   // Header always 0xFD
+                  0xEB,                                   // Command ID
+                  ArmYServobytes[1],           // MSB Hex in Milimeters  Should always be since 0-255 is only 0000-00FF
+                  ArmYServobytes[0],           // LSB Hex in Milimeters
                   0x04                                    // End of Transmission
                   };
 
-         checkSum = (byte)(~(0x43 + armYList[0] + armYList[1] + armYList[2]));
-         _armYPackage.SetValue(checkSum, 7);
-         fpga.Send(_armYPackage);
-      }
+            fpga.Send(_armYPackage);
+        }
 
         void ArmXSend(int armX)
-      {
-         byte checkSum; 
-         byte[] armXByte = Encoding.ASCII.GetBytes(armX.ToString());
-         List<byte> armXList = armXByte.ToList();  //  MSB = index0,  LSB = index1,                  
-         if (armXList.Count == 1)
-         {
-            armXList.Insert(0, 0x30);                     // add 0 in ascii to first item in list
-            armXList.Insert(0, 0x30);
-         }
-         else if (armXList.Count == 2)
-            armXList.Insert(0, 0x30);
-         byte[] _armXPackage = new byte[] {
+        {
+            byte[] ArmXServobytes = ConvertInt32ToByteArray(armX);//  MSB = index1,  LSB = index0         
+            byte[] _armXPackage = new byte[] {
                 0x01,                                   // Start of Transmission
-                0x44,                                   // ID of Device to be controlled (ALPHABETIC)
-                0x02,                                   // Start of Data (Parameters of Device)
-                armXList[0],           // MSB Digit in Milimeters  
-                armXList[1],           // Second Digit in Milimeters  ###### Check ORDER!!
-                armXList[2],           // LSB Third Digit in Milimeters 
-                0x03,                                   // End of Data
-                0x00,                                   // Checksum = ~(ID + DATA) 1 BYTE!
+                0xFD,                                   // Header always 0xFD
+                0xBB,                                   //Command ID
+                ArmXServobytes[1],           // MSB Hex in Milimeters  Should always be 00 since 0-255 is only 0000-00FF
+                ArmXServobytes[0],           // LSB Hex  in Milimeters 
                 0x04                                    // End of Transmission
                 };
 
-         checkSum = (byte)(~(0x44 + armXList[0] + armXList[1] + armXList[2]));
-         
-         _armXPackage.SetValue(checkSum, 7);
-         fpga.Send(_armXPackage);
-      }
-      
-      void GimbalPhi(int gimbalPhi)
-      {
-         byte checkSum; 
-         byte[] gimbalPhiByte = Encoding.ASCII.GetBytes(gimbalPhi.ToString());
-         List<byte> gimbalPhiList = gimbalPhiByte.ToList();  //  MSB = index0,  LSB = index2,                  
-         if (gimbalPhiList.Count == 2)
-            gimbalPhiList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-         else if (gimbalPhiList.Count == 1)
-         {
-            gimbalPhiList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-            gimbalPhiList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-         }
-         byte[] _gimbalPhiPackage = new byte[] {
+
+            fpga.Send(_armXPackage);
+        }
+
+        void GimbalPhi(int gimbalPhi)
+        {
+            byte[] GimbalPhibytes = ConvertInt32ToByteArray(gimbalPhi);//  MSB = index1,  LSB = index0         
+            byte[] _gimbalPhiPackage = new byte[] {
                 0x01,                                   // Start of Transmission
-                0x48,                                   // ID of Device to be controlled (ALPHABETIC)
-                0x02,                                   // Start of Data (Parameters of Device)
-                gimbalPhiList[0],           // MSB Digit in degrees  
-                gimbalPhiList[1],           // Second Digit in degrees  ###### Check ORDER!!
-                gimbalPhiList[2],           // LSB Third Digit in degrees 
-                0x03,                                   // End of Data
-                0x00,                                   // Checksum = ~(ID + DATA) 1 BYTE!
+                0xFD,                                   // Header always 0xFD
+                0xCA,                                   // Command ID
+                GimbalPhibytes[1],                      // MSB Hex in degrees  
+                GimbalPhibytes[0],                      // LSB Hex in degrees 
                 0x04                                    // End of Transmission
                 };
 
-         checkSum = (byte)(~(0x48 + gimbalPhiList[0] + gimbalPhiList[1] + gimbalPhiList[2]));
-         _gimbalPhiPackage.SetValue(checkSum, 7);
-         fpga.Send(_gimbalPhiPackage);
-      }
-      void GimbalTheta(int GimbalTheta)
-      {
-         byte checkSum;
-         byte[] gimbalThetaByte = Encoding.ASCII.GetBytes(GimbalTheta.ToString());
-         List<byte> gimbalThetaList = gimbalThetaByte.ToList();  //  MSB = index0,  LSB = index2,                  
-         if (gimbalThetaList.Count == 2)
-            gimbalThetaList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-         else if (gimbalThetaList.Count == 1)
-         {
-            gimbalThetaList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-            gimbalThetaList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-         }
-         byte[] _gimbalThetaPackage = new byte[] {
+            fpga.Send(_gimbalPhiPackage);
+        }
+        void GimbalTheta(int GimbalTheta)
+        {
+            byte[] GimbalThetabytes = ConvertInt32ToByteArray(GimbalTheta);//  MSB = index1,  LSB = index0         
+
+            byte[] _gimbalThetaPackage = new byte[] {
                 0x01,                                   // Start of Transmission
-                0x47,                                   // ID of Device to be controlled (ALPHABETIC)
-                0x02,                                   // Start of Data (Parameters of Device)
-                gimbalThetaList[0],           // MSB Digit in degrees  
-                gimbalThetaList[1],           // Second Digit in degrees  ###### Check ORDER!!
-                gimbalThetaList[2],           // LSB Third Digit in degrees 
-                0x03,                                   // End of Data
-                0x00,                                   // Checksum = ~(ID + DATA) 1 BYTE!
+                0xFD,                                   // Header always 0xFD
+                0xCB,                                   // Command ID
+                GimbalThetabytes[1],           // MSB Digit in degrees  
+                GimbalThetabytes[0],           // LSB Third Digit in degrees 
                 0x04                                    // End of Transmission
                 };
 
-         checkSum = (byte)(~(0x47 + gimbalThetaList[0] + gimbalThetaList[1] + gimbalThetaList[2]));
-         _gimbalThetaPackage.SetValue(checkSum, 7);
-         fpga.Send(_gimbalThetaPackage);
-      }
+            fpga.Send(_gimbalThetaPackage);
+        }
 
-      private void AutoGrab_Click(object sender, EventArgs e)//############ Next thing to test
-      {
-         int[] RobotArmDirections = { 0, 0, 0 };
-         if(firstreset)
-         {
-            PackageRecieved = false;
-            LidarRecieve();
-            while (!PackageRecieved) ;// Maybe create a limit for how long it waits 
-            PackageRecieved = false;
-            RobotArmDirections =AutonomousRetrieval(gimbalX, gimbalY, LidarDistance);
-            if ((RobotArmDirections[1] >= 0 && RobotArmDirections[1] <= 270) || (RobotArmDirections[2] >= 0 && RobotArmDirections[2] <= 120) || (RobotArmDirections[0] >= 0 && RobotArmDirections[0] <= 203))
+        private void AutoGrab_Click(object sender, EventArgs e)//############ Next thing to test
+        {
+            int[] RobotArmDirections = { 0, 0, 0 };
+            if (firstreset)
             {
-               TurrentServo(RobotArmDirections[1]);
-               ArmXSend(RobotArmDirections[2]);
-               ArmYSend(RobotArmDirections[0]);
+                PackageRecieved = false;
+                LidarRecieve();
+                while (!PackageRecieved) ;// Maybe create a limit for how long it waits 
+                PackageRecieved = false;
+                RobotArmDirections = AutonomousRetrieval(gimbalX, gimbalY, LidarDistance);
+                if ((RobotArmDirections[1] >= 0 && RobotArmDirections[1] <= 270) || (RobotArmDirections[2] >= 0 && RobotArmDirections[2] <= 120) || (RobotArmDirections[0] >= 0 && RobotArmDirections[0] <= 203))
+                {
+                    TurrentServo(RobotArmDirections[1]);
+                    ArmXSend(RobotArmDirections[2]);
+                    ArmYSend(RobotArmDirections[0]);
+                }
             }
-         }
-      }
+        }
 
-      private void lblBase_pp_Click(object sender, EventArgs e)
-      {
+        private void lblBase_pp_Click(object sender, EventArgs e)
+        {
 
-      }
+        }
 
-      private void lblElbow_pp_Click(object sender, EventArgs e)
-      {
+        private void lblElbow_pp_Click(object sender, EventArgs e)
+        {
 
-      }
+        }
 
-      private void lblShoulder_pp_Click(object sender, EventArgs e)
-      {
+        private void lblShoulder_pp_Click(object sender, EventArgs e)
+        {
 
-      }
+        }
 
-      private void lblGripper_pp_Click(object sender, EventArgs e)
-      {
+        private void lblGripper_pp_Click(object sender, EventArgs e)
+        {
 
-      }
-
-      void GripperControl(bool gripper)
-      {
-         byte checkSum;
-         int grippervalue = gripper ? 1 : 0; // converts to value from boolean 
-         byte[] gripperByte = Encoding.ASCII.GetBytes(grippervalue.ToString());
-         List<byte> gripperList = gripperByte.ToList();
-         byte[] _gripperPackage = new byte[] {
+        }
+        public static byte[] ConvertInt32ToByteArray(int I32)
+        {
+            return BitConverter.GetBytes(I32);
+        }
+        void GripperControl(bool gripper)
+        {
+            int grippervalue = gripper ? 1 : 0; // converts to value from boolean 
+            byte[] gripperByte = Encoding.ASCII.GetBytes(grippervalue.ToString());
+            List<byte> gripperList = gripperByte.ToList();
+            byte[] _gripperPackage = new byte[] {
                 0x01,                                   // Start of Transmission
-                0x46,                                   // ID of Device to be controlled (ALPHABETIC)
-                0x02,                                   // Start of Data (Parameters of Device)
-                0x30,           // 00  
+                0xFD,                                   // Header always 0xFD
+                0xEC,                                   // Command ID
                 0x30,           // 00
                 gripperList[0],           // Boolean of if gripper is open or closed 
-                0x03,                                   // End of Data
-                0x00,                                   // Checksum = ~(ID + DATA) 1 BYTE!
                 0x04                                    // End of Transmission
                 };
 
-         checkSum = (byte)(~(0x46 + gripperList[0] + 0x30 + 0x30));
 
-         _gripperPackage.SetValue(checkSum, 7);
-         fpga.Send(_gripperPackage);
-         lblGripper_pp.Text = gripper.ToString();
-      }
-      void ArmReset(bool armReset)
+            fpga.Send(_gripperPackage);
+            lblGripper_pp.Text = gripper.ToString();
+        }
+
+        void ArmReset(bool armReset)
       {
          byte checkSum;
          int ResetValue = armReset ? 1 : 0; // converts to value from boolean 
@@ -514,7 +484,32 @@ namespace RoboticArm_XBoxController_GUI
          track = !track; 
       }
 
-      void LidarRecieve()
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void LidarData_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Xgimbal_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label22_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        void LidarRecieve()
         {
             byte checkSum = 0x00; 
             byte[] _LidarRecievePackage = new byte[] {
@@ -733,7 +728,13 @@ namespace RoboticArm_XBoxController_GUI
          ThreadHelperClass.SetText(this, LeftError, yDir.ToString());
          ThreadHelperClass.SetText(this, Ygimbal, gimbalX.ToString());
          ThreadHelperClass.SetText(this, Xgimbal, gimbalY.ToString());
-      }
+         ThreadHelperClass.SetText(this, BottleAngle, BottleData.ToString());
+         ThreadHelperClass.SetText(this, BottleCenterX, BottleX.ToString());
+         ThreadHelperClass.SetText(this, BottleCenterY, BottleY.ToString());
+         ThreadHelperClass.SetText(this, BallCenterX, BallX.ToString());
+         ThreadHelperClass.SetText(this, BallCenterY, BallY.ToString());
+
+        }
 
    }
 
