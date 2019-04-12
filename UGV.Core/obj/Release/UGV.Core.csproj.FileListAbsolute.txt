@@ -1,0 +1,4 @@
+C:\Users\UGV\Documents\GitHub\NGCP_UGV\UGV.Core\bin\Release\UGV.Core.dll
+C:\Users\UGV\Documents\GitHub\NGCP_UGV\UGV.Core\bin\Release\UGV.Core.pdb
+C:\Users\UGV\Documents\GitHub\NGCP_UGV\UGV.Core\obj\Release\UGV.Core.dll
+C:\Users\UGV\Documents\GitHub\NGCP_UGV\UGV.Core\obj\Release\UGV.Core.pdb

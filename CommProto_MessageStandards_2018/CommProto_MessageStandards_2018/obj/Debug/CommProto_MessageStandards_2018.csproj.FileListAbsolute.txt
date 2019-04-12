@@ -1,0 +1,7 @@
+c:\users\troy\documents\visual studio 2015\Projects\CommProto_MessageStandards_2018\CommProto_MessageStandards_2018\obj\Debug\CommProto_MessageStandards_2018.csprojResolveAssemblyReference.cache
+c:\users\troy\documents\visual studio 2015\Projects\CommProto_MessageStandards_2018\CommProto_MessageStandards_2018\bin\Debug\CommProto_MessageStandards_2018.dll
+c:\users\troy\documents\visual studio 2015\Projects\CommProto_MessageStandards_2018\CommProto_MessageStandards_2018\bin\Debug\CommProto_MessageStandards_2018.pdb
+c:\users\troy\documents\visual studio 2015\Projects\CommProto_MessageStandards_2018\CommProto_MessageStandards_2018\bin\Debug\CommProtoCSharp.dll
+c:\users\troy\documents\visual studio 2015\Projects\CommProto_MessageStandards_2018\CommProto_MessageStandards_2018\bin\Debug\CommProtoCSharp.pdb
+c:\users\troy\documents\visual studio 2015\Projects\CommProto_MessageStandards_2018\CommProto_MessageStandards_2018\obj\Debug\CommProto_MessageStandards_2018.dll
+c:\users\troy\documents\visual studio 2015\Projects\CommProto_MessageStandards_2018\CommProto_MessageStandards_2018\obj\Debug\CommProto_MessageStandards_2018.pdb

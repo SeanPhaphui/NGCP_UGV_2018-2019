@@ -1,0 +1,10 @@
+C:\Users\UGV\Documents\GitHub\NGCP_UGV\UGV.Core\bin\x64\Release\UGV.Core.dll
+C:\Users\UGV\Documents\GitHub\NGCP_UGV\UGV.Core\bin\x64\Release\UGV.Core.pdb
+C:\Users\UGV\Documents\GitHub\NGCP_UGV\UGV.Core\obj\x64\Release\UGV.Core.csprojResolveAssemblyReference.cache
+C:\Users\UGV\Documents\GitHub\NGCP_UGV\UGV.Core\obj\x64\Release\UGV.Core.dll
+C:\Users\UGV\Documents\GitHub\NGCP_UGV\UGV.Core\obj\x64\Release\UGV.Core.pdb
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGV.Core\bin\x64\Release\UGV.Core.dll
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGV.Core\bin\x64\Release\UGV.Core.pdb
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGV.Core\obj\x64\Release\UGV.Core.csprojResolveAssemblyReference.cache
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGV.Core\obj\x64\Release\UGV.Core.dll
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGV.Core\obj\x64\Release\UGV.Core.pdb

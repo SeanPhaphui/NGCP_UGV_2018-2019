@@ -1,0 +1,39 @@
+C:\Emgu\emgucv-windesktop 3.4.1.2976\bin\x64\concrt140.dll
+C:\Emgu\emgucv-windesktop 3.4.1.2976\bin\x64\cvextern.dll
+C:\Emgu\emgucv-windesktop 3.4.1.2976\bin\x64\msvcp140.dll
+C:\Emgu\emgucv-windesktop 3.4.1.2976\bin\x64\opencv_ffmpeg341_64.dll
+C:\Emgu\emgucv-windesktop 3.4.1.2976\bin\x64\vcruntime140.dll
+C:\Emgu\emgucv-windesktop 3.4.1.2976\bin\x86\concrt140.dll
+C:\Emgu\emgucv-windesktop 3.4.1.2976\bin\x86\cvextern.dll
+C:\Emgu\emgucv-windesktop 3.4.1.2976\bin\x86\msvcp140.dll
+C:\Emgu\emgucv-windesktop 3.4.1.2976\bin\x86\opencv_ffmpeg341.dll
+C:\Emgu\emgucv-windesktop 3.4.1.2976\bin\x86\vcruntime140.dll
+C:\Emgu\emgucv-windesktop 3.4.1.2976\bin\Example.CameraCapture.exe
+C:\Emgu\emgucv-windesktop 3.4.1.2976\bin\Example.CameraCapture.pdb
+C:\Emgu\emgucv-windesktop 3.4.1.2976\Emgu.CV.Example\CameraCapture\obj\Debug\CameraCapture.csprojResolveAssemblyReference.cache
+C:\Emgu\emgucv-windesktop 3.4.1.2976\Emgu.CV.Example\CameraCapture\obj\Debug\CameraCapture.CameraCapture.resources
+C:\Emgu\emgucv-windesktop 3.4.1.2976\Emgu.CV.Example\CameraCapture\obj\Debug\CameraCapture.csproj.GenerateResource.Cache
+C:\Emgu\emgucv-windesktop 3.4.1.2976\Emgu.CV.Example\CameraCapture\obj\Debug\Example.CameraCapture.exe
+C:\Emgu\emgucv-windesktop 3.4.1.2976\Emgu.CV.Example\CameraCapture\obj\Debug\Example.CameraCapture.pdb
+C:\Users\Troy\Desktop\SolutionTest\bin\Example.CameraCapture.exe
+C:\Users\Troy\Desktop\SolutionTest\bin\Example.CameraCapture.pdb
+C:\Users\Troy\Desktop\SolutionTest\Windows.Desktop\CameraCapture\obj\Debug\CameraCapture.CameraCapture.resources
+C:\Users\Troy\Desktop\SolutionTest\Windows.Desktop\CameraCapture\obj\Debug\CameraCapture.csproj.GenerateResource.Cache
+C:\Users\Troy\Desktop\SolutionTest\Windows.Desktop\CameraCapture\obj\Debug\Example.CameraCapture.exe
+C:\Users\Troy\Desktop\SolutionTest\Windows.Desktop\CameraCapture\obj\Debug\Example.CameraCapture.pdb
+C:\Users\Troy\Desktop\SolutionTest\Windows.Desktop\CameraCapture\obj\Debug\CameraCapture.csprojResolveAssemblyReference.cache
+C:\Users\UGV\Documents\GitHub\NGCP_UGV_2017-2018\UGV_ObjectDetection\Windows.Desktop\CameraCapture\obj\Debug\Example.CameraCapture.exe
+C:\Users\UGV\Documents\GitHub\NGCP_UGV_2017-2018\UGV_ObjectDetection\Windows.Desktop\CameraCapture\obj\Debug\Example.CameraCapture.pdb
+C:\Users\UGV\Documents\GitHub\NGCP_UGV_2017-2018\UGV_ObjectDetection\bin\Example.CameraCapture.exe
+C:\Users\UGV\Documents\GitHub\NGCP_UGV_2017-2018\UGV_ObjectDetection\bin\Example.CameraCapture.pdb
+C:\Users\UGV\Documents\GitHub\NGCP_UGV_2017-2018\UGV_ObjectDetection\Windows.Desktop\CameraCapture\obj\Debug\CameraCapture.csprojResolveAssemblyReference.cache
+C:\Users\UGV\Documents\GitHub\NGCP_UGV_2017-2018\UGV_ObjectDetection\Windows.Desktop\CameraCapture\obj\Debug\CameraCapture.CameraCapture.resources
+C:\Users\UGV\Documents\GitHub\NGCP_UGV_2017-2018\UGV_ObjectDetection\Windows.Desktop\CameraCapture\obj\Debug\CameraCapture.csproj.GenerateResource.Cache
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGV_ObjectDetection\Windows.Desktop\CameraCapture\obj\Debug\Example.CameraCapture.exe
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGV_ObjectDetection\Windows.Desktop\CameraCapture\obj\Debug\Example.CameraCapture.pdb
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGV_ObjectDetection\bin\Example.CameraCapture.exe
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGV_ObjectDetection\bin\Example.CameraCapture.pdb
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGV_ObjectDetection\Windows.Desktop\CameraCapture\obj\Debug\CameraCapture.csprojResolveAssemblyReference.cache
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGV_ObjectDetection\Windows.Desktop\CameraCapture\obj\Debug\CameraCapture.CameraCapture.resources
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGV_ObjectDetection\Windows.Desktop\CameraCapture\obj\Debug\CameraCapture.csproj.GenerateResource.Cache
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGV_ObjectDetection\bin\Example.CameraCapture.exe.config

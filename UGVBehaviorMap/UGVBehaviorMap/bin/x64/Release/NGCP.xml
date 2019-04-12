@@ -1,0 +1,933 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NGCP</name>
+    </assembly>
+    <members>
+        <member name="F:NGCP.IO.Link.PackageReceived">
+            <summary>
+            Action to do when a new package was received
+            </summary>
+        </member>
+        <member name="M:NGCP.IO.Link.IsActive">
+            <summary>
+            If IO is active
+            </summary>
+        </member>
+        <member name="M:NGCP.IO.Link.Start">
+            <summary>
+            Start a Link
+            </summary>
+        </member>
+        <member name="M:NGCP.IO.Link.Stop">
+            <summary>
+            Stop a Link
+            </summary>
+        </member>
+        <member name="M:NGCP.IO.Link.Send(System.Byte[])">
+            <summary>
+            Send data
+            </summary>
+            <param name="bytes"></param>
+        </member>
+        <member name="M:NGCP.IO.Link.Send(System.Byte[],System.Object)">
+            <summary>
+            Send data with dynamic target
+            </summary>
+            <param name="bytes"></param>
+            <param name="Target"></param>
+        </member>
+        <member name="T:NGCP.IO.Serial">
+            <summary>
+            An Serial based sensor
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.Serial.PackageMaxSizeLimit">
+            <summary>
+            Amount of byte limit max of a single package include escape tokens
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.Serial.EscapeToken">
+            <summary>
+            User defined token of ending a package
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.Serial.FindPackageEnd">
+            <summary>
+            User defined function to find the end of package 
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.Serial.PackageMode">
+            <summary>
+            Package Mode of link
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.Serial.COM">
+            <summary>
+            Serial port of COM
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.Serial.read">
+            <summary>
+            Timer to read data from buffer used if data data recived event will not work on the current OS
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.Serial.message">
+            <summary>
+            byte sequence of message income
+            </summary>
+        </member>
+        <member name="M:NGCP.IO.Serial.#ctor(System.String,System.Int32)">
+            <summary>
+            Construct a Serial based sensor object
+            </summary>
+            <param name="portName"></param>
+            <param name="baudRate"></param>
+        </member>
+        <member name="M:NGCP.IO.Serial.IsActive">
+            <summary>
+            If IO is active
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.IO.Serial.Start">
+            <summary>
+            Start read serial communication
+            </summary>
+        </member>
+        <member name="M:NGCP.IO.Serial.Stop">
+            <summary>
+            Stop read serial communication
+            </summary>
+        </member>
+        <member name="M:NGCP.IO.Serial.Send(System.Byte[])">
+            <summary>
+            Send a serial data package
+            </summary>
+            <param name="bytes"></param>
+        </member>
+        <member name="M:NGCP.IO.Serial.OnDataReceived(System.Object,System.IO.Ports.SerialDataReceivedEventArgs)">
+            <summary>
+            Callback for data received
+            </summary>
+        </member>
+        <member name="T:NGCP.IO.Serial.PackageModes">
+            <summary>
+            Package mode of link
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.Serial.PackageModes.UseEscapeToken">
+            <summary>
+            Use EscapeToken to determine end of package
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.Serial.PackageModes.UseFunction">
+            <summary>
+            Use FindPackageEnd Function to extract the package
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.TcpClientSocket.TerminateFlag">
+            <summary>
+            ManualResetEvent instances signal completion for terminate
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.TcpClientSocket.ConnectionSocket">
+            <summary>
+            Socket if connection
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.TcpClientSocket.Active">
+            <summary>
+            If Tcp is active
+            </summary>
+        </member>
+        <member name="M:NGCP.IO.TcpClientSocket.#ctor(System.Net.IPAddress,System.Int32)">
+            <summary>
+            Construct a Tcp Client Socket
+            </summary>
+            <param name="Port">Port Number</param>
+        </member>
+        <member name="M:NGCP.IO.TcpClientSocket.IsActive">
+            <summary>
+            If TCP is active
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.IO.TcpClientSocket.Stop">
+            <summary>
+            Stop a Tcp Client from listening to connection
+            </summary>
+        </member>
+        <member name="M:NGCP.IO.TcpClientSocket.Start">
+            <summary>
+            Start a thread of
+            </summary>
+        </member>
+        <member name="M:NGCP.IO.TcpClientSocket.StartWork">
+            <summary>
+            Start a connection of Tcp Client Socket
+            </summary>
+        </member>
+        <member name="M:NGCP.IO.TcpClientSocket.Send(System.Byte[])">
+            <summary>
+            Add a message to server queue that will be send to server
+            </summary>
+            <param name="Message"></param>
+        </member>
+        <member name="M:NGCP.IO.TcpClientSocket.ConnectCallback(System.IAsyncResult)">
+            <summary>
+            Called when a new server is connected to this client
+            </summary>
+            <param name="ar"></param>
+        </member>
+        <member name="M:NGCP.IO.TcpClientSocket.ReadCallback(System.IAsyncResult)">
+            <summary>
+            Read a Callback send from client
+            </summary>
+            <param name="ar"></param>
+        </member>
+        <member name="P:NGCP.IO.TcpClientSocket.IpAddress">
+            <summary>
+            IP address of Tcp Client
+            </summary>
+        </member>
+        <member name="P:NGCP.IO.TcpClientSocket.Port">
+            <summary>
+            IP address of Tcp Client
+            </summary>
+        </member>
+        <member name="T:NGCP.IO.MessageArgs">
+            <summary>
+            Message Argumens
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.MessageArgs.Message">
+            <summary>
+            Message body
+            </summary>
+        </member>
+        <member name="M:NGCP.IO.MessageArgs.#ctor(System.String)">
+            <summary>
+            Construct a message argument
+            </summary>
+            <param name="Message">Message Body</param>
+        </member>
+        <member name="T:NGCP.IO.TcpServerSocket">
+            <summary>
+            Tcp Server
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.TcpServerSocket.allDone">
+            <summary>
+            Manual Rest Event for Async Listener
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.TcpServerSocket.TerminateFlag">
+            <summary>
+            Flag for terminate threads and loop
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.TcpServerSocket.ConnectionSocket">
+            <summary>
+            Socket if connection
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.TcpServerSocket.Active">
+            <summary>
+            If Tcp is active
+            </summary>
+        </member>
+        <member name="M:NGCP.IO.TcpServerSocket.#ctor(System.Net.IPAddress,System.Int32)">
+            <summary>
+            Construct a Tcp Server Socket
+            </summary>
+            <param name="Port">Port Number</param>
+        </member>
+        <member name="M:NGCP.IO.TcpServerSocket.IsActive">
+            <summary>
+            If TCP is active
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.IO.TcpServerSocket.Stop">
+            <summary>
+            Stop a Tcp Server from listening to connection
+            </summary>
+        </member>
+        <member name="M:NGCP.IO.TcpServerSocket.Start">
+            <summary>
+            Start a connection of Tcp Server Socket
+            </summary>
+        </member>
+        <member name="M:NGCP.IO.TcpServerSocket.StartWork">
+            <summary>
+            Start a connection of Tcp Server Socket
+            </summary>
+        </member>
+        <member name="M:NGCP.IO.TcpServerSocket.Send(System.Byte[])">
+            <summary>
+            Add a message to server queue that will be send to client
+            </summary>
+            <param name="Message"></param>
+        </member>
+        <member name="M:NGCP.IO.TcpServerSocket.AcceptCallback(System.IAsyncResult)">
+            <summary>
+            Callback function to accpect an incoming connection
+            </summary>
+            <param name="ar"></param>
+        </member>
+        <member name="M:NGCP.IO.TcpServerSocket.ReadCallback(System.IAsyncResult)">
+            <summary>
+            Read a Callback send from client
+            </summary>
+            <param name="ar"></param>
+        </member>
+        <member name="M:NGCP.IO.TcpServerSocket.SendMessage(System.Net.Sockets.Socket,System.String)">
+            <summary>
+            Send a message back to client
+            </summary>
+            <param name="handler">Sockect object</param>
+            <param name="data">data content</param>
+        </member>
+        <member name="M:NGCP.IO.TcpServerSocket.SendCallback(System.IAsyncResult)">
+            <summary>
+            Async send a callback to client
+            </summary>
+            <param name="ar"></param>
+        </member>
+        <member name="P:NGCP.IO.TcpServerSocket.ipAddress">
+            <summary>
+            IP address of Tcp Server
+            </summary>
+        </member>
+        <member name="P:NGCP.IO.TcpServerSocket.Port">
+            <summary>
+            IP address of Tcp Server
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.UdpClientSocket.TerminateFlag">
+            <summary>
+            ManualResetEvent instances signal completion for terminate
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.UdpClientSocket.Udp">
+            <summary>
+            Socket if connection
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.UdpClientSocket.TargetEP">
+            <summary>
+            Endpoint of target
+            </summary>
+        </member>
+        <member name="F:NGCP.IO.UdpClientSocket.Active">
+            <summary>
+            If Udp is active
+            </summary>
+        </member>
+        <member name="M:NGCP.IO.UdpClientSocket.#ctor(System.Net.IPAddress,System.Int32)">
+            <summary>
+            Construct a Tcp Client Socket
+            </summary>
+            <param name="IpAddress">Ip address of this udp client</param>
+            <param name="Port">Port Number</param>
+        </member>
+        <member name="M:NGCP.IO.UdpClientSocket.#ctor(System.Net.IPAddress,System.Int32,System.Net.IPAddress,System.Int32)">
+            <summary>
+            Construct a Tcp Client Socket
+            </summary>
+            <param name="IpAddress">Ip address of this udp client</param>
+            <param name="Port">Port Number</param>
+            <param name="TargetIpAddress"></param>
+            <param name="TargetPort"></param>
+        </member>
+        <member name="M:NGCP.IO.UdpClientSocket.IsActive">
+            <summary>
+            If UDP is active
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.IO.UdpClientSocket.Stop">
+            <summary>
+            Stop a Tcp Client from listening to connection
+            </summary>
+        </member>
+        <member name="M:NGCP.IO.UdpClientSocket.Start">
+            <summary>
+            Start a thread of
+            </summary>
+            <param name="target">target to transmit to or multicase if null</param>
+        </member>
+        <member name="M:NGCP.IO.UdpClientSocket.StartWork(System.Object)">
+            <summary>
+            Start a connection of Tcp Client Socket
+            </summary>
+        </member>
+        <member name="M:NGCP.IO.UdpClientSocket.Send(System.Byte[])">
+            <summary>
+            Add a message to server queue that will be send to server
+            </summary>
+            <param name="Message"></param>
+        </member>
+        <member name="M:NGCP.IO.UdpClientSocket.Send(System.Byte[],System.Object)">
+            <summary>
+            Add a message to server queue that will be send to server
+            </summary>
+            <param name="Message"></param>
+        </member>
+        <member name="M:NGCP.IO.UdpClientSocket.ReadCallback(System.IAsyncResult)">
+            <summary>
+            Read a Callback send from client
+            </summary>
+            <param name="ar"></param>
+        </member>
+        <member name="P:NGCP.IO.UdpClientSocket.IpAddress">
+            <summary>
+            IP address or Host Name of Tcp Client
+            </summary>
+        </member>
+        <member name="P:NGCP.IO.UdpClientSocket.Port">
+            <summary>
+            IP address of Tcp Client
+            </summary>
+        </member>
+        <member name="F:NGCP.Maths.Matrix.Data">
+            <summary>
+            Data of a matrix
+            </summary>
+        </member>
+        <member name="F:NGCP.Maths.Matrix.Width">
+            <summary>
+            Width of matrix
+            </summary>
+        </member>
+        <member name="F:NGCP.Maths.Matrix.Height">
+            <summary>
+            Height of matrix
+            </summary>
+        </member>
+        <member name="T:NGCP.Maths.PID">
+            <summary>
+            PID controller
+            </summary>
+        </member>
+        <member name="F:NGCP.Maths.PID.SamplingPeriod">
+            <summary>
+            Sampling period of pid control system
+            </summary>
+        </member>
+        <member name="F:NGCP.Maths.PID.K1">
+            <summary>
+            Calculated Gains
+            </summary>
+        </member>
+        <member name="F:NGCP.Maths.PID.K2">
+            <summary>
+            Calculated Gains
+            </summary>
+        </member>
+        <member name="F:NGCP.Maths.PID.K3">
+            <summary>
+            Calculated Gains
+            </summary>
+        </member>
+        <member name="F:NGCP.Maths.PID.R1">
+            <summary>
+            delay state memory
+            </summary>
+        </member>
+        <member name="F:NGCP.Maths.PID.R2">
+            <summary>
+            delay state memory
+            </summary>
+        </member>
+        <member name="F:NGCP.Maths.PID.R3">
+            <summary>
+            delay state memory
+            </summary>
+        </member>
+        <member name="F:NGCP.Maths.PID.Limit">
+            <summary>
+            Limit of output memory
+            </summary>
+        </member>
+        <member name="M:NGCP.Maths.PID.#ctor(System.Double,System.Double)">
+            <summary>
+            Constructor of a PID controller
+            </summary>
+            <param name="SamplingFrequency">sampling frequency of PID in Hz</param>
+            <param name="Limit">Limit of output memory, 0 for no limit</param>
+        </member>
+        <member name="M:NGCP.Maths.PID.#ctor(System.Double,System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Constructor of a PID controller
+            </summary>
+            <param name="SamplingFrequency">sampling frequency of PID in Hz</param>
+            <param name="Kp">Propotional Gain</param>
+            <param name="Ki">Integrate Gain</param>
+            <param name="Kd">Devritivational Gain</param>
+            <param name="Limit">Limit of output memory, 0 for no limit</param>
+        </member>
+        <member name="M:NGCP.Maths.PID.SetPID(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            PID gain of the control system
+            </summary>
+            <param name="Kp">Propotional Gain</param>
+            <param name="Ki">Integrate Gain</param>
+            <param name="Kd">Devritivational Gain</param>
+            <param name="Limit">Limit of output memory, 0 for no limit</param>
+        </member>
+        <member name="M:NGCP.Maths.PID.Feed(System.Double,System.Double)">
+            <summary>
+            Feed a input to PID and get a output
+            </summary>
+            <param name="Input">input of sensor</param>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.Maths.PID.Feed(System.Double)">
+            <summary>
+            Feed a input to PID and get a output
+            </summary>
+            <param name="Error">Error of control: expected value - feed back</param>
+            <returns></returns>
+        </member>
+        <member name="T:NGCP.Maths.Utility">
+            <summary>
+            Collection of non-memory required math operations
+            </summary>
+        </member>
+        <member name="M:NGCP.Maths.Utility.GaussianLowPass(System.Double,System.Double,System.Double)">
+            <summary>
+            Calculate gaussian coefficient of x for x greater than expected value
+            </summary>
+            <param name="x"></param>
+            <param name="ExpectedValue">Expected value</param>
+            <param name="Variance">variance of gaussian</param>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.Maths.Utility.GaussianHighPass(System.Double,System.Double,System.Double)">
+            <summary>
+            Calculate gaussian coefficient of x for x less than expected value
+            </summary>
+            <param name="x"></param>
+            <param name="ExpectedValue">Expected value</param>
+            <param name="Variance">variance of gaussian</param>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.Maths.Utility.Gaussian(System.Double,System.Double,System.Double)">
+            <summary>
+            Calculate gaussian coefficient of x
+            </summary>
+            <param name="x"></param>
+            <param name="ExpectedValue">Expected value</param>
+            <param name="Variance">variance of gaussian</param>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.Maths.Utility.AverageAngle(System.Double,System.Double)">
+            <summary>
+            Calculate average angle of two angle
+            </summary>
+            <param name="AngleA">Angle A in radian</param>
+            <param name="AngleB">Angle B in radian</param>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.Maths.Utility.AdjustAngle(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Adjust two angle based on each side's gain
+            </summary>
+            <param name="AngleA">Angle A in radian</param>
+            <param name="GainA">Scale Gain of angle A</param>
+            <param name="AngleB">Angle B in radian</param>
+            <param name="GainB">Scale Gain of angle B</param>
+            <returns></returns>
+        </member>
+        <member name="T:NGCP.Maths.Vector">
+            <summary>
+            A cartesian vector
+            </summary>
+        </member>
+        <member name="F:NGCP.Maths.Vector.DirectionX">
+            <summary>
+            Direction of X Vector
+            </summary>
+        </member>
+        <member name="F:NGCP.Maths.Vector.DirectionY">
+            <summary>
+            Direction of Y Vector
+            </summary>
+        </member>
+        <member name="F:NGCP.Maths.Vector.DirectionZ">
+            <summary>
+            Direction of Z Vector
+            </summary>
+        </member>
+        <member name="M:NGCP.Maths.Vector.#ctor(System.Double,System.Double,System.Double)">
+            <summary>
+            Constructor of a cartesian vector
+            </summary>
+            <param name="DirectionX">Direction of X Vector</param>
+            <param name="DirectionY">Direction of Y Vector</param>
+            <param name="DirectionZ">Direction of Z Vector</param>
+        </member>
+        <member name="M:NGCP.Maths.Vector.ToString">
+            <summary>
+            String output of vector
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.Maths.Vector.Rotate(NGCP.Maths.Vector,System.Double)">
+            <summary>
+            Rotate an Vector based on another Vector
+            </summary>
+            <param name="Axle">Axle of rotate</param>
+            <param name="degree">degree of rotatein radian</param>
+        </member>
+        <member name="M:NGCP.Maths.Vector.Clone">
+            <summary>
+            Clone a Vector
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.Maths.Vector.Normalize">
+            <summary>
+            Normalize the vector
+            </summary>
+        </member>
+        <member name="F:NGCP.Navigation.WayPoint.R">
+            <summary>
+            Radius of earth
+            </summary>
+        </member>
+        <member name="F:NGCP.Navigation.WayPoint.GUID">
+            <summary>
+            Guid of waypoint
+            </summary>
+        </member>
+        <member name="F:NGCP.Navigation.WayPoint.Lat">
+            <summary>
+            Lat of waypoint
+            </summary>
+        </member>
+        <member name="F:NGCP.Navigation.WayPoint.Long">
+            <summary>
+            Long of waypoint
+            </summary>
+        </member>
+        <member name="F:NGCP.Navigation.WayPoint.Alt">
+            <summary>
+            Altitute of waypoint
+            </summary>
+        </member>
+        <member name="M:NGCP.Navigation.WayPoint.#ctor(System.Double,System.Double,System.Double)">
+            <summary>
+            
+            </summary>
+            <param name="Lat"></param>
+            <param name="Long"></param>
+            <param name="Alt"></param>
+        </member>
+        <member name="M:NGCP.Navigation.WayPoint.ToString">
+            <summary>
+            String format of a waypoint
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.Navigation.WayPoint.GetBearing(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Calculate bearing angle from one waypoint to another
+            </summary>
+            <param name="LatStart">Lat of Start Point</param>
+            <param name="LonStart">Long of Start Point</param>
+            <param name="LatEnd">Lat of End Point</param>
+            <param name="LongEnd">Long of End Point</param>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.Navigation.WayPoint.GetDistance(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Calculate distance from one waypoint to another
+            </summary>
+            <param name="LatStart">Lat of Start Point</param>
+            <param name="LonStart">Long of Start Point</param>
+            <param name="LatEnd">Lat of End Point</param>
+            <param name="LongEnd">Long of End Point</param>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.Navigation.WayPoint.GetIntersection(NGCP.Navigation.WayPoint,System.Double,NGCP.Navigation.WayPoint,System.Double)">
+            <summary>
+            Intersection of two waypoint
+            </summary>
+            <param name="WaypointA"></param>
+            <param name="HeadingA"></param>
+            <param name="WaypointB"></param>
+            <param name="HeadingB"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.Navigation.WayPoint.GetCenter(System.Collections.Generic.List{NGCP.Navigation.WayPoint})">
+            <summary>
+            Get the center of waypoints
+            </summary>
+            <param name="Boundary"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.Navigation.WayPoint.Projection(NGCP.Navigation.WayPoint,System.Double,System.Double)">
+            <summary>
+            Project from one point to a distance
+            </summary>
+            <param name="wp"></param>
+            <param name="bearing">In radians</param>
+            <param name="distance">Distance in meters</param>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.Navigation.WayPoint.IsInsideBoundary(System.Double,System.Double,System.Collections.Generic.List{NGCP.Navigation.WayPoint})">
+            <summary>
+            Check if the waypoint is inside boundary
+            </summary>
+            <param name="Lat"></param>
+            <param name="Long"></param>
+            <param name="Boundary"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.Navigation.WayPoint.GenerateRandomWaypoint(System.Collections.Generic.List{NGCP.Navigation.WayPoint})">
+            <summary>
+            Generate a random waypoint inside boundary
+            </summary>
+            <param name="Boundary"></param>
+            <returns></returns>
+        </member>
+        <member name="F:NGCP.Sensor.Sensor`1.Calibrated">
+            <summary>
+            Determine whether the sensor is calibrated
+            </summary>
+        </member>
+        <member name="F:NGCP.Sensor.Sensor`1.LastUpdateTime">
+            <summary>
+            Last Update time of Sensor
+            </summary>
+        </member>
+        <member name="M:NGCP.Sensor.Sensor`1.Update(`0)">
+            <summary>
+            Update the sensor data 
+            </summary>
+            <param name="package">package of the sensor data</param>
+        </member>
+        <member name="P:NGCP.Sensor.Encoders.speed">
+            <summary>
+            the speed measure by the encoders in m/s
+            </summary>
+        </member>
+        <member name="P:NGCP.Sensor.Encoders.turn">
+            <summary>
+            The degree of turn measured by the encoders in radians left of forward
+            </summary>
+        </member>
+        <member name="F:NGCP.Sensor.SensorPackage.Valid">
+            <summary>
+            Determine if the sensor package is valid
+            </summary>
+        </member>
+        <member name="M:NGCP.Sensor.GPS.#ctor">
+            <summary>
+            Constructor of a GPS object
+            </summary>
+        </member>
+        <member name="M:NGCP.Sensor.GPS.Update(NGCP.Sensor.GPSPackage)">
+            <summary>
+            Update a GPS data
+            </summary>
+            <param name="package"></param>
+        </member>
+        <member name="P:NGCP.Sensor.GPS.LatitudeFiltered">
+            <summary>
+            Lat of GPS after filter with encoder
+            </summary>
+        </member>
+        <member name="P:NGCP.Sensor.GPS.LongitudeFiltered">
+            <summary>
+            Long of GPS after filter with encoder
+            </summary>
+        </member>
+        <member name="P:NGCP.Sensor.GPS.RawData">
+            <summary>
+            Raw data of IMU
+            </summary>
+        </member>
+        <member name="P:NGCP.Sensor.GPS.GPSTime">
+            <summary>
+            GPS time stamp
+            </summary>
+        </member>
+        <member name="P:NGCP.Sensor.GPS.Latitude">
+            <summary>
+            Lat of GPS
+            </summary>
+        </member>
+        <member name="P:NGCP.Sensor.GPS.Longitude">
+            <summary>
+            Long of GPS
+            </summary>
+        </member>
+        <member name="P:NGCP.Sensor.GPS.Altitude">
+            <summary>
+            Alt of GPS
+            </summary>
+        </member>
+        <member name="P:NGCP.Sensor.GPS.GoodData">
+            <summary>
+            Indicate good or bad data
+            </summary>
+        </member>
+        <member name="P:NGCP.Sensor.GPS.SatelliteCount">
+            <summary>
+            Satillite count
+            </summary>
+        </member>
+        <member name="P:NGCP.Sensor.GPS.TrackAngle">
+            <summary>
+            Track angle of gps
+            </summary>
+        </member>
+        <member name="P:NGCP.Sensor.GPS.GroundSpeed">
+            <summary>
+            Ground Speed of gps
+            </summary>
+        </member>
+        <member name="T:NGCP.Sensor.GPSPackage">
+            <summary>
+            A package of GPS data
+            </summary>
+        </member>
+        <member name="F:NGCP.Sensor.GPSPackage.NMEA">
+            <summary>
+            NMEA string of GPS
+            </summary>
+        </member>
+        <member name="F:NGCP.Sensor.IMUStick.AccelSensitivity">
+            <summary>
+            Accelerometer Sensitivity
+            </summary>
+        </member>
+        <member name="F:NGCP.Sensor.IMUStick.GyroSensitivity">
+            <summary>
+            Gyro Sensitivity
+            </summary>
+        </member>
+        <member name="F:NGCP.Sensor.IMUStick.SamplePeriod">
+            <summary>
+            SamplePeriod
+            </summary>
+        </member>
+        <member name="F:NGCP.Sensor.IMUStick.GyroConstant">
+            <summary>
+            Calculate Gyro constant
+            </summary>
+        </member>
+        <member name="F:NGCP.Sensor.IMUStick.UsingCalibration">
+            <summary>
+            Use calibration or not
+            </summary>
+        </member>
+        <member name="F:NGCP.Sensor.IMUStick.ComplementaryFilterRatio">
+            <summary>
+            Ratio of measurement in place of filtering;
+            </summary>
+        </member>
+        <member name="M:NGCP.Sensor.IMUStick.#ctor">
+            <summary>
+            Constructor of a  IMU object
+            </summary>
+        </member>
+        <member name="M:NGCP.Sensor.IMUStick.Update(NGCP.Sensor.IMUPackage)">
+            <summary>
+            Update a IMU data
+            </summary>
+            <param name="package"></param>
+        </member>
+        <member name="M:NGCP.Sensor.IMUStick.ReadPackage(System.Byte[])">
+            <summary>
+            Read a byte array to IMU package data
+            </summary>
+            <param name="XML"></param>
+        </member>
+        <member name="P:NGCP.Sensor.IMUStick.RawData">
+            <summary>
+            Raw data of IMU
+            </summary>
+        </member>
+        <member name="P:NGCP.Sensor.IMUStick.LocationX">
+            <summary>
+            X displacement
+            </summary>
+        </member>
+        <member name="P:NGCP.Sensor.IMUStick.LocationY">
+            <summary>
+            Y displacement
+            </summary>
+        </member>
+        <member name="P:NGCP.Sensor.IMUStick.LocationZ">
+            <summary>
+            Z displacement
+            </summary>
+        </member>
+        <member name="T:NGCP.Sensor.IMUPackage">
+            <summary>
+            A package of IMU data
+            </summary>
+        </member>
+        <member name="F:NGCP.Sensor.Ultrasonic.Distance">
+            <summary>
+            distance of ultrasoni
+            </summary>
+        </member>
+        <member name="M:NGCP.Sensor.Ultrasonic.Update(NGCP.Sensor.UltrasonicPackage)">
+            <summary>
+            Update Ultrasonic data
+            </summary>
+            <param name="package"></param>
+        </member>
+        <member name="T:NGCP.AES">
+            <summary>
+            AES Encryotor and Decryptor
+            </summary>
+        </member>
+        <member name="F:NGCP.AES.Encryptor">
+            <summary>
+            AES Encryptor
+            </summary>
+        </member>
+        <member name="F:NGCP.AES.Decryptor">
+            <summary>
+            AES Edcryptor
+            </summary>
+        </member>
+        <member name="M:NGCP.AES.#ctor(System.String)">
+            <summary>
+            Constructor of AES
+            </summary>
+            <param name="Key"></param>
+        </member>
+        <member name="M:NGCP.AES.Encrypt(System.Byte[])">
+            <summary>
+            Encrypt and a plain tex
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.AES.Decrypt(System.Byte[])">
+            <summary>
+            Decrypt and a plain tex
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.Serialize.XmlSerialize``1(``0)">
+            <summary>
+            XML Serialization
+            </summary>
+        </member>
+        <member name="M:NGCP.Serialize.XmlDeserialize``1(System.String)">
+            <summary>
+            XML Deserialization
+            </summary>
+        </member>
+    </members>
+</doc>

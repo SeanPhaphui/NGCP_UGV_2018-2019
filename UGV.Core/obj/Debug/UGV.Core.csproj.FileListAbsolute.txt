@@ -1,0 +1,10 @@
+C:\Users\Dcoco\Documents\Visual Studio 2015\Projects\UGV.Core\UGV.Core\obj\Debug\UGV.Core.csprojResolveAssemblyReference.cache
+C:\Users\Dcoco\Documents\Visual Studio 2015\Projects\UGV.Core\UGV.Core\bin\Debug\UGV.Core.dll
+C:\Users\Dcoco\Documents\Visual Studio 2015\Projects\UGV.Core\UGV.Core\bin\Debug\UGV.Core.pdb
+C:\Users\Dcoco\Documents\Visual Studio 2015\Projects\UGV.Core\UGV.Core\obj\Debug\UGV.Core.dll
+C:\Users\Dcoco\Documents\Visual Studio 2015\Projects\UGV.Core\UGV.Core\obj\Debug\UGV.Core.pdb
+C:\Users\UGV\Documents\GitHub\NGCP_UGV\UGV.Core\bin\Debug\UGV.Core.dll
+C:\Users\UGV\Documents\GitHub\NGCP_UGV\UGV.Core\bin\Debug\UGV.Core.pdb
+C:\Users\UGV\Documents\GitHub\NGCP_UGV\UGV.Core\obj\Debug\UGV.Core.csprojResolveAssemblyReference.cache
+C:\Users\UGV\Documents\GitHub\NGCP_UGV\UGV.Core\obj\Debug\UGV.Core.dll
+C:\Users\UGV\Documents\GitHub\NGCP_UGV\UGV.Core\obj\Debug\UGV.Core.pdb

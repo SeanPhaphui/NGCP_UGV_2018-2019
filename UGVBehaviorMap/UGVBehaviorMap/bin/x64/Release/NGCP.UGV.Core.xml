@@ -1,0 +1,970 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NGCP.UGV.Core</name>
+    </assembly>
+    <members>
+        <member name="T:NGCP.UGV.Core.Missions.Mission">
+            <summary>
+            Mission of UGV
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.Missions.Mission.SleepTime">
+            <summary>
+            Sleep Time each cycle
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.Missions.Mission.ugv">
+            <summary>
+            UGV Class
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.Missions.Mission.#ctor(NGCP.UGV.Core.UGV)">
+            <summary>
+            Constructor of Mission
+            </summary>
+            <param name="ugv"></param>
+        </member>
+        <member name="M:NGCP.UGV.Core.Missions.Mission.Reset">
+            <summary>
+            Reset this mission
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.Missions.Mission.DoWork">
+            <summary>
+            Do the work of mission
+            </summary>
+        </member>
+        <member name="T:NGCP.UGV.Core.Missions.SearchTargetMission">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.Missions.SearchTargetMission.ApporachingZone">
+            <summary>
+            The limit of apporaching zone in mm
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.Missions.SearchTargetMission.TargetZone">
+            <summary>
+            The distance considered as at target in mm 
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.Missions.SearchTargetMission.RelativeNavTimeout">
+            <summary>
+            RelativeNav for 1 seconds
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.Missions.SearchTargetMission.TargetApporachTimeout">
+            <summary>
+            track target for 0.5 seconds
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.Missions.SearchTargetMission.#ctor(NGCP.UGV.Core.UGV)">
+            <summary>
+            
+            </summary>
+            <param name="ugv"></param>
+        </member>
+        <member name="F:NGCP.UGV.Core.Missions.SearchTargetMission.RelativeNavFlag">
+            <summary>
+            if system is navigate relatively
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.Missions.SearchTargetMission.RelativeNavCount">
+            <summary>
+            RelativeNav count
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.Missions.SearchTargetMission.TargetApporachCount">
+            <summary>
+            Apporaching count
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.Missions.SearchTargetMission.Reset">
+            <summary>
+            Reset
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.Missions.SearchTargetMission.DoWork">
+            <summary>
+            Search target mode
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.ProtoNet.Callbacks">
+            <summary>
+            Call backs of protonet
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.ProtoNet.Node">
+            <summary>
+            Node object of protonet
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.ProtoNet.link_id">
+            <summary>
+            Link ID object
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.ProtoNet.#ctor(System.Byte)">
+            <summary>
+            Constructor of protonet
+            </summary>
+            <param name="NodeID"></param>
+        </member>
+        <member name="M:NGCP.UGV.Core.ProtoNet.StartSerial(System.Byte,System.UInt32,System.String)">
+            <summary>
+            Start Protonet on serial
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.ProtoNet.SendState(NGCP.UGV.Core.UGVState)">
+            <summary>
+            Send a state to GCS
+            </summary>
+            <param name="state"></param>
+        </member>
+        <member name="P:NGCP.UGV.Core.ProtoNet.NodeID">
+            <summary>
+            Local Node id
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.ProtoNet.TargetNodeID">
+            <summary>
+            Node ID of target
+            </summary>
+        </member>
+        <member name="T:NGCP.UGV.Core.ProtoNet.ProtonetCallbacks">
+            <summary>
+            Hold all state and behavior data in this callback class
+            </summary>
+        </member>
+        <member name="T:NGCP.UGV.Core.UGV">
+            <summary>
+            UGV Behavior
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.SleepTime">
+            <summary>
+            Sleep Time each cycle
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.FullSpeed">
+            <summary>
+            Full Speed for Autonomous
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.SteerRatio">
+            <summary>
+            Steering Ratio
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.OutsideSpeedRatio">
+            <summary>
+            Speed Ratio When outside boundary
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.OutsideSteerRatio">
+            <summary>
+            Steer Ratio When outside boundary
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.AvoidanceThreshold">
+            <summary>
+            How close to check for obstacles in meters
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.ReachWaypointZone">
+            <summary>
+            The distance considered hit a waypoint
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.ApporachingZone">
+            <summary>
+            The limit of apporaching zone in mm
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.TargetZone">
+            <summary>
+            The distance considered as at target in mm 
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.RelativeNavTimeout">
+            <summary>
+            RelativeNav for 1 seconds
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.TargetApporachTimeout">
+            <summary>
+            track target for 0.5 seconds
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.SafeDistance">
+            <summary>
+            The distance considered as far enough from target
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.PayloadDropTimeout">
+            <summary>
+            wait payload drop for 30 sec
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.SteerPID">
+            <summary>
+            pid control for steering
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.State">
+            <summary>
+            Drive state
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.TargetLockedLocation">
+            <summary>
+            Location where the target locked
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.WaypointVector">
+            <summary>
+            Target vector
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.SumVector">
+            <summary>
+            Sum vector
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.DoWork">
+            <summary>
+            Behavior of UGV when autonomous
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.ResetAllState">
+            <summary>
+            Reset All drive state
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.RelativeNavFlag">
+            <summary>
+            if system is navigate relatively
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.RelativeNavCount">
+            <summary>
+            RelativeNav count
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.TargetApporachCount">
+            <summary>
+            Apporaching count
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.ResetSearchTarget">
+            <summary>
+            Reset search target
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.SearchTarget">
+            <summary>
+            Search target mode
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.LockTarget">
+            <summary>
+            Lock target mode
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.SearchPayload">
+            <summary>
+            Search Payload mode
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.ResetDriveAwayFromTarget">
+            <summary>
+            Reset Drive Away
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.DriveAwayFromTarget">
+            <summary>
+            Lock target mode
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.DriveToSafeZone">
+            <summary>
+            Drive to safe zone
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.PayloadDropCount">
+            <summary>
+            count tick for payload drop
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.ResetWaitDrop">
+            <summary>
+            Reset Wait Drop Counter
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.WaitDrop">
+            <summary>
+            Wait for drop command
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.VerifyTarget">
+            <summary>
+            Apporach and verify target
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.DriveToStart">
+            <summary>
+            Drive back to start point
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.Idle">
+            <summary>
+            Do nothing and wait for command
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.Enabled">
+            <summary>
+            Indicate if UGV is enabled
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.LocalSpeed">
+            <summary>
+            Speed factor of front wheel driving from -1000 to 1000
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.LocalSteering">
+            <summary>
+            Steering factor of driving from -1000 to 1000
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.Links">
+            <summary>
+            Linked IOs of UGV
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.AvoidanceVector">
+            <summary>
+            Obstacle vector
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.DebugMessage">
+            <summary>
+            A Debug message from upper layer
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.VisionWaypoints">
+            <summary>
+            A list of waypoint from vision
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.VisionTargets">
+            <summary>
+            A list of target from vision
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.controlTimer">
+            <summary>
+            Timer for sequencial action
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.boardcastTimer">
+            <summary>
+            Timer for system state board casting
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.CommWheel">
+            <summary>
+            Wheel power from XBee
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.CommSteering">
+            <summary>
+            Steering Angle from XBee;
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.imu">
+            <summary>
+            IMU of UGV
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.rxCommState">
+            <sumary>
+            Protonet Comm Info
+            </sumary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.#ctor">
+            <summary>
+            Constructor of UGV
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.Start">
+            <summary>
+            Start opeartion of UGV
+            </summary>          
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.Stop">
+            <summary>
+            Stop operation of UGV
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.ResetMission">
+            <summary>
+            Reset the mission
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.UpdateBattery(NGCP.UGV.Core.UGV.BatteryStatus)">
+            <summary>
+            Update Battery Status
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.InsertWaypointAt(System.Int32,NGCP.Navigation.WayPoint)">
+            <summary>
+            Insert a waypoint at a certain index, of index is out of range, it will insert at the end
+            </summary>
+            <param name="index"></param>
+            <param name="waypoint"></param>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.EditWaypointAt(System.Int32,NGCP.Navigation.WayPoint)">
+            <summary>
+            Edit waypoint at a certain indedx
+            </summary>
+            <param name="index"></param>
+            <param name="waypoint"></param>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.RemoveWaypointAt(System.Int32)">
+            <summary>
+            Remove a waypoint at a certain index
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.StartBehavior(System.Object)">
+            <summary>
+            Start behavior code
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.Timer_Tick(System.Object,System.Timers.ElapsedEventArgs)">
+            <summary>
+            EventHandler when timer tick
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.SendControl">
+            <summary>
+            Seqencial action to send control
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.BoardCast_Tick(System.Object,System.Timers.ElapsedEventArgs)">
+            <summary>
+            EventHandler when boardcast timer tick
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.BoardCast">
+            <summary>
+            Board Cast System State
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.UnixTime">
+            <summary>
+            Represent UnixTime
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.OnEnter(System.SByte,Comnet.Header@,Comnet.Enter@,Comnet.Node)">
+            <summary>
+            Callback for Enter
+            </summary>
+            <param name="link_id"></param>
+            <param name="header"></param>
+            <param name="rx_msg"></param>
+            <param name="node"></param>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.OnPing(System.SByte,Comnet.Header@,Comnet.Ping@,Comnet.Node)">
+            <summary>
+            Callback for Ping
+            </summary>
+            <param name="link_id"></param>
+            <param name="header"></param>
+            <param name="rx_msg"></param>
+            <param name="node"></param>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.OnVehicleAuthRequest(System.SByte,Comnet.Header@,Comnet.VehicleAuthorizationRequest@,Comnet.Node)">
+            <summary>
+            Callback for Vehicle Authorization Request
+            </summary>
+            <param name="link_id"></param>
+            <param name="header"></param>
+            <param name="rx_msg"></param>
+            <param name="node"></param>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.NewJoyStickInput">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.OnJoyStickInput(System.SByte,Comnet.Header@,Comnet.VehicleJoystickCommand@,Comnet.Node)">
+            <summary>
+            Callback for JoyStick Input
+            </summary>
+            <param name="link_id"></param>
+            <param name="header"></param>
+            <param name="rx_msg"></param>
+            <param name="node"></param>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.OnPayloadBayCommand(System.SByte,Comnet.Header@,Comnet.PayloadBayCommand@,Comnet.Node)">
+            <summary>
+            
+            </summary>
+            <param name="linkid"></param>
+            <param name="header"></param>
+            <param name="rx_msg"></param>
+            <param name="node"></param>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.OnVehicleModeCommand(System.SByte,Comnet.Header@,Comnet.VehicleModeCommand@,Comnet.Node)">
+            <summary>
+            
+            </summary>
+            <param name="linkid"></param>
+            <param name="header"></param>
+            <param name="rx_msg"></param>
+            <param name="node"></param>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.SendState(NGCP.UGV.Core.UGVState)">
+            <summary>
+            Send a state to GCS
+            </summary>
+            <param name="state"></param>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.GetTimeStamp">
+            <summary>
+            Generate the time stamp
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.startProtonet">
+            <summary>
+            Start Protonet
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.JoyStickTimer_Tick(System.Object,System.Timers.ElapsedEventArgs)">
+            <summary>
+            On joystick timer tick
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.Speed">
+            <summary>
+            Speed factor of front wheel driving from -1000 to 1000
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.Steering">
+            <summary>
+            Steering factor of driving from -1000 to 1000
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.FinalFrontWheel">
+            <summary>
+            Final output for Front Wheel
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.FinalRearWheel">
+            <summary>
+            Final output for Rear Wheel
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.FinalSteering">
+            <summary>
+            Final output for Steer
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.Settings">
+            <summary>
+            Settings of UGV
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.InsideBoundary">
+            <summary>
+            If vehicle is inside boundary
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.CloseBoundary">
+            <summary>
+            If Vehicle is close to boundary
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.InsideSafeZone">
+            <summary>
+            If vehicle is inside SafeZone
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.Boundary">
+            <summary>
+            Boundary of the active zone
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.SafeZone">
+            <summary>
+            Boundary of Safe Zone
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.DefaultLocation">
+            <summary>
+            The geo location as starting default
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.TargetDropped">
+            <summary>
+            If Target has dropped
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.LineCount">
+            <summary>
+            Number of Lidar lines considered
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.TargetFound">
+            <summary>
+            If the target is found
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.TargetWaypoint">
+            <summary>
+            Location of the target
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.Waypoints">
+            <summary>
+            Way point of UGV route to search for target
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.NextWaypointDistance">
+            <summary>
+            Straight line distance towards the next waypoint
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.NextWaypointBearing">
+            <summary>
+            Straight line bearing angle towards the next waypoint
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.NextWaypointBearingError">
+            <summary>
+            Straight line bearing angle towards the next waypoint
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.NextVisionDistance">
+            <summary>
+            Straight line distance towards the next waypoint
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.NextVisionBearing">
+            <summary>
+            Straight line bearing angle towards the next waypoint
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.NextVisionBearingError">
+            <summary>
+            Straight line bearing angle towards the next waypoint
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.VisionWaypointReceiveTime">
+            <summary>
+            Last time stamp of vision waypoint
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.VisionTargetReceiveTime">
+            <summary>
+            Last time stamp of vision target
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.BatteryInfo">
+            <summary>
+            Battery status of UGV
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.ByWireMotorControl">
+            <summary>
+            Control state of the motors true FPGA controls motors by direct command of UGV
+            false the UGV passes a heading a distance and a speed and the FPGA handles it on there own
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.EncoderSpeed">
+            <summary>
+            Encoder Speed
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.EncoderTurn">
+            <summary>
+            Encoder Turn
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.Pitch">
+            <summary>
+            Pitch angle of UGV
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.Roll">
+            <summary>
+            Roll angle of UGV
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.Heading">
+            <summary>
+            Heading angle of UGV
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.Latitude">
+            <summary>
+            Latitude of UGV
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.Longitude">
+            <summary>
+            Longitude of UGV
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.Altitude">
+            <summary>
+            Altitude of UGV
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.GroundSpeed">
+            <summary>
+            Ground Speed of UGV
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.TrackAngle">
+            <summary>
+            TrackAngle of UGV
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.GPSLock">
+            <summary>
+            Data State of UGV
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.SatelliteCount">
+            <summary>
+            Satellite Lock of UGV
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.EncoderLat">
+            <summary>
+            Data Time of UGV
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.CommOverride">
+            <summary>
+            If Override control by Comm
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.encoders">
+            <summary>
+            IMU of UGV
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.tracker">
+            <summary>
+            IMU of UGV
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.Xbee">
+            <summary>
+            Stanag port of UGV
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.ftdi_gps">
+            <summary>
+            Ftdi port of UGV
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.arduino">
+            <summary>
+            Ftdi port of UGV
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.fpga">
+            <summary>
+            Ftdi port of UGV
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.udp_lidar">
+            <summary>
+            UDP for Lidar
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.udp_camera">
+            <summary>
+            UDP for Camera
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.protonet">
+            <summary>
+            Protonet of UGV
+            </summary>
+        </member>
+        <member name="P:NGCP.UGV.Core.UGV.Nav">
+            <summary>
+            Port of the Nav440
+            </summary>
+        </member>
+        <member name="T:NGCP.UGV.Core.UGV.DriveState">
+            <summary>
+            Drive state of UGV
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.DriveState.SearchTarget">
+            <summary>
+            1) Vehicle will search for target
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.DriveState.LockTarget">
+            <summary>
+            2) Vehicle will lock target for a certain time
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.DriveState.SearchPayload">
+            <summary>
+            3) Vehicle will search for the payload
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.DriveState.DriveAwayFromTarget">
+            <summary>
+            2.5) Drive away till a certain distance of target
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.DriveState.DriveToSafeZone">
+            <summary>
+            3) Vehicle will drive back to a safe zone
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.DriveState.WaitDrop">
+            <summary>
+            4) Vehicle will wait for GCS to confirm the drop
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.DriveState.VerifyTarget">
+            <summary>
+            5) Vehicle will drive to dropped location and verify
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.DriveState.DriveToStart">
+            <summary>
+            6) Vehicle will drive to start point
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.DriveState.GenerateSearchPath">
+            <summary>
+            7) Generate search path if point of interest is not given
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.DriveState.Idle">
+            <summary>
+            0) Vehicle will idle and wait for command
+            </summary>
+        </member>
+        <member name="T:NGCP.UGV.Core.UGV.DriveMode">
+            <summary>
+            Driving mode of UGV
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.DriveMode.LocalControl">
+            <summary>
+            Use Local control on speed and steering
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.DriveMode.SemiAutonomous">
+            <summary>
+            Use Local Speed and Autonomous Steering
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.DriveMode.Autonomous">
+            <summary>
+            Use Autonomous Speed and Steering
+            </summary>
+        </member>
+        <member name="T:NGCP.UGV.Core.UGV.UGVSetting">
+            <summary>
+            UGV Setting class
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.UGVSetting.ControlRate">
+            <summary>
+            Rate of update in sequencial control in ms
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.UGVSetting.BoardCastRate">
+            <summary>
+            Rate of board cast in sequencial control in ms
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.UGVSetting.IMUGain">
+            <summary>
+            IMU Gain
+            </summary>
+        </member>
+        <member name="F:NGCP.UGV.Core.UGV.UGVSetting.DeadZone">
+            <summary>
+            Dead Zone for slow speed to prevent hardward damage
+            </summary>
+        </member>
+        <member name="T:NGCP.UGV.Core.UGV.SerialPackage">
+            <summary>
+            Extended class for UGV
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.SerialPackage.Package(System.Byte[])">
+            <summary>
+            Package a byte array to Serial Shift prevented package
+            </summary>
+            <param name="bytes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.SerialPackage.Check(System.Byte[])">
+            <summary>
+            Check if a byte array agree with 
+            </summary>
+            <param name="bytes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGV.SerialPackage.Read(System.Byte[])">
+            <summary>
+            Read data from a serial package
+            </summary>
+            <param name="bytes"></param>
+            <returns></returns>
+        </member>
+        <member name="T:NGCP.UGV.Core.UGV.BatteryStatus">
+            <summary>
+            Battery Status
+            </summary>
+        </member>
+        <member name="T:NGCP.UGV.Core.UGV.commAuth">
+            <summary>
+            Struct for Authorization
+            </summary>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGVState.Capture(NGCP.UGV.Core.UGV)">
+            <summary>
+            Capture UGV state
+            </summary>
+            <param name="ugv"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGVState.ToSystemState(NGCP.UGV.Core.UGV)">
+            <summary>
+            Convert UGV State to system state
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NGCP.UGV.Core.UGVState.ToBytes">
+            <summary>
+            Serialize state into bytes
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

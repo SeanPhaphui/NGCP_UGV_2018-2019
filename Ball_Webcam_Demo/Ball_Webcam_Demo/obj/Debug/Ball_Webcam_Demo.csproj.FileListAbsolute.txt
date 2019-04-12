@@ -1,0 +1,42 @@
+c:\users\ugv\documents\visual studio 2015\Projects\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Ball_Webcam_Demo.exe.config
+c:\users\ugv\documents\visual studio 2015\Projects\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Ball_Webcam_Demo.exe
+c:\users\ugv\documents\visual studio 2015\Projects\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Ball_Webcam_Demo.pdb
+c:\users\ugv\documents\visual studio 2015\Projects\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Emgu.CV.UI.dll
+c:\users\ugv\documents\visual studio 2015\Projects\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Emgu.CV.UI.GL.dll
+c:\users\ugv\documents\visual studio 2015\Projects\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Emgu.CV.World.dll
+c:\users\ugv\documents\visual studio 2015\Projects\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\ZedGraph.dll
+c:\users\ugv\documents\visual studio 2015\Projects\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Emgu.CV.UI.xml
+c:\users\ugv\documents\visual studio 2015\Projects\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Emgu.CV.UI.GL.xml
+c:\users\ugv\documents\visual studio 2015\Projects\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Emgu.CV.World.xml
+c:\users\ugv\documents\visual studio 2015\Projects\Ball_Webcam_Demo\Ball_Webcam_Demo\obj\Debug\Ball_Webcam_Demo.csprojResolveAssemblyReference.cache
+c:\users\ugv\documents\visual studio 2015\Projects\Ball_Webcam_Demo\Ball_Webcam_Demo\obj\Debug\Ball_Webcam_Demo.Form1.resources
+c:\users\ugv\documents\visual studio 2015\Projects\Ball_Webcam_Demo\Ball_Webcam_Demo\obj\Debug\Ball_Webcam_Demo.Properties.Resources.resources
+c:\users\ugv\documents\visual studio 2015\Projects\Ball_Webcam_Demo\Ball_Webcam_Demo\obj\Debug\Ball_Webcam_Demo.csproj.GenerateResource.Cache
+c:\users\ugv\documents\visual studio 2015\Projects\Ball_Webcam_Demo\Ball_Webcam_Demo\obj\Debug\Ball_Webcam_Demo.exe
+c:\users\ugv\documents\visual studio 2015\Projects\Ball_Webcam_Demo\Ball_Webcam_Demo\obj\Debug\Ball_Webcam_Demo.pdb
+C:\Users\Troy\Downloads\UGV Software 2016-2017 Archive\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Ball_Webcam_Demo.exe.config
+C:\Users\Troy\Downloads\UGV Software 2016-2017 Archive\Ball_Webcam_Demo\Ball_Webcam_Demo\obj\Debug\Ball_Webcam_Demo.exe
+C:\Users\Troy\Downloads\UGV Software 2016-2017 Archive\Ball_Webcam_Demo\Ball_Webcam_Demo\obj\Debug\Ball_Webcam_Demo.pdb
+C:\Users\Troy\Downloads\UGV Software 2016-2017 Archive\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Ball_Webcam_Demo.exe
+C:\Users\Troy\Downloads\UGV Software 2016-2017 Archive\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Ball_Webcam_Demo.pdb
+C:\Users\Troy\Downloads\UGV Software 2016-2017 Archive\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\ZedGraph.dll
+C:\Users\Troy\Downloads\UGV Software 2016-2017 Archive\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Emgu.CV.UI.xml
+C:\Users\Troy\Downloads\UGV Software 2016-2017 Archive\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Emgu.CV.UI.GL.xml
+C:\Users\Troy\Downloads\UGV Software 2016-2017 Archive\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Emgu.CV.World.xml
+C:\Users\Troy\Downloads\UGV Software 2016-2017 Archive\Ball_Webcam_Demo\Ball_Webcam_Demo\obj\Debug\Ball_Webcam_Demo.csprojResolveAssemblyReference.cache
+C:\Users\Troy\Downloads\UGV Software 2016-2017 Archive\Ball_Webcam_Demo\Ball_Webcam_Demo\obj\Debug\Ball_Webcam_Demo.Form1.resources
+C:\Users\Troy\Downloads\UGV Software 2016-2017 Archive\Ball_Webcam_Demo\Ball_Webcam_Demo\obj\Debug\Ball_Webcam_Demo.Properties.Resources.resources
+C:\Users\Troy\Downloads\UGV Software 2016-2017 Archive\Ball_Webcam_Demo\Ball_Webcam_Demo\obj\Debug\Ball_Webcam_Demo.csproj.GenerateResource.Cache
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Ball_Webcam_Demo.exe.config
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\Ball_Webcam_Demo\Ball_Webcam_Demo\obj\Debug\Ball_Webcam_Demo.exe
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\Ball_Webcam_Demo\Ball_Webcam_Demo\obj\Debug\Ball_Webcam_Demo.pdb
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Ball_Webcam_Demo.exe
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Ball_Webcam_Demo.pdb
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\ZedGraph.dll
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Emgu.CV.UI.xml
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Emgu.CV.UI.GL.xml
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\Ball_Webcam_Demo\Ball_Webcam_Demo\bin\Debug\Emgu.CV.World.xml
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\Ball_Webcam_Demo\Ball_Webcam_Demo\obj\Debug\Ball_Webcam_Demo.csprojResolveAssemblyReference.cache
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\Ball_Webcam_Demo\Ball_Webcam_Demo\obj\Debug\Ball_Webcam_Demo.Form1.resources
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\Ball_Webcam_Demo\Ball_Webcam_Demo\obj\Debug\Ball_Webcam_Demo.Properties.Resources.resources
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\Ball_Webcam_Demo\Ball_Webcam_Demo\obj\Debug\Ball_Webcam_Demo.csproj.GenerateResource.Cache

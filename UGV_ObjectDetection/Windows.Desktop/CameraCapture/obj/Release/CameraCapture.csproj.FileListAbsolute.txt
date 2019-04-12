@@ -1,0 +1,7 @@
+C:\Users\Troy\Desktop\SolutionTest\bin\Example.CameraCapture.exe
+C:\Users\Troy\Desktop\SolutionTest\bin\Example.CameraCapture.pdb
+C:\Users\Troy\Desktop\SolutionTest\Windows.Desktop\CameraCapture\obj\Release\CameraCapture.CameraCapture.resources
+C:\Users\Troy\Desktop\SolutionTest\Windows.Desktop\CameraCapture\obj\Release\CameraCapture.csproj.GenerateResource.Cache
+C:\Users\Troy\Desktop\SolutionTest\Windows.Desktop\CameraCapture\obj\Release\Example.CameraCapture.exe
+C:\Users\Troy\Desktop\SolutionTest\Windows.Desktop\CameraCapture\obj\Release\Example.CameraCapture.pdb
+C:\Users\Troy\Desktop\SolutionTest\Windows.Desktop\CameraCapture\obj\Release\CameraCapture.csprojResolveAssemblyReference.cache

@@ -1,0 +1,4 @@
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGVBehaviorMap\UGVBehaviorMap\bin\x64\Debug\UGVBehaviorMap.exe.config
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGVBehaviorMap\UGVBehaviorMap\obj\x64\Debug\UGVBehaviorMap.csprojResolveAssemblyReference.cache
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGVBehaviorMap\UGVBehaviorMap\obj\x64\Debug\App.g.cs
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGVBehaviorMap\UGVBehaviorMap\obj\x64\Debug\UGVBehaviorMap_MarkupCompile.cache

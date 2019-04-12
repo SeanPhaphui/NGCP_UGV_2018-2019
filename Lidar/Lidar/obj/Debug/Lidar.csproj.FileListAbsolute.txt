@@ -1,0 +1,42 @@
+C:\Users\buffr\Documents\Visual Studio 2015\Projects\Lidar\Lidar\bin\Debug\Lidar.exe.config
+C:\Users\buffr\Documents\Visual Studio 2015\Projects\Lidar\Lidar\bin\Debug\Lidar.exe
+C:\Users\buffr\Documents\Visual Studio 2015\Projects\Lidar\Lidar\bin\Debug\Lidar.pdb
+C:\Users\buffr\Documents\Visual Studio 2015\Projects\Lidar\Lidar\obj\Debug\Lidar.csprojResolveAssemblyReference.cache
+C:\Users\buffr\Documents\Visual Studio 2015\Projects\Lidar\Lidar\obj\Debug\Lidar.exe
+C:\Users\buffr\Documents\Visual Studio 2015\Projects\Lidar\Lidar\obj\Debug\Lidar.pdb
+C:\Users\UGV_usr\Desktop\Behaviors\behaviorApril29\Lidar\Lidar\bin\Debug\Lidar.exe.config
+C:\Users\UGV_usr\Desktop\Behaviors\behaviorApril29\Lidar\Lidar\obj\Debug\Lidar.exe
+C:\Users\UGV_usr\Desktop\Behaviors\behaviorApril29\Lidar\Lidar\obj\Debug\Lidar.pdb
+C:\Users\buffr\Documents\Code\C#\NGCP_UGV_2014_2015\Lidar\Lidar\bin\Debug\Lidar.exe.config
+C:\Users\buffr\Documents\Code\C#\NGCP_UGV_2014_2015\Lidar\Lidar\obj\Debug\Lidar.exe
+C:\Users\buffr\Documents\Code\C#\NGCP_UGV_2014_2015\Lidar\Lidar\obj\Debug\Lidar.pdb
+C:\Users\UGV_usr\Desktop\Behaviors\behaviorMay7\Lidar\Lidar\bin\Debug\Lidar.exe.config
+C:\Users\UGV_usr\Desktop\Behaviors\behaviorMay7\Lidar\Lidar\obj\Debug\Lidar.exe
+C:\Users\UGV_usr\Desktop\Behaviors\behaviorMay7\Lidar\Lidar\obj\Debug\Lidar.pdb
+C:\Users\UGV_usr\Desktop\Behaviors\behaviorMay7\Lidar\Lidar\bin\Debug\Lidar.exe
+C:\Users\UGV_usr\Desktop\Behaviors\behaviorMay7\Lidar\Lidar\bin\Debug\Lidar.pdb
+C:\Users\UGV_usr\Desktop\Behaviors\behaviorMay7\Lidar\Lidar\bin\Debug\mscorlib.dll
+C:\Users\UGV_usr\Desktop\Behaviors\behaviorMay7\Lidar\Lidar\bin\Debug\normidna.nlp
+C:\Users\UGV_usr\Desktop\Behaviors\behaviorMay7\Lidar\Lidar\bin\Debug\normnfc.nlp
+C:\Users\UGV_usr\Desktop\Behaviors\behaviorMay7\Lidar\Lidar\bin\Debug\normnfd.nlp
+C:\Users\UGV_usr\Desktop\Behaviors\behaviorMay7\Lidar\Lidar\bin\Debug\normnfkc.nlp
+C:\Users\UGV_usr\Desktop\Behaviors\behaviorMay7\Lidar\Lidar\bin\Debug\normnfkd.nlp
+C:\Users\UGV_usr\Desktop\Behaviors\behaviorMay7\Lidar\Lidar\obj\Debug\Lidar.csprojResolveAssemblyReference.cache
+C:\Users\UGV\Desktop\2015-2016 UGV\Behaviors\DEMODAY\Lidar\Lidar\bin\Debug\Lidar.exe.config
+C:\Users\UGV\Desktop\2015-2016 UGV\Behaviors\DEMODAY\Lidar\Lidar\obj\Debug\Lidar.exe
+C:\Users\UGV\Desktop\2015-2016 UGV\Behaviors\DEMODAY\Lidar\Lidar\obj\Debug\Lidar.pdb
+C:\Users\Troy\Downloads\UGV Software 2016-2017 Archive\Lidar\Lidar\bin\Debug\Lidar.exe.config
+C:\Users\Troy\Downloads\UGV Software 2016-2017 Archive\Lidar\Lidar\obj\Debug\Lidar.exe
+C:\Users\Troy\Downloads\UGV Software 2016-2017 Archive\Lidar\Lidar\obj\Debug\Lidar.pdb
+C:\Users\Troy\Downloads\UGV Software 2016-2017 Archive\Lidar\Lidar\bin\Debug\Lidar.exe
+C:\Users\Troy\Downloads\UGV Software 2016-2017 Archive\Lidar\Lidar\bin\Debug\Lidar.pdb
+C:\Users\Troy\Downloads\UGV Software 2016-2017 Archive\Lidar\Lidar\obj\Debug\Lidar.csprojResolveAssemblyReference.cache
+C:\Users\UGV\Documents\GitHub\NGCP_UGV_2017-2018\Lidar\Lidar\bin\Debug\Lidar.exe.config
+C:\Users\UGV\Documents\GitHub\NGCP_UGV_2017-2018\Lidar\Lidar\bin\Debug\Lidar.exe
+C:\Users\UGV\Documents\GitHub\NGCP_UGV_2017-2018\Lidar\Lidar\bin\Debug\Lidar.pdb
+C:\Users\UGV\Documents\GitHub\NGCP_UGV_2017-2018\Lidar\Lidar\obj\Debug\Lidar.csprojResolveAssemblyReference.cache
+C:\Users\UGV\Documents\GitHub\NGCP_UGV_2017-2018\Lidar\Lidar\obj\Debug\Lidar.exe
+C:\Users\UGV\Documents\GitHub\NGCP_UGV_2017-2018\Lidar\Lidar\obj\Debug\Lidar.pdb
+C:\Users\Troy\Desktop\NGCP_UGV_2017-2018_Final\Lidar\Lidar\bin\Debug\Lidar.exe.config
+C:\Users\Troy\Desktop\NGCP_UGV_2017-2018_Final\Lidar\Lidar\obj\Debug\Lidar.exe
+C:\Users\Troy\Desktop\NGCP_UGV_2017-2018_Final\Lidar\Lidar\obj\Debug\Lidar.pdb

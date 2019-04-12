@@ -1,0 +1,9 @@
+c:\users\troy\documents\visual studio 2015\Projects\UGVStationCommProto\UGVStationCommProto\bin\x64\Release\UGVStationCommProto.exe.config
+c:\users\troy\documents\visual studio 2015\Projects\UGVStationCommProto\UGVStationCommProto\bin\x64\Release\UGVStationCommProto.exe
+c:\users\troy\documents\visual studio 2015\Projects\UGVStationCommProto\UGVStationCommProto\bin\x64\Release\UGVStationCommProto.pdb
+c:\users\troy\documents\visual studio 2015\Projects\UGVStationCommProto\UGVStationCommProto\bin\x64\Release\CommProtoCSharp.dll
+c:\users\troy\documents\visual studio 2015\Projects\UGVStationCommProto\UGVStationCommProto\bin\x64\Release\UGV.Core.dll
+c:\users\troy\documents\visual studio 2015\Projects\UGVStationCommProto\UGVStationCommProto\bin\x64\Release\UGV.Core.pdb
+c:\users\troy\documents\visual studio 2015\Projects\UGVStationCommProto\UGVStationCommProto\obj\x64\Release\UGVStationCommProto.exe
+c:\users\troy\documents\visual studio 2015\Projects\UGVStationCommProto\UGVStationCommProto\obj\x64\Release\UGVStationCommProto.pdb
+c:\users\troy\documents\visual studio 2015\Projects\UGVStationCommProto\UGVStationCommProto\bin\x64\Release\CommProtoCSharp.pdb

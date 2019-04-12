@@ -1,0 +1,13 @@
+c:\users\troy\documents\visual studio 2015\Projects\UGVStationCommProto\UGVStationCommProto\bin\x86\Debug\UGVStationCommProto.exe.config
+c:\users\troy\documents\visual studio 2015\Projects\UGVStationCommProto\UGVStationCommProto\bin\x86\Debug\UGVStationCommProto.exe
+c:\users\troy\documents\visual studio 2015\Projects\UGVStationCommProto\UGVStationCommProto\bin\x86\Debug\UGVStationCommProto.pdb
+c:\users\troy\documents\visual studio 2015\Projects\UGVStationCommProto\UGVStationCommProto\bin\x86\Debug\CommProtoCSharp.dll
+c:\users\troy\documents\visual studio 2015\Projects\UGVStationCommProto\UGVStationCommProto\bin\x86\Debug\UGV.Core.dll
+c:\users\troy\documents\visual studio 2015\Projects\UGVStationCommProto\UGVStationCommProto\bin\x86\Debug\CommProtoCSharp.pdb
+c:\users\troy\documents\visual studio 2015\Projects\UGVStationCommProto\UGVStationCommProto\bin\x86\Debug\UGV.Core.pdb
+c:\users\troy\documents\visual studio 2015\Projects\UGVStationCommProto\UGVStationCommProto\obj\x86\Debug\UGVStationCommProto.exe
+c:\users\troy\documents\visual studio 2015\Projects\UGVStationCommProto\UGVStationCommProto\obj\x86\Debug\UGVStationCommProto.pdb
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGVStationCommProto\UGVStationCommProto\obj\x86\Debug\UGVStationCommProto.csprojResolveAssemblyReference.cache
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGVStationCommProto\UGVStationCommProto\obj\x86\Debug\UGVStationCommProto.exe
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGVStationCommProto\UGVStationCommProto\obj\x86\Debug\UGVStationCommProto.pdb
+C:\Users\Troy\Documents\GitHub\NGCP_UGV_2017-2018\UGVStationCommProto\UGVStationCommProto\bin\x86\Debug\UGVStationCommProto.exe.config
