@@ -165,4 +165,6 @@ while phase==2:
             maincam.release()
             cv2.destroyAllWindows()
             break
+	
+cv2.destroyAllWindows()
     
