@@ -429,10 +429,7 @@ namespace UGVBehaviorMap
             output.Append(String.Format("\nAuton: Speed {0, 7} Steer {1, 7} ", ugv.Speed, ugv.Steering));
             output.Append(String.Format("\nFinal: Speed {0, 7} Steer {1, 7} ", ugv.FinalFrontWheel, ugv.FinalSteering));
             //output.Append(String.Format("\nPayload X coor  {0, 7} Payload Y coor {1, 7} ", ugv.payloadx, ugv.payloady));
-            output.Append(String.Format("\nTurret Servo: {0}", ugv.turretServo));
-            output.Append(String.Format("\nArm X:  {0}", ugv.armX));
-            output.Append(String.Format("\nArm Y:  {0}", ugv.armY));
-            output.Append(String.Format("\nGripper:  {0}", ugv.gripper));
+            
 
             ugv.debugUGV();
             output.Append("\n--- Debug ---  " + ugv.DebugMessage);
