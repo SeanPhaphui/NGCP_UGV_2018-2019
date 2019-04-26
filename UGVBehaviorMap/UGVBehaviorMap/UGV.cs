@@ -462,7 +462,7 @@ namespace NGCP.UGV
         /// Ftdi port of UGV
         /// </summary>
         Serial fpga { get; set; }
-
+        Serial tempfpga { get; set; }
         /// <summary>
         /// UDP for Lidar
         /// </summary>
@@ -664,10 +664,10 @@ namespace NGCP.UGV
             //open a fpga serial port
             fpga = new Serial(Settings.FPGAPort, Settings.FPGABaud);
             // for temp solution
-            Serial tempfpga = new Serial("COM10", 115200);
+            tempfpga = new Serial("COM10", 115200);
             //
             fpga.EscapeToken = new byte[] { 251, 252, 253, 254, 255 };
-            Links.Add("FPGA FTDI", fpga);
+            Links.Add("FPGA FTDI", fpga);//change back to FPGA
             //define callback
             fpga.PackageReceived = (bytes =>
             {
@@ -1164,7 +1164,7 @@ namespace NGCP.UGV
                 //scale range input to outpur                
                 FinalFrontWheel = (localSpeed * 255.0 / 1000.0);
                 FinalSteering = (-steering * 27.0 / 1000.0) + 27.0; // changed from 100 to 340, from 512 to 2048
-                commProtocol.SendSpeedSteeringCommand((ushort)localSpeed, (ushort)steering);
+               // commProtocol.SendSpeedSteeringCommand((ushort)localSpeed, (ushort)steering);
 
             }
             else if (Settings.DriveMode == DriveMode.Autonomous)
@@ -1172,7 +1172,7 @@ namespace NGCP.UGV
                 //scale range input to outpur
                 FinalFrontWheel = (speed * 255.0 / 1000.0);
                 FinalSteering = (-steering * 27.0 / 1000.0) + 27.0; // changed from 100 to 340, from 512 to 2048
-                commProtocol.SendSpeedSteeringCommand((ushort)speed, (ushort)steering);
+                //commProtocol.SendSpeedSteeringCommand((ushort)speed, (ushort)steering);
 
             }
             else if (Settings.DriveMode == DriveMode.LocalControl)
