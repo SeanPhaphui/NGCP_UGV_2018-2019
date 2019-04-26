@@ -182,7 +182,7 @@ namespace UGVBehaviorMap
             }
 
 #region Waypoint and Boundary Definition
-            UGV.Core.Navigation.WayPoint WaypointA = new UGV.Core.Navigation.WayPoint(34.0588093, -117.8216925,0);
+            UGV.Core.Navigation.WayPoint WaypointA = new UGV.Core.Navigation.WayPoint(34.059158, -117.821432,0);
             UGV.Core.Navigation.WayPoint WaypointB = new UGV.Core.Navigation.WayPoint(34.0590510, -117.8219402,0);
             UGV.Core.Navigation.WayPoint WaypointC = new UGV.Core.Navigation.WayPoint(34.0594426, -117.8220626,0);
 

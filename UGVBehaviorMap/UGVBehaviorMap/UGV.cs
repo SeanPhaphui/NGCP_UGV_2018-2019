@@ -889,6 +889,7 @@ namespace NGCP.UGV
                 double angle = BitConverter.ToDouble(bytes, sizeof(double) + sizeof(int));
                 LineCount = num;
                 AvoidanceVector = new Vector2d(angle, magnitude);
+                temp = new Vector2d(angle, magnitude);
             });
 
             //start camera udp

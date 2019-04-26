@@ -1237,7 +1237,7 @@ namespace NGCP.UGV
                SumVector = new Vector2d(currentLocation, nextWaypoint);
                SumVector.magnitude /= SumVector.magnitude; //Normalize(Check if normalize is needed)
                SumVector.magnitude *= Alpha; // Influence(Check if maxspeed is needed)
-               AvoidanceVector.angle = (temp.angle + (45 * Math.PI / 180) + Heading);// add heading + 90Make Lidar data relative to robot position
+               AvoidanceVector.angle = (temp.angle - (45 * Math.PI / 180) + Heading);// add heading + 90Make Lidar data relative to robot position
                DebugMessage.Clear();
                DebugMessage.Append((AvoidanceVector.angle * 180 / Math.PI));
                SumVector += AvoidanceVector; //combine Avoidance and Attraction vector                  
