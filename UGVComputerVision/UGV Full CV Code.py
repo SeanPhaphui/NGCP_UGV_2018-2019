@@ -6,6 +6,7 @@ import math
 import socket
 import struct
 
+cv2.namedWindow('UGV Filter')
 maincam = cv2.VideoCapture(0)
 UDP_IP_ADDRESS = "127.0.0.1"
 udp_reciever = 6800
@@ -14,6 +15,23 @@ udp2 = 6790
 udp3 = 6791
 udpcircleX = 6792
 udpcircleY = 6793
+
+def nothing(x):
+    pass
+
+cv2.createTrackbar("MaxHue", "Colorbars",0,1800,nothing)
+cv2.createTrackbar("MinHue", "Colorbars",0,1800,nothing)
+cv2.createTrackbar("MaxSat", "Colorbars",0,2550,nothing)
+cv2.createTrackbar("MinSat", "Colorbars",0,2550,nothing)
+cv2.createTrackbar("MaxLum", "Colorbars",0,2550,nothing)
+cv2.createTrackbar("MinLum", "Colorbars",0,2550,nothing)
+
+cv2.setTrackbarPos("MaxHue", "Colorbars",1800)
+cv2.setTrackbarPos("MinHue", "Colorbars",0)
+cv2.setTrackbarPos("MaxSat", "Colorbars",2550)
+cv2.setTrackbarPos("MinSat", "Colorbars",0)
+cv2.setTrackbarPos("MaxLum", "Colorbars",2550)
+cv2.setTrackbarPos("MinLum", "Colorbars",0)
 
 
 RecieverSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -29,8 +47,16 @@ while phase == 1:
     _, image = maincam.read()
 
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HLS)
-    lowh = np.array([0.0, 0.0, 32.10431654676259])
-    upph = np.array([5.757575757575761, 212.07070707070707, 255.0])
+    maxhue =(cv2.getTrackbarPos("MaxHue", "Colorbars"))/10
+    minhue = (cv2.getTrackbarPos("MinHue", "Colorbars"))/10
+    maxsat=(cv2.getTrackbarPos("MaxSat", "Colorbars"))/10
+    minsat=(cv2.getTrackbarPos("MinSat", "Colorbars"))/10
+    maxlum=(cv2.getTrackbarPos("MaxLum", "Colorbars"))/10
+    minlum=(cv2.getTrackbarPos("MinLum", "Colorbars"))/10
+    
+    lowh = np.array([minhue, minlum, minsat])
+    upph = np.array([maxhue, maxlum, maxsat])
+    
     mask = cv2.inRange(hsv, lowh, upph)
     edges = cv2.Canny(mask,150,200)
     ret,thresh = cv2.threshold(mask, 40, 255, 0) 
@@ -86,12 +112,35 @@ while phase == 1:
 
 cv2.destroyAllWindows()
 
+cv2.createTrackbar("MaxHue", "Colorbars",0,1800,nothing)
+cv2.createTrackbar("MinHue", "Colorbars",0,1800,nothing)
+cv2.createTrackbar("MaxSat", "Colorbars",0,2550,nothing)
+cv2.createTrackbar("MinSat", "Colorbars",0,2550,nothing)
+cv2.createTrackbar("MaxLum", "Colorbars",0,2550,nothing)
+cv2.createTrackbar("MinLum", "Colorbars",0,2550,nothing)
+
+cv2.setTrackbarPos("MaxHue", "Colorbars",1800)
+cv2.setTrackbarPos("MinHue", "Colorbars",0)
+cv2.setTrackbarPos("MaxSat", "Colorbars",2550)
+cv2.setTrackbarPos("MinSat", "Colorbars",0)
+cv2.setTrackbarPos("MaxLum", "Colorbars",2550)
+cv2.setTrackbarPos("MinLum", "Colorbars",0)
+
 while phase==2:
 
         _, image = maincam.read()
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HLS)
-        lowh = np.array([103.59712230215827, 0.0, 59.62230215827338])
-        upph = np.array([180.0, 111.18686868686868, 255.0])
+        maxhue =(cv2.getTrackbarPos("MaxHue", "Colorbars"))/10
+        minhue = (cv2.getTrackbarPos("MinHue", "Colorbars"))/10
+        maxsat=(cv2.getTrackbarPos("MaxSat", "Colorbars"))/10
+        minsat=(cv2.getTrackbarPos("MinSat", "Colorbars"))/10
+        maxlum=(cv2.getTrackbarPos("MaxLum", "Colorbars"))/10
+        minlum=(cv2.getTrackbarPos("MinLum", "Colorbars"))/10
+    
+        lowh = np.array([minhue, minlum, minsat])
+        upph = np.array([maxhue, maxlum, maxsat])
+        
+
         output = image.copy()
         mask = cv2.inRange(hsv, lowh, upph)
 
@@ -165,6 +214,4 @@ while phase==2:
             maincam.release()
             cv2.destroyAllWindows()
             break
-
-cv2.destroyAllWindows()
     
