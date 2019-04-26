@@ -18,8 +18,8 @@ namespace ObstacleDetection
 
         public ObstacleDetector(int startingStep, List<double> distanceList, double maxDistance)
         {
-            //this.maxDistance = maxDistance; just doing a test change back if i forget
-            this.maxDistance = .3; //use code above 
+            this.maxDistance = maxDistance; //just doing a test change back if i forget
+            //this.maxDistance = .3; //use code above 
             stepDistances = distanceList;
             startStep = startingStep; // start step should be 140 End step should be 930
             vectors = new List<Vector2d>();

@@ -664,7 +664,7 @@ namespace NGCP.UGV
             //open a fpga serial port
             fpga = new Serial(Settings.FPGAPort, Settings.FPGABaud);
             // for temp solution
-            tempfpga = new Serial("COM16", 115200);
+            tempfpga = new Serial("COM27", 115200);
             //
             fpga.EscapeToken = new byte[] { 251, 252, 253, 254, 255 };
             Links.Add("FPGA FTDI", fpga);//change back to FPGA

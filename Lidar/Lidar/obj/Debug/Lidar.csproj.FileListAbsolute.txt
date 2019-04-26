@@ -40,3 +40,9 @@ C:\Users\UGV\Documents\GitHub\NGCP_UGV_2017-2018\Lidar\Lidar\obj\Debug\Lidar.pdb
 C:\Users\Troy\Desktop\NGCP_UGV_2017-2018_Final\Lidar\Lidar\bin\Debug\Lidar.exe.config
 C:\Users\Troy\Desktop\NGCP_UGV_2017-2018_Final\Lidar\Lidar\obj\Debug\Lidar.exe
 C:\Users\Troy\Desktop\NGCP_UGV_2017-2018_Final\Lidar\Lidar\obj\Debug\Lidar.pdb
+C:\Users\UGV\Documents\GitHub\NGCP_UGV_2018-2019\Lidar\Lidar\bin\Debug\Lidar.exe.config
+C:\Users\UGV\Documents\GitHub\NGCP_UGV_2018-2019\Lidar\Lidar\obj\Debug\Lidar.exe
+C:\Users\UGV\Documents\GitHub\NGCP_UGV_2018-2019\Lidar\Lidar\obj\Debug\Lidar.pdb
+C:\Users\UGV\Documents\GitHub\NGCP_UGV_2018-2019\Lidar\Lidar\bin\Debug\Lidar.exe
+C:\Users\UGV\Documents\GitHub\NGCP_UGV_2018-2019\Lidar\Lidar\bin\Debug\Lidar.pdb
+C:\Users\UGV\Documents\GitHub\NGCP_UGV_2018-2019\Lidar\Lidar\obj\Debug\Lidar.csprojResolveAssemblyReference.cache

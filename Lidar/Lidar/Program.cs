@@ -24,7 +24,7 @@ namespace ObstacleDetection
 
             //Serial Information 
             int baudrate = 115200;
-            string port_name = "COM4";
+            string port_name = "COM6";
 
             //Distance Information
             double maxDistance = 5000;
@@ -63,7 +63,7 @@ namespace ObstacleDetection
             value = file.Read("LidarPort", "Lidar");
             if (value != null && value.ToString().Length > 0)
             {
-                port_name = value.ToString();
+               // port_name = value.ToString();
             }
             else
             {
