@@ -305,7 +305,7 @@ namespace NGCP.UGV
         public const int BACKWHEEL = 1;
         public const int TURRENT = 3;
         public const int BAUDRATE = 57600;
-        public const string DEVICENAME = "COM11";              // Check which port is being used on your controller                                                // ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
+        public const string DEVICENAME = "COM14";              // Check which port is being used on your controller                                                // ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
 
         public const int TORQUE_ENABLE = 1;                   // Value for enabling the torque
         public const int TORQUE_DISABLE = 0;                   // Value for disabling the torque
@@ -664,7 +664,7 @@ namespace NGCP.UGV
             //open a fpga serial port
             fpga = new Serial(Settings.FPGAPort, Settings.FPGABaud);
             // for temp solution
-            tempfpga = new Serial("COM10", 115200);
+            tempfpga = new Serial("COM16", 115200);
             //
             fpga.EscapeToken = new byte[] { 251, 252, 253, 254, 255 };
             Links.Add("FPGA FTDI", fpga);//change back to FPGA
