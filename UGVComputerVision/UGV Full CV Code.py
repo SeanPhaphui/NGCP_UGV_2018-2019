@@ -90,8 +90,8 @@ while phase==2:
 
         _, image = maincam.read()
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HLS)
-        lowh = np.array([92.2661870503597, 0.0, 126.12410071942446])
-        upph = np.array([117.87878787878788, 255.0, 255.0])
+        lowh = np.array([111.69064748201437, 0.0, 171.98741007194246])
+        upph = np.array([180.0, 197.045454545454545, 255.0])
         output = image.copy()
         mask = cv2.inRange(hsv, lowh, upph)
 
