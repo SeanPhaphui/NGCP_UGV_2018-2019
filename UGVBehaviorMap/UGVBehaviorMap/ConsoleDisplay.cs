@@ -169,7 +169,9 @@ namespace UGVBehaviorMap
             //start ugv
             try
             {
-                ugv.Start();
+                //ugv.Start();
+                UGVXbee XBee = new UGVXbee();
+                XBee.ReceiveStart += (o, EventArgs) => ugv.Start();
                 timer.Start();
                 #if logging
                 logTimer.Start();

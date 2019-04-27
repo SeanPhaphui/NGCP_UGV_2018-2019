@@ -13,6 +13,8 @@ using UGV.Core.Sensors;
 using UGV.Core.IO;
 using UGV.Core.Maths;
 using UGV.Core.Navigation;
+using static UGVBehaviorMap.UGVXbee;
+
 //using Comnet;
 
 namespace NGCP.UGV
@@ -455,117 +457,6 @@ namespace NGCP.UGV
         Serial Nav { get; set; }
 
 
-        #region CommPorotcol
-        ///<sumary>
-        ///Commprotocol Comm Info
-        ///</sumary>        
-        CommProtocol commProtocol;
-
-        ///<sumary>
-        ///Commprotocol callbacks
-        ///</sumary>    
-        #region CommProtocol callbacks
-        public int VehicleWaypointCommandCallback(Comnet.Header header, Comnet.ABSPacket packet, Comnet.CommNode node)
-        {
-            //validate who the packet is from 1 is gcs
-            if(header.GetSourceID() == 1)
-            {
-                NGCP.VehicleWaypointCommand twc = Comnet.ABSPacket.GetValue<NGCP.VehicleWaypointCommand>(packet);
-                WayPoint commandWayPoint = new WayPoint(twc.latitude, twc.longitude, 1);
-
-                //using a queue but want command waypoint in front :(
-                //maybe want to switch this data type
-                Waypoints.Enqueue(commandWayPoint);
-
-            }
-            else if (header.GetSourceID() == 100)
-            {
-                NGCP.VehicleWaypointCommand vwc = Comnet.ABSPacket.GetValue<NGCP.VehicleWaypointCommand>(packet);
-                WayPoint commandWayPoint = new WayPoint(vwc.latitude, vwc.longitude, 1);
-
-                //using a queue but want command waypoint in front :(
-                //maybe want to switch this data type
-                Waypoints.Enqueue(commandWayPoint);
-            }
-            
-            //make sure you return this way to declare succes and destory the pointer(c++)
-            return (Int32)(Comnet.CallBackCodes.CALLBACK_SUCCESS | Comnet.CallBackCodes.CALLBACK_DESTROY_PACKET);
-        }
-        public int VehicleModeCommandCallback(Comnet.Header header, Comnet.ABSPacket packet, Comnet.CommNode node)
-        {
-            //validate who the packet is from 1 is gcs
-            if (header.GetSourceID() == 1)
-            {
-                NGCP.VehicleModeCommand twc = Comnet.ABSPacket.GetValue<NGCP.VehicleModeCommand>(packet);
-                Settings.DriveMode = (DriveMode)twc.vehicle_mode;
-                commProtocol.sendMode((DriveMode)twc.vehicle_mode, 100);
-            }
-            else if (header.GetSourceID() == 100)
-            {
-                NGCP.VehicleModeCommand vmc = Comnet.ABSPacket.GetValue<NGCP.VehicleModeCommand>(packet);
-                Settings.DriveMode = (DriveMode)vmc.vehicle_mode;
-                commProtocol.sendMode((DriveMode)vmc.vehicle_mode, 100);
-            }
-
-            //make sure you return this way to declare succes and destory the pointer(c++)
-            return (Int32)(Comnet.CallBackCodes.CALLBACK_SUCCESS | Comnet.CallBackCodes.CALLBACK_DESTROY_PACKET);
-        }
-
-        public int ArmCommandCallback(Comnet.Header header, Comnet.ABSPacket packet, Comnet.CommNode node)
-        {
-            NGCP.ArmCommand ac = Comnet.ABSPacket.GetValue<NGCP.ArmCommand>(packet);
-
-            //do some kind of switch case
-            //@TODO ARM
-            int armServo = ac.id;
-            int servoValue = ac.position;     
-
-            //// this method 
-            switch (armServo)
-            {
-                case armY_id: //Arm Stepper Y      
-                    ArmYSend(servoValue);
-                    break;
-                case armX_id: //Arm Stepper X
-                    ArmXSend(servoValue);
-                    break;
-                case turretServo_id: //Turret Servo
-                    TurrentServo(servoValue);
-                    break;
-                case gripper_id: //Gripper
-                    if (servoValue == 1)
-                        GripperControl(true);
-                    else
-                        GripperControl(false);       
-                    break;
-                default:
-                    // write to none of the servos, the id written was not recognized
-                    break;
-            }
-            return (Int32)(Comnet.CallBackCodes.CALLBACK_SUCCESS | Comnet.CallBackCodes.CALLBACK_DESTROY_PACKET);
-        }
-
-        public int SpeedSteeringCallback(Comnet.Header header, Comnet.ABSPacket packet, Comnet.CommNode node)
-        {
-            NGCP.SpeedSteeringCommand ssc = Comnet.ABSPacket.GetValue<NGCP.SpeedSteeringCommand>(packet);
-            LocalSpeed = ssc.speed - 1000;
-            localSteering = (int)((ssc.steering)*2000.0/54.0)-1000;
-            
-            return (Int32)(Comnet.CallBackCodes.CALLBACK_SUCCESS | Comnet.CallBackCodes.CALLBACK_DESTROY_PACKET);
-        }
-
-
-        public int VehicleSystemStatusCallback(Comnet.Header header, Comnet.ABSPacket packet, Comnet.CommNode node)
-        {
-            NGCP.VehicleSystemStatus vss = Comnet.ABSPacket.GetValue<NGCP.VehicleSystemStatus>(packet);
-            State = (UGV.DriveState)vss.vehicle_state;
-            DebugMessage.Append(State.ToString());
-            //make sure you return this way to declare succes and destory the pointer(c++)
-            return (Int32)(Comnet.CallBackCodes.CALLBACK_SUCCESS | Comnet.CallBackCodes.CALLBACK_DESTROY_PACKET);
-        }
-
-        #endregion CommProtocol callbacks
-        #endregion CommProtocol
 
         #endregion Private Properties
 
@@ -684,6 +575,8 @@ namespace NGCP.UGV
                 fpga.Start();
 
             #endregion FPGA Connection
+            //UGVBehaviorMap.ControlProgram.InitializeConnection();
+
 
             /*
             * open connection to Gnav, 
