@@ -6,6 +6,10 @@ import math
 import socket
 import struct
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 55194fc6cd3ea0a98238cd3b7a651491630ca8f9
 maincam = cv2.VideoCapture(0)
 UDP_IP_ADDRESS = "127.0.0.1"
 udp_reciever = 6800
@@ -15,12 +19,36 @@ udp3 = 6791
 udpcircleX = 6792
 udpcircleY = 6793
 
+<<<<<<< HEAD
+=======
+def nothing(x):
+    pass
+
+
+
+>>>>>>> 55194fc6cd3ea0a98238cd3b7a651491630ca8f9
 
 RecieverSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 ##RecieverSock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 RecieverSock.bind((UDP_IP_ADDRESS, udp_reciever))
 data, address = RecieverSock.recvfrom(1024)
 phase = int.from_bytes(data,byteorder='little')
+
+cv2.namedWindow('UGV Filter')
+cv2.resizeWindow('UGV Filter', 500,500)
+cv2.createTrackbar("MaxHue", "UGV Filter",0,1800,nothing)
+cv2.createTrackbar("MinHue", "UGV Filter",0,1800,nothing)
+cv2.createTrackbar("MaxSat", "UGV Filter",0,2550,nothing)
+cv2.createTrackbar("MinSat", "UGV Filter",0,2550,nothing)
+cv2.createTrackbar("MaxLum", "UGV Filter",0,2550,nothing)
+cv2.createTrackbar("MinLum", "UGV Filter",0,2550,nothing)
+
+cv2.setTrackbarPos("MaxHue", "UGV Filter",1800)
+cv2.setTrackbarPos("MinHue", "UGV Filter",0)
+cv2.setTrackbarPos("MaxSat", "UGV Filter",2550)
+cv2.setTrackbarPos("MinSat", "UGV Filter",0)
+cv2.setTrackbarPos("MaxLum", "UGV Filter",2550)
+cv2.setTrackbarPos("MinLum", "UGV Filter",0)
    
 
 while phase == 1:
@@ -28,9 +56,24 @@ while phase == 1:
     
     _, image = maincam.read()
 
+    
+
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HLS)
+<<<<<<< HEAD
     lowh = np.array([0.0, 0.0, 32.10431654676259])
     upph = np.array([5.757575757575761, 212.07070707070707, 255.0])
+=======
+    maxhue =(cv2.getTrackbarPos("MaxHue", "UGV Filter"))/10
+    minhue = (cv2.getTrackbarPos("MinHue", "UGV Filter"))/10
+    maxsat=(cv2.getTrackbarPos("MaxSat", "UGV Filter"))/10
+    minsat=(cv2.getTrackbarPos("MinSat", "UGV Filter"))/10
+    maxlum=(cv2.getTrackbarPos("MaxLum", "UGV Filter"))/10
+    minlum=(cv2.getTrackbarPos("MinLum", "UGV Filter"))/10
+    
+    lowh = np.array([minhue, minlum, minsat])
+    upph = np.array([maxhue, maxlum, maxsat])
+    
+>>>>>>> 55194fc6cd3ea0a98238cd3b7a651491630ca8f9
     mask = cv2.inRange(hsv, lowh, upph)
     edges = cv2.Canny(mask,150,200)
     ret,thresh = cv2.threshold(mask, 40, 255, 0) 
@@ -60,7 +103,7 @@ while phase == 1:
             ballbyte = bytearray(struct.pack("i", int(x)))
             ballbyte += bytearray(struct.pack("i", int(y)))
             bcenterSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            bcenterSock.sendto(bcenterbyte, (UDP_IP_ADDRESS, udp2))
+            bcenterSock.sendto(ballbyte, (UDP_IP_ADDRESS, udp2))
 ##        bcenterXbyte = bytearray(struct.pack("i", int(x)))
 ##        bcenterYbyte = bytearray(struct.pack("i", int(y)))
 ##        bcenterXSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -86,12 +129,46 @@ while phase == 1:
 
 cv2.destroyAllWindows()
 
+<<<<<<< HEAD
+=======
+cv2.namedWindow('UGV Filter')
+cv2.resizeWindow('UGV Filter', 500,500)
+cv2.createTrackbar("MaxHue", "UGV Filter",0,1800,nothing)
+cv2.createTrackbar("MinHue", "UGV Filter",0,1800,nothing)
+cv2.createTrackbar("MaxSat", "UGV Filter",0,2550,nothing)
+cv2.createTrackbar("MinSat", "UGV Filter",0,2550,nothing)
+cv2.createTrackbar("MaxLum", "UGV Filter",0,2550,nothing)
+cv2.createTrackbar("MinLum", "UGV Filter",0,2550,nothing)
+
+cv2.setTrackbarPos("MaxHue", "UGV Filter",1800)
+cv2.setTrackbarPos("MinHue", "UGV Filter",0)
+cv2.setTrackbarPos("MaxSat", "UGV Filter",2550)
+cv2.setTrackbarPos("MinSat", "UGV Filter",0)
+cv2.setTrackbarPos("MaxLum", "UGV Filter",2550)
+cv2.setTrackbarPos("MinLum", "UGV Filter",0)
+
+
+>>>>>>> 55194fc6cd3ea0a98238cd3b7a651491630ca8f9
 while phase==2:
 
         _, image = maincam.read()
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HLS)
+<<<<<<< HEAD
         lowh = np.array([111.69064748201437, 0.0, 171.98741007194246])
         upph = np.array([180.0, 197.045454545454545, 255.0])
+=======
+        maxhue =(cv2.getTrackbarPos("MaxHue", "UGV Filter"))/10
+        minhue = (cv2.getTrackbarPos("MinHue", "UGV Filter"))/10
+        maxsat=(cv2.getTrackbarPos("MaxSat", "UGV Filter"))/10
+        minsat=(cv2.getTrackbarPos("MinSat", "UGV Filter"))/10
+        maxlum=(cv2.getTrackbarPos("MaxLum", "UGV Filter"))/10
+        minlum=(cv2.getTrackbarPos("MinLum", "UGV Filter"))/10
+    
+        lowh = np.array([minhue, minlum, minsat])
+        upph = np.array([maxhue, maxlum, maxsat])
+        
+
+>>>>>>> 55194fc6cd3ea0a98238cd3b7a651491630ca8f9
         output = image.copy()
         mask = cv2.inRange(hsv, lowh, upph)
 
