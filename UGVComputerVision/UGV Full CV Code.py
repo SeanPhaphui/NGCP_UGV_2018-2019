@@ -6,17 +6,18 @@ import math
 import socket
 import struct
 
+
 maincam = cv2.VideoCapture(0)
 UDP_IP_ADDRESS = "127.0.0.1"
 udp_reciever = 6800
 udp1 = 6789
 udp2 = 6790
-udp3 = 6791
-udpcircleX = 6792
-udpcircleY = 6793
+bottlefound = 0
+ballfound = 0 
 
+ta = 0
 
-def nothing(x):
+def update(x):
     pass
 
 
@@ -30,12 +31,12 @@ phase = int.from_bytes(data,byteorder='little')
 
 cv2.namedWindow('UGV Filter')
 cv2.resizeWindow('UGV Filter', 500,500)
-cv2.createTrackbar("MaxHue", "UGV Filter",0,1800,nothing)
-cv2.createTrackbar("MinHue", "UGV Filter",0,1800,nothing)
-cv2.createTrackbar("MaxSat", "UGV Filter",0,2550,nothing)
-cv2.createTrackbar("MinSat", "UGV Filter",0,2550,nothing)
-cv2.createTrackbar("MaxLum", "UGV Filter",0,2550,nothing)
-cv2.createTrackbar("MinLum", "UGV Filter",0,2550,nothing)
+cv2.createTrackbar("MaxHue", "UGV Filter",0,1800,update)
+cv2.createTrackbar("MinHue", "UGV Filter",0,1800,update)
+cv2.createTrackbar("MaxSat", "UGV Filter",0,2550,update)
+cv2.createTrackbar("MinSat", "UGV Filter",0,2550,update)
+cv2.createTrackbar("MaxLum", "UGV Filter",0,2550,update)
+cv2.createTrackbar("MinLum", "UGV Filter",0,2550,update)
 
 cv2.setTrackbarPos("MaxHue", "UGV Filter",1800)
 cv2.setTrackbarPos("MinHue", "UGV Filter",0)
@@ -53,8 +54,6 @@ while phase == 1:
     
 
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HLS)
-    lowh = np.array([0.0, 0.0, 32.10431654676259])
-    upph = np.array([5.757575757575761, 212.07070707070707, 255.0])
     maxhue =(cv2.getTrackbarPos("MaxHue", "UGV Filter"))/10
     minhue = (cv2.getTrackbarPos("MinHue", "UGV Filter"))/10
     maxsat=(cv2.getTrackbarPos("MaxSat", "UGV Filter"))/10
@@ -76,6 +75,8 @@ while phase == 1:
 
     if circles is not None:
 		# convert the (x, y) coordinates and radius of the circles to integers
+
+        ballfound = 1;
         circles = np.round(circles[0, :]).astype("int")
 		
 		# loop over the (x, y) coordinates and radius of the circles
@@ -93,17 +94,13 @@ while phase == 1:
         
             ballbyte = bytearray(struct.pack("i", int(x)))
             ballbyte += bytearray(struct.pack("i", int(y)))
+            ballbyte += bytearray(struct.pack("i", int(ballfound)))
             bcenterSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             bcenterSock.sendto(ballbyte, (UDP_IP_ADDRESS, udp2))
-##        bcenterXbyte = bytearray(struct.pack("i", int(x)))
-##        bcenterYbyte = bytearray(struct.pack("i", int(y)))
-##        bcenterXSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-##        bcenterXSock.sendto(bcenterXbyte, (UDP_IP_ADDRESS, udpcircleX))
-##        bcenterYSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-##        bcenterYSock.sendto(bcenterYbyte, (UDP_IP_ADDRESS, udpcircleY))
 
-    cv2.imshow('gray',res2)
-    cv2.imshow('frame',output)
+
+    cv2.imshow('mask',res2)
+    cv2.imshow('image',output)
     
     RecieverSock.setblocking(0)
     try:
@@ -122,27 +119,25 @@ cv2.destroyAllWindows()
 
 cv2.namedWindow('UGV Filter')
 cv2.resizeWindow('UGV Filter', 500,500)
-cv2.createTrackbar("MaxHue", "UGV Filter",0,1800,nothing)
-cv2.createTrackbar("MinHue", "UGV Filter",0,1800,nothing)
-cv2.createTrackbar("MaxSat", "UGV Filter",0,2550,nothing)
-cv2.createTrackbar("MinSat", "UGV Filter",0,2550,nothing)
-cv2.createTrackbar("MaxLum", "UGV Filter",0,2550,nothing)
-cv2.createTrackbar("MinLum", "UGV Filter",0,2550,nothing)
+cv2.createTrackbar("MaxHue", "UGV Filter",0,1800,update)
+cv2.createTrackbar("MinHue", "UGV Filter",0,1800,update)
+cv2.createTrackbar("MaxSat", "UGV Filter",0,2550,update)
+cv2.createTrackbar("MinSat", "UGV Filter",0,2550,update)
+cv2.createTrackbar("MaxLum", "UGV Filter",0,2550,update)
+cv2.createTrackbar("MinLum", "UGV Filter",0,2550,update)
 
-cv2.setTrackbarPos("MaxHue", "UGV Filter",1800)
-cv2.setTrackbarPos("MinHue", "UGV Filter",0)
+cv2.setTrackbarPos("MaxHue", "UGV Filter",1301)
+cv2.setTrackbarPos("MinHue", "UGV Filter",1060)
 cv2.setTrackbarPos("MaxSat", "UGV Filter",2550)
-cv2.setTrackbarPos("MinSat", "UGV Filter",0)
-cv2.setTrackbarPos("MaxLum", "UGV Filter",2550)
-cv2.setTrackbarPos("MinLum", "UGV Filter",0)
+cv2.setTrackbarPos("MinSat", "UGV Filter",1041)
+cv2.setTrackbarPos("MaxLum", "UGV Filter",1814)
+cv2.setTrackbarPos("MinLum", "UGV Filter",22)
 
-
+ta = 500
 while phase==2:
 
         _, image = maincam.read()
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HLS)
-        lowh = np.array([111.69064748201437, 0.0, 171.98741007194246])
-        upph = np.array([180.0, 197.045454545454545, 255.0])
         maxhue =(cv2.getTrackbarPos("MaxHue", "UGV Filter"))/10
         minhue = (cv2.getTrackbarPos("MinHue", "UGV Filter"))/10
         maxsat=(cv2.getTrackbarPos("MaxSat", "UGV Filter"))/10
@@ -162,9 +157,12 @@ while phase==2:
         ret,thresh = cv2.threshold(mask, 40, 255, 0)
         
         im2,contours,hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-        
-        ta = 100
+
+        if ta < 2000
+            ta = ta + 10
+            
         if len(contours) != 0:
+                bottlefound =  1; 
                 c = max(contours, key = cv2.contourArea)
                 M = cv2.moments(c)
                 a = cv2.contourArea(c)
@@ -192,19 +190,11 @@ while phase==2:
                         bottlebyte = bytearray(struct.pack("i", int(anglefound)))
                         bottlebyte += (bytearray(struct.pack("i", int(cX))))
                         bottlebyte += (bytearray(struct.pack("i", int(cY))))
+                        bottlebyte += (bytearray(struct.pack("i", int(bottlefound))))
                         bottleSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                         bottleSock.sendto(bottlebyte, (UDP_IP_ADDRESS, udp1))
                         
-##                        anglebyte= bytearray(struct.pack("i", int(anglefound)))
-##                        centerXbyte = bytearray(struct.pack("i", int(cX)))
-##                        centerYbyte = bytearray(struct.pack("i", int(cY)))
-                       
-##                        angleSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-##                        angleSock.sendto(anglebyte, (UDP_IP_ADDRESS, udp1))
-##                        centerXSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-##                        centerXSock.sendto(centerXbyte, (UDP_IP_ADDRESS, udp2))
-##                        centerYSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-##                        centerYSock.sendto(centerYbyte, (UDP_IP_ADDRESS, udp3))
+
                         
 
                         print('Angle found: ', anglefound)
@@ -213,7 +203,7 @@ while phase==2:
         
         
 
-        cv2.imshow("mage", image)
+        cv2.imshow("image", image)
         cv2.imshow("mask", mask)
 
         RecieverSock.setblocking(0)
@@ -227,6 +217,9 @@ while phase==2:
             maincam.release()
             cv2.destroyAllWindows()
             break
-	
+
+
+maincam.release()
 cv2.destroyAllWindows()
+
     
