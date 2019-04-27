@@ -13,6 +13,7 @@ using UGV.Core.Sensors;
 using UGV.Core.IO;
 using UGV.Core.Maths;
 using UGV.Core.Navigation;
+using dynamixel_sdk;
 //using Comnet;
 
 namespace NGCP.UGV
@@ -285,11 +286,39 @@ namespace NGCP.UGV
 
         public int x_mainpayload = 0;
         public int y_mainpayload = 0;
+        #region Dynamixel Settings
+        /// <summary>
+        /// Settings For Dynamixels
+        /// </summary>
+        // Control table address
+        public const int ADDR_MX_TORQUE_ENABLE = 24;                  // Control table address is different in Dynamixel model
+        public const int ADDR_MX_GOAL_POSITION = 30;
+        public const int ADDR_MX_PRESENT_POSITION = 36;
 
+        // Protocol version
+        public const int PROTOCOL_VERSION = 1;                   // See which protocol version is used in the Dynamixel
 
+        // Default setting
+        public const int GIMBALYAW = 5;                   // Dynamixel ID: 1
+        public const int GIMBALPITCH = 6;
+        public const int FRONTWHEEL = 2;
+        public const int BACKWHEEL = 1;
+        public const int TURRENT = 3;
+        public const int BAUDRATE = 57600;
+        public const string DEVICENAME = "COM11";              // Check which port is being used on your controller                                                // ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
 
+        public const int TORQUE_ENABLE = 1;                   // Value for enabling the torque
+        public const int TORQUE_DISABLE = 0;                   // Value for disabling the torque
+        public const int GIMBALYAWSTART = 2000;
+        public const int GIMBALPITCHSTART = 1000;
+        public const int FRONTWHEELSTART = 2000;
+        public const int BACKWHEELSTART = 2000;
+        public const int TURRENTSTART = 1300;
+        ///DYNAMIXEL VALUES    
+        int port_num = dynamixel.portHandler(DEVICENAME);
+        #endregion Dynamixel Settings
         //debug properties
-        
+
         #endregion Public Properties
 
         #region Forwarding Data
@@ -433,7 +462,7 @@ namespace NGCP.UGV
         /// Ftdi port of UGV
         /// </summary>
         Serial fpga { get; set; }
-
+        Serial tempfpga { get; set; }
         /// <summary>
         /// UDP for Lidar
         /// </summary>
@@ -521,27 +550,7 @@ namespace NGCP.UGV
             int servoValue = ac.position;     
 
             //// this method 
-            switch (armServo)
-            {
-                case armY_id: //Arm Stepper Y      
-                    ArmYSend(servoValue);
-                    break;
-                case armX_id: //Arm Stepper X
-                    ArmXSend(servoValue);
-                    break;
-                case turretServo_id: //Turret Servo
-                    TurrentServo(servoValue);
-                    break;
-                case gripper_id: //Gripper
-                    if (servoValue == 1)
-                        GripperControl(true);
-                    else
-                        GripperControl(false);       
-                    break;
-                default:
-                    // write to none of the servos, the id written was not recognized
-                    break;
-            }
+            
             return (Int32)(Comnet.CallBackCodes.CALLBACK_SUCCESS | Comnet.CallBackCodes.CALLBACK_DESTROY_PACKET);
         }
 
@@ -631,15 +640,34 @@ namespace NGCP.UGV
         {
             //clear links
             Links.Clear();
-
+            #region Dynamixel Start up
+            //Dynamixel Settings           
+            dynamixel.packetHandler();
+            dynamixel.openPort(port_num);
+            dynamixel.setBaudRate(port_num, BAUDRATE);
+            //ENABLE TORQUE
+            dynamixel.write1ByteTxRx(port_num, PROTOCOL_VERSION, GIMBALPITCH, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE);
+            dynamixel.write1ByteTxRx(port_num, PROTOCOL_VERSION, GIMBALYAW, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE);
+            //  dynamixel.write1ByteTxRx(port_num, PROTOCOL_VERSION, TURRENT, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE);
+            dynamixel.write1ByteTxRx(port_num, PROTOCOL_VERSION, FRONTWHEEL, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE);
+            dynamixel.write1ByteTxRx(port_num, PROTOCOL_VERSION, BACKWHEEL, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE);
+            //SET START POS
+            dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, GIMBALPITCH, ADDR_MX_GOAL_POSITION, GIMBALPITCHSTART);
+            dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, GIMBALYAW, ADDR_MX_GOAL_POSITION, GIMBALYAWSTART);
+            // dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, TURRENT, ADDR_MX_GOAL_POSITION, TURRENTSTART);
+            dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, FRONTWHEEL, ADDR_MX_GOAL_POSITION, FRONTWHEELSTART);
+            dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, BACKWHEEL, ADDR_MX_GOAL_POSITION, BACKWHEELSTART);
+            #endregion Dynamixel Start up 
             #region FPGA Connection
 
-            //open a fpga serial port            
 
             //open a fpga serial port
             fpga = new Serial(Settings.FPGAPort, Settings.FPGABaud);
+            // for temp solution
+            tempfpga = new Serial("COM10", 115200);
+            //
             fpga.EscapeToken = new byte[] { 251, 252, 253, 254, 255 };
-            Links.Add("FPGA FTDI", fpga);
+            Links.Add("FPGA FTDI", fpga);//change back to FPGA
             //define callback
             fpga.PackageReceived = (bytes =>
             {
@@ -649,40 +677,15 @@ namespace NGCP.UGV
                 {
                     Console.WriteLine("byte {0}: {1}", i, (char)bytes[i]);
                 }
-                switch (bytes[1])
-                {
-                    case 0x4B:
-                        int temp = 0;
-                        int MSB = bytes[3] - 0x30;
-                        int SB = bytes[4] - 0x30;
-                        int LSB = bytes[5] - 0x30;
-                        temp += LSB;
-                        temp += SB * 10;
-                        temp += MSB * 100;
-                        LidarDistance = temp;
-                        PackageRecieved = true;
-                        break;
-                    case 0x49:
-                        LSB = bytes[5] - 0x30;
-                        if (LSB == 1)
-                            RightEncoder += 1;
-                        else
-                            RightEncoder -= 1;
-                        break;
-                    case 0x4C:
-                        LSB = bytes[5] - 0x30;
-                        if (LSB == 1)
-                            LeftEnconder += 1;
-                        else
-                            LeftEnconder -= 1;
-                        break;
-                }
+                
                 Console.WriteLine("\n");
             });
             //start
             if (Settings.UseFPGA)
                 fpga.Start();
-
+            //For temporary solution
+            tempfpga.Start();
+            //
             #endregion FPGA Connection
 
             /*
@@ -1132,7 +1135,17 @@ namespace NGCP.UGV
                 SendControl();
             //controlTimer.Enabled = true; 
         }
-
+        private int Remap(int OldValue, int OldMax, int OldMin, int NewMax, int NewMin)
+        {
+            int OldRange = (OldMax - OldMin);
+            int NewRange = (NewMax - NewMin);
+            int NewValue = (((OldValue - OldMin) * NewRange) / OldRange) + NewMin;
+            return NewValue;
+        }
+        public static byte[] ConvertInt32ToByteArray(int I32)
+        {
+            return BitConverter.GetBytes(I32);
+        }
         #region arm and motor controls
         /// <summary>
         /// Seqencial action to send control
@@ -1151,7 +1164,7 @@ namespace NGCP.UGV
                 //scale range input to outpur                
                 FinalFrontWheel = (localSpeed * 255.0 / 1000.0);
                 FinalSteering = (-steering * 27.0 / 1000.0) + 27.0; // changed from 100 to 340, from 512 to 2048
-                commProtocol.SendSpeedSteeringCommand((ushort)localSpeed, (ushort)steering);
+               // commProtocol.SendSpeedSteeringCommand((ushort)localSpeed, (ushort)steering);
 
             }
             else if (Settings.DriveMode == DriveMode.Autonomous)
@@ -1159,7 +1172,7 @@ namespace NGCP.UGV
                 //scale range input to outpur
                 FinalFrontWheel = (speed * 255.0 / 1000.0);
                 FinalSteering = (-steering * 27.0 / 1000.0) + 27.0; // changed from 100 to 340, from 512 to 2048
-                commProtocol.SendSpeedSteeringCommand((ushort)speed, (ushort)steering);
+                //commProtocol.SendSpeedSteeringCommand((ushort)speed, (ushort)steering);
 
             }
             else if (Settings.DriveMode == DriveMode.LocalControl)
@@ -1167,7 +1180,7 @@ namespace NGCP.UGV
                 //scale range input to outpur
                 FinalFrontWheel = (localSpeed * 255.0 / 1000.0);
                 FinalSteering = (-localSteering * 27.0 / 1000.0) + 27.0; // changed from 100 to 340, from 512 to 2048
-                commProtocol.SendSpeedSteeringCommand((ushort)localSpeed, (ushort)localSteering);
+                //commProtocol.SendSpeedSteeringCommand((ushort)localSpeed, (ushort)localSteering);
 
             }
             //make sure vehicle is enabled
@@ -1185,8 +1198,21 @@ namespace NGCP.UGV
             // scale speed and control for microZed protocol
             FinalFrontWheel = (FinalFrontWheel * 99.0) / 255.0;
 
+            //Controls for Steering 
+            int FrontWheelAngle = (int)FinalSteering;
+            int DynamixelFrontWheelAngle = Remap(FrontWheelAngle, 54, 0, 2330, 1730);
+            int DynamixelBackWheelAngle = Remap(FrontWheelAngle, 54, 0, 1730, 2330);
+            dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, BACKWHEEL, ADDR_MX_GOAL_POSITION, (ushort)DynamixelBackWheelAngle);
+            dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, FRONTWHEEL, ADDR_MX_GOAL_POSITION, (ushort)DynamixelFrontWheelAngle);
+            //Controls for Wheel speed
+            int WheelSpeed = (int)FinalFrontWheel;
+            int FPGAWheelSpeed = Remap(WheelSpeed, 99, 0, 255, 0);
+            byte[] FPGAWheelSpeedbytes = ConvertInt32ToByteArray(FPGAWheelSpeed);
+            byte[] _FPGAWheelSpeedPackage = new byte[] {
+                FPGAWheelSpeedbytes[0],
+                };
 
-
+            tempfpga.Send(_FPGAWheelSpeedPackage);
             //prepare control
             byte FrontWheelDirection = FinalFrontWheel >= 0 ? (byte)'1' : (byte)'0';
             //RearWheelDirection = Math.Abs(FinalRearWheel) < Settings.DeadZone ? (byte)0x00 : RearWheelDirection;
@@ -1316,301 +1342,6 @@ namespace NGCP.UGV
 
         }
 
-
-        private int LidarDistance;
-        public int turretServo = 135;
-        public int armX = 0;
-        public int armY = 0;
-        private int gimbalX = 180;
-        private int gimbalY = 50;
-        public bool gripper = true;
-        private bool armReset = false;
-        private bool firstreset = false;
-        private bool PackageRecieved = false;
-        private int RightEncoder = 0;
-        private int LeftEnconder = 0;
-        private bool track = false;
-        private int xDir = 0;
-        private int yDir = 0;
-        private const byte  turretServo_id = 0x45,
-                            armX_id = 0x44,
-                            armY_id = 0x43,
-                            gripper_id = 0x46;
-
-        /// <summary>
-        /// Sequencial action to send control values to arm
-        /// </summary>
-        void GimbalTracking(int xError, int yError)
-        {
-            if (gimbalY + yError < 100 && gimbalY + yError > 0)
-                gimbalY += yError;
-            if (gimbalX + xError < 360 && gimbalX + xError > 0)
-                gimbalX += xError;
-        }
-
-
-        void TurrentServo(int turrentServo)
-        {
-            byte checkSum;
-            this.turretServo = turrentServo;
-            commProtocol.SendArmCommand(turretServo_id, turrentServo, 100);
-            byte[] turrentServoByte = Encoding.ASCII.GetBytes(turrentServo.ToString());
-            List<byte> turrentServoList = turrentServoByte.ToList();  //  MSB = index0,  LSB = index1,                  
-            if (turrentServoList.Count == 1)
-            {
-                turrentServoList.Insert(0, 0x30);                     // add 0 in ascii to first item in list
-                turrentServoList.Insert(0, 0x30);
-            }
-            else if (turrentServoList.Count == 2)
-                turrentServoList.Insert(0, 0x30);
-            byte[] _turrentServoPackage = new byte[] {
-                0x01,                                   // Start of Transmission
-                0x45,                                   // ID of Device to be controlled (ALPHABETIC)
-                0x02,                                   // Start of Data (Parameters of Device)
-                turrentServoList[0],           // MSB Digit in degrees  
-                turrentServoList[1],           // Second Digit in degrees  ###### Check ORDER!!
-                turrentServoList[2],           // LSB Third Digit in degrees
-                0x03,                                   // End of Data
-                0x00,                                   // Checksum = ~(ID + DATA) 1 BYTE!
-                0x04                                    // End of Transmission
-                };
-
-            checkSum = (byte)(~(0x45 + turrentServoList[0] + turrentServoList[1] + turrentServoList[2]));
-
-            _turrentServoPackage.SetValue(checkSum, 7);
-            fpga.Send(_turrentServoPackage);
-        }    
-        void ArmYSend(int armY)
-        {
-            byte checkSum;
-            this.armY = armY;
-            commProtocol.SendArmCommand(armY_id, armY, 100);
-            byte[] armYByte = Encoding.ASCII.GetBytes(armY.ToString());
-            List<byte> armYList = armYByte.ToList();  //  MSB = index0,  LSB = index1,                  
-            if (armYList.Count == 2)
-                armYList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-            else if (armYList.Count == 1)
-            {
-                armYList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-                armYList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-            }
-            byte[] _armYPackage = new byte[] {
-                  0x01,                                   // Start of Transmission
-                  0x43,                                   // ID of Device to be controlled (ALPHABETIC)
-                  0x02,                                   // Start of Data (Parameters of Device)
-                  armYList[0],           // MSB Digit in Milimeters  
-                  armYList[1],           // Second Digit in Milimeters  ###### Check ORDER!!
-                  armYList[2],           // LSB Third Digit in Milimeters
-                  0x03,                                   // End of Data
-                  0x00,                                   // Checksum = ~(ID + DATA) 1 BYTE!
-                  0x04                                    // End of Transmission
-                  };
-
-            checkSum = (byte)(~(0x43 + armYList[0] + armYList[1] + armYList[2]));
-            _armYPackage.SetValue(checkSum, 7);
-            fpga.Send(_armYPackage);
-        }        
-        void ArmXSend(int armX)
-        {
-            byte checkSum;
-            this.armX = armX;
-            commProtocol.SendArmCommand(armX_id, armX, 100);
-            byte[] armXByte = Encoding.ASCII.GetBytes(armX.ToString());
-            List<byte> armXList = armXByte.ToList();  //  MSB = index0,  LSB = index1,                  
-            if (armXList.Count == 1)
-            {
-                armXList.Insert(0, 0x30);                     // add 0 in ascii to first item in list
-                armXList.Insert(0, 0x30);
-            }
-            else if (armXList.Count == 2)
-                armXList.Insert(0, 0x30);
-            byte[] _armXPackage = new byte[] {
-                0x01,                                   // Start of Transmission
-                0x44,                                   // ID of Device to be controlled (ALPHABETIC)
-                0x02,                                   // Start of Data (Parameters of Device)
-                armXList[0],           // MSB Digit in Milimeters  
-                armXList[1],           // Second Digit in Milimeters  ###### Check ORDER!!
-                armXList[2],           // LSB Third Digit in Milimeters 
-                0x03,                                   // End of Data
-                0x00,                                   // Checksum = ~(ID + DATA) 1 BYTE!
-                0x04                                    // End of Transmission
-                };
-
-            checkSum = (byte)(~(0x44 + armXList[0] + armXList[1] + armXList[2]));
-
-            _armXPackage.SetValue(checkSum, 7);
-            fpga.Send(_armXPackage);
-        }         
-        void GimbalPhi(int gimbalPhi)
-        {
-            byte checkSum;
-            byte[] gimbalPhiByte = Encoding.ASCII.GetBytes(gimbalPhi.ToString());
-            List<byte> gimbalPhiList = gimbalPhiByte.ToList();  //  MSB = index0,  LSB = index2,                  
-            if (gimbalPhiList.Count == 2)
-                gimbalPhiList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-            else if (gimbalPhiList.Count == 1)
-            {
-                gimbalPhiList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-                gimbalPhiList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-            }
-            byte[] _gimbalPhiPackage = new byte[] {
-                0x01,                                   // Start of Transmission
-                0x48,                                   // ID of Device to be controlled (ALPHABETIC)
-                0x02,                                   // Start of Data (Parameters of Device)
-                gimbalPhiList[0],           // MSB Digit in degrees  
-                gimbalPhiList[1],           // Second Digit in degrees  ###### Check ORDER!!
-                gimbalPhiList[2],           // LSB Third Digit in degrees 
-                0x03,                                   // End of Data
-                0x00,                                   // Checksum = ~(ID + DATA) 1 BYTE!
-                0x04                                    // End of Transmission
-                };
-
-            checkSum = (byte)(~(0x48 + gimbalPhiList[0] + gimbalPhiList[1] + gimbalPhiList[2]));
-            _gimbalPhiPackage.SetValue(checkSum, 7);
-            fpga.Send(_gimbalPhiPackage);
-        }
-        void GimbalTheta(int GimbalTheta)
-        {
-            byte checkSum;
-            byte[] gimbalThetaByte = Encoding.ASCII.GetBytes(GimbalTheta.ToString());
-            List<byte> gimbalThetaList = gimbalThetaByte.ToList();  //  MSB = index0,  LSB = index2,                  
-            if (gimbalThetaList.Count == 2)
-                gimbalThetaList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-            else if (gimbalThetaList.Count == 1)
-            {
-                gimbalThetaList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-                gimbalThetaList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-            }
-            byte[] _gimbalThetaPackage = new byte[] {
-                0x01,                                   // Start of Transmission
-                0x47,                                   // ID of Device to be controlled (ALPHABETIC)
-                0x02,                                   // Start of Data (Parameters of Device)
-                gimbalThetaList[0],           // MSB Digit in degrees  
-                gimbalThetaList[1],           // Second Digit in degrees  ###### Check ORDER!!
-                gimbalThetaList[2],           // LSB Third Digit in degrees 
-                0x03,                                   // End of Data
-                0x00,                                   // Checksum = ~(ID + DATA) 1 BYTE!
-                0x04                                    // End of Transmission
-                };
-
-            checkSum = (byte)(~(0x47 + gimbalThetaList[0] + gimbalThetaList[1] + gimbalThetaList[2]));
-            _gimbalThetaPackage.SetValue(checkSum, 7);
-            fpga.Send(_gimbalThetaPackage);
-        }
-
-        private void AutoGrab_Click(object sender, EventArgs e)//############ Next thing to test
-        {
-            int[] RobotArmDirections = { 0, 0, 0 };
-            if (firstreset)
-            {
-                PackageRecieved = false;
-                LidarRecieve();
-                while (!PackageRecieved) ;// Maybe create a limit for how long it waits 
-                PackageRecieved = false;
-                RobotArmDirections = AutonomousRetrieval(gimbalX, gimbalY, LidarDistance);
-                if ((RobotArmDirections[1] >= 0 && RobotArmDirections[1] <= 270) || (RobotArmDirections[2] >= 0 && RobotArmDirections[2] <= 120) || (RobotArmDirections[0] >= 0 && RobotArmDirections[0] <= 203))
-                {
-                    TurrentServo(RobotArmDirections[1]);
-                    ArmXSend(RobotArmDirections[2]);
-                    ArmYSend(RobotArmDirections[0]);
-                }
-            }
-        }             
-        void GripperControl(bool gripper)
-        {
-            byte checkSum;
-            this.gripper = gripper;
-            if (gripper)
-                commProtocol.SendArmCommand(gripper_id, 1, 100);
-            else
-                commProtocol.SendArmCommand(gripper_id, 0, 100);
-
-            int grippervalue = gripper ? 1 : 0; // converts to value from boolean 
-            byte[] gripperByte = Encoding.ASCII.GetBytes(grippervalue.ToString());
-            List<byte> gripperList = gripperByte.ToList();
-            byte[] _gripperPackage = new byte[] {
-                0x01,                                   // Start of Transmission
-                0x46,                                   // ID of Device to be controlled (ALPHABETIC)
-                0x02,                                   // Start of Data (Parameters of Device)
-                0x30,           // 00  
-                0x30,           // 00
-                gripperList[0],           // Boolean of if gripper is open or closed 
-                0x03,                                   // End of Data
-                0x00,                                   // Checksum = ~(ID + DATA) 1 BYTE!
-                0x04                                    // End of Transmission
-                };
-
-            checkSum = (byte)(~(0x46 + gripperList[0] + 0x30 + 0x30));
-
-            _gripperPackage.SetValue(checkSum, 7);
-            fpga.Send(_gripperPackage);
-        }
-        void ArmReset(bool armReset)
-        {
-            byte checkSum;
-            int ResetValue = armReset ? 1 : 0; // converts to value from boolean 
-            byte[] armResetByte = Encoding.ASCII.GetBytes(ResetValue.ToString());
-            List<byte> armResetList = armResetByte.ToList();
-            byte[] _armResetPackage = new byte[] {
-                0x01,                                   // Start of Transmission
-                0x4A,                                   // ID of Device to be controlled (ALPHABETIC)
-                0x02,                                   // Start of Data (Parameters of Device)
-                0x30,           // 00  
-                0x30,           // 00
-                0x31,           // Boolean of if gripper is open or closed 
-                0x03,                                   // End of Data
-                0x00,                                   // Checksum = ~(ID + DATA) 1 BYTE!
-                0x04                                    // End of Transmission
-                };
-            checkSum = unchecked((byte)(~(0x4A + armResetList[0] + 0x30 + 0x30)));
-            _armResetPackage.SetValue(checkSum, 7);
-            fpga.Send(_armResetPackage);
-        }
-                  
-
-        int[] AutonomousRetrieval(int gimbalX, int gimbalY, int RangeFinderDistance)
-        {
-            gimbalX = gimbalX - 180;
-            gimbalY = gimbalY + 40;
-            double RangeFinderDistanceMM = RangeFinderDistance * 10;
-            double GimbalHeight = 457.2;
-            double DifferenceofGimbalHeightToRobotArm = 203.2;
-            double DistanceFromGimbalToRobotArm = 215.9;
-            //initial calculations
-            double DistanceFromPayload = Math.Sin(gimbalY * Math.PI / 180) * RangeFinderDistanceMM;
-            double zCoord = GimbalHeight - Math.Cos(gimbalY * Math.PI / 180) * RangeFinderDistanceMM;
-            double xCoord = DistanceFromPayload * Math.Cos(gimbalX * Math.PI / 180);
-            double yCoord = DistanceFromPayload * Math.Sin(gimbalX * Math.PI / 180);
-            //Translation
-            xCoord = xCoord - DistanceFromGimbalToRobotArm;
-            zCoord = zCoord - DifferenceofGimbalHeightToRobotArm;
-            //Robot arm calculations 
-            int RobotArmHeight = (int)Math.Abs(zCoord);
-            int RobotArmAngle = (int)(Math.Atan2(yCoord, xCoord) * 180 / Math.PI);
-            int RobotArmDistance = (int)Math.Sqrt(xCoord * xCoord + yCoord * yCoord);
-            int[] Array = { RobotArmHeight, RobotArmAngle, RobotArmDistance };
-            return Array;
-        }
-
-        void LidarRecieve()
-        {
-            byte checkSum = 0x00;
-            byte[] _LidarRecievePackage = new byte[] {
-                0x01,                                   // Start of Transmission
-                0x4B,                                   // ID of Device to be controlled (ALPHABETIC)
-                0x02,                                   // Start of Data (Parameters of Device)
-                0x30,           // MSB Digit in Milimeters  
-                0x30,           // Second Digit in Milimeters  ###### Check ORDER!!
-                0x30,           // LSB Third Digit in Milimeters
-                0x03,                                   // End of Data
-                0x00,                                   // Checksum = ~(ID + DATA) 1 BYTE!
-                0x04                                    // End of Transmission
-                };
-
-            checkSum = unchecked((byte)(~(0x4B + 0x30 + 0x30 + 0x30)));
-            _LidarRecievePackage.SetValue(checkSum, 7);
-            fpga.Send(_LidarRecievePackage);
-        }
         #endregion arm and motor controls
 
 
