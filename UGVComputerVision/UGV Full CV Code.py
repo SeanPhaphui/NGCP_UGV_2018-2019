@@ -39,13 +39,15 @@ cv2.createTrackbar("MaxLum", "UGV Filter",0,2550,update)
 cv2.createTrackbar("MinLum", "UGV Filter",0,2550,update)
 
 cv2.setTrackbarPos("MaxHue", "UGV Filter",1800)
-cv2.setTrackbarPos("MinHue", "UGV Filter",0)
-cv2.setTrackbarPos("MaxSat", "UGV Filter",2550)
-cv2.setTrackbarPos("MinSat", "UGV Filter",0)
-cv2.setTrackbarPos("MaxLum", "UGV Filter",2550)
+cv2.setTrackbarPos("MinHue", "UGV Filter",1590)
+cv2.setTrackbarPos("MaxSat", "UGV Filter",1000)
+cv2.setTrackbarPos("MinSat", "UGV Filter",270)
+cv2.setTrackbarPos("MaxLum", "UGV Filter",2370)
 cv2.setTrackbarPos("MinLum", "UGV Filter",0)
-   
 
+x =0
+y= 0
+r= 0
 while phase == 1:
 
     
@@ -71,7 +73,7 @@ while phase == 1:
     ksize = int(6 * round(radius) + 1)
     output = image.copy()
     res2=cv2.GaussianBlur(thresh,(ksize, ksize), round(radius))
-    circles = cv2.HoughCircles(res2, cv2.HOUGH_GRADIENT, 1, 200, param1=30, param2=35, minRadius=5, maxRadius=0)
+    circles = cv2.HoughCircles(res2, cv2.HOUGH_GRADIENT, 1, 200, param1=30, param2=65, minRadius=50, maxRadius=0)
     ballfound = 0 
     if circles is not None:
 		# convert the (x, y) coordinates and radius of the circles to integers
@@ -98,6 +100,10 @@ while phase == 1:
             bcenterSock.sendto(ballbyte, (UDP_IP_ADDRESS, udp2))
 
 
+    ballbyte = bytearray(struct.pack("i", int(x)))
+    ballbyte += bytearray(struct.pack("i", int(y)))
+    ballbyte += bytearray(struct.pack("i", int(ballfound)))
+    bcenterSock.sendto(ballbyte, (UDP_IP_ADDRESS, udp2))
     cv2.imshow('mask',res2)
     cv2.imshow('image',output)
     
