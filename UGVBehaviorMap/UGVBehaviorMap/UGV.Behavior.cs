@@ -282,47 +282,54 @@ namespace NGCP.UGV
 
         #region Generate Search Path
 
-        void GenerateSearchPath()
+        void GenerateSearchPath() // Red Ball has been found and we have the distance to the ball as 3 meters
         {
-            List<WayPoint> map = new List<WayPoint>();
-            WayPoint nextWayPoint;
-            WayPoint center = WayPoint.GetCenter(Boundary);
-            nextWayPoint = center;
-            map.Add(nextWayPoint);
-            double distance = 0.5; //meters
+            WayPoint nextWayPoint = null;
 
-            // ====== Flower Petal Pattern ======
-            //r = 1 + cos(k * theta)
-            distance = 8; // meters
-            double r;
-            double theta = 0;
-            double k = 5.0 / 2.0;
-            r = 1 + Math.Cos(k * theta);
-            r *= distance;
-            nextWayPoint = WayPoint.Projection(center, theta, r);
-            for (int i = 0; i < 51; i++)
+            if (ObjectFound && !goToObject)
             {
-                if (WayPoint.IsInsideBoundary(nextWayPoint.Lat, nextWayPoint.Long, Boundary))
-                    map.Add(nextWayPoint);
-                theta += 0.25;
-                r = 1 + Math.Cos(k * theta);
-                r *= distance;
-                nextWayPoint = WayPoint.Projection(center, theta, r);
+                State = DriveState.DriveToStart; // set to Drive to Object
+                Speed = 0;
+                Steering = 0;
+                //ToObject();
+                ObjectFound = false;
+                goToObject = true;
             }
-            map.Add(map[1]);
+            else if (Waypoints.Count == 0 && !ObjectFound)
+            {
+                // create new waypoints
+                List<WayPoint> map = new List<WayPoint>();
+                double Total_Orintation;
+                double distance = 3;
+                if (Yaw < 0)
+                {
+                    Yaw = (2 * Math.PI + Yaw);
+                }
+                Total_Orintation = Heading + Yaw;
+                if (Total_Orintation > 2 * Math.PI)
+                {
+                    Total_Orintation = Total_Orintation - 2 * Math.PI;
+                }
+                //Calculate Distance to Ball
+                double Ball_X = Math.Cos(Heading) + distance * Math.Cos(Total_Orintation);
+                double Ball_Y = Math.Sin(Heading) + distance * Math.Sin(Total_Orintation);
 
-            // ========== Recording ========== //
-            string[] cords = new string[map.Count];
-            for (int j = 0; j < map.Count; j++)
-            {
-                cords[j] = map[j].Lat + " " + map[j].Long + "\n";
-            }
-            //System.IO.File.WriteAllLines(@"C:\Users\UGV_usr\output.txt", cords);
-
-            foreach (WayPoint point in map)
-            {
-                Waypoints.Enqueue(point);
-            }
+                // Create WayPoint Map based on location
+                if (oneTime == 1)
+                {
+                    oneTime = 2;
+                    double phi = Total_Orintation;
+                    int radius = 5;
+                    for (int i = 0; i < 16; i++)
+                    {
+                        map.Add(new WayPoint(Ball_X + radius * Math.Cos(phi), Ball_Y + radius * Math.Sin(phi), Altitude));
+                        phi = phi + (Math.PI / 8);
+                    }
+                    for (int i = 0; i < 16; i++)
+                    {
+                        Waypoints.Enqueue(map[i]);
+                    }
+                }
         }   // end of GenerateMap
 
       #endregion
