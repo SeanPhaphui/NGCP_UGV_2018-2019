@@ -158,7 +158,7 @@ while phase==2:
         
         im2,contours,hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
-        if ta < 2000
+        if ta < 2000:
             ta = ta + 10
             
         if len(contours) != 0:
