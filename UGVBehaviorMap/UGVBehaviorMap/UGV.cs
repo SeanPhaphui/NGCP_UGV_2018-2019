@@ -985,7 +985,10 @@ namespace NGCP.UGV
                 BallX = BitConverter.ToInt32(bytes, 0);
                 BallY = BitConverter.ToInt32(bytes, sizeof(int));
                 Targetbit = BitConverter.ToInt32(bytes, 2 * sizeof(int));
-
+                if (Targetbit == 1)
+                {
+                    GimbalTracking(BallX, BallY);
+                }
 
             });
             udp_bottle.Start();
@@ -1192,12 +1195,12 @@ namespace NGCP.UGV
                 SendControl();
             //controlTimer.Enabled = true; 
         }
-        private int Remap(int OldValue, int OldMax, int OldMin, int NewMax, int NewMin)
+        private int Remap(float OldValue, int OldMax, int OldMin, int NewMax, int NewMin)
         {
-            int OldRange = (OldMax - OldMin);
-            int NewRange = (NewMax - NewMin);
-            int NewValue = (((OldValue - OldMin) * NewRange) / OldRange) + NewMin;
-            return NewValue;
+            float OldRange = (OldMax - OldMin);
+            float NewRange = (NewMax - NewMin);
+            float NewValue = (((OldValue - OldMin) * NewRange) / OldRange) + NewMin;
+            return (int)NewValue;
         }
         public static byte[] ConvertInt32ToByteArray(int I32)
         {
@@ -1405,14 +1408,12 @@ namespace NGCP.UGV
             //480 width
             float FloatxError = ((float)xError - 240) / 50;
             float FloatyError = ((float)yError - 340) / 50;
-            if ((gimbalY - FloatyError < 50 && gimbalY - FloatyError > 0) && (Math.Abs(FloatyError * 50) > 10))
-                gimbalY -= FloatyError;
-            if ((gimbalX - FloatxError < 360 && gimbalX - FloatxError > 0) && (Math.Abs(FloatxError * 50) > 10))
-                gimbalX -= FloatxError;
-            GimbalPhi((int)gimbalX);
-            GimbalTheta((int)gimbalY);
-            int DynamixelgimbalY = Remap(gimbalY, 100, 0, 512, 1655);
-            int DynamixelgimbalX = Remap(gimbalX, 360, 0, 4000, 0);
+            if ((gimbalpitch - FloatyError < 50 && gimbalpitch - FloatyError > 0) && (Math.Abs(FloatyError * 50) > 10))
+                gimbalpitch -= FloatyError;
+            if ((gimbalyaw - FloatxError < 360 && gimbalyaw - FloatxError > 0) && (Math.Abs(FloatxError * 50) > 10))
+                gimbalyaw -= FloatxError;
+            int DynamixelgimbalY = Remap(gimbalpitch, 100, 0, 512, 1655);
+            int DynamixelgimbalX = Remap(gimbalyaw, 360, 0, 4000, 0);
             //dynamixel stuff
             dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, GIMBALYAW, ADDR_MX_GOAL_POSITION, (ushort)DynamixelgimbalX);
             //Dynamixel stuff
