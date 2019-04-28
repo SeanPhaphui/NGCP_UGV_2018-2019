@@ -330,6 +330,7 @@ namespace NGCP.UGV
                         Waypoints.Enqueue(map[i]);
                     }
                 }
+                SearchTarget();
         }   // end of GenerateMap
 
       #endregion
