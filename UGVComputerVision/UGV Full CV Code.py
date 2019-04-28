@@ -142,6 +142,9 @@ ta = 500
 
 counter = 0
 
+anglefound = 0
+cX = 0
+cY = 0
 
 while phase==2:
 
@@ -170,9 +173,7 @@ while phase==2:
         if ta < 2000:
             ta = ta + 10
 
-        cX = 0
-        cY = 0
-        anglefound = 0
+       
         if counter == 0:
             bottlefound = 0
         
