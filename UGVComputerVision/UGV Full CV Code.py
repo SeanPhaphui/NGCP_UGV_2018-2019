@@ -12,10 +12,10 @@ UDP_IP_ADDRESS = "127.0.0.1"
 udp_reciever = 6800
 udp1 = 6789
 udp2 = 6790
-bottlefound = 0
-ballfound = 0 
 
-ta = 0
+bottleSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+bcenterSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
 
 def update(x):
     pass
@@ -72,7 +72,7 @@ while phase == 1:
     output = image.copy()
     res2=cv2.GaussianBlur(thresh,(ksize, ksize), round(radius))
     circles = cv2.HoughCircles(res2, cv2.HOUGH_GRADIENT, 1, 200, param1=30, param2=35, minRadius=5, maxRadius=0)
-
+    ballfound = 0 
     if circles is not None:
 		# convert the (x, y) coordinates and radius of the circles to integers
 
@@ -95,7 +95,6 @@ while phase == 1:
             ballbyte = bytearray(struct.pack("i", int(x)))
             ballbyte += bytearray(struct.pack("i", int(y)))
             ballbyte += bytearray(struct.pack("i", int(ballfound)))
-            bcenterSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             bcenterSock.sendto(ballbyte, (UDP_IP_ADDRESS, udp2))
 
 
@@ -134,6 +133,10 @@ cv2.setTrackbarPos("MaxLum", "UGV Filter",1814)
 cv2.setTrackbarPos("MinLum", "UGV Filter",22)
 
 ta = 500
+
+counter = 0
+
+
 while phase==2:
 
         _, image = maincam.read()
@@ -158,15 +161,25 @@ while phase==2:
         
         im2,contours,hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
-        if ta < 2000
+        if ta < 2000:
             ta = ta + 10
-            
+
+        cX = 0
+        cY = 0
+        anglefound = 0
+        if counter == 0:
+            bottlefound = 0
+        
+        
+
         if len(contours) != 0:
-                bottlefound =  1; 
                 c = max(contours, key = cv2.contourArea)
                 M = cv2.moments(c)
                 a = cv2.contourArea(c)
-                if a > ta:                        
+                if a > ta:
+                        if counter == 5:                     
+                            bottlefound =  1
+                          
                         cv2.drawContours(image, c, -1, 255, 3)
                         cX = int(M["m10"] / M["m00"])
                         cY = int(M["m01"] / M["m00"])
@@ -194,15 +207,31 @@ while phase==2:
                         bottleSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                         bottleSock.sendto(bottlebyte, (UDP_IP_ADDRESS, udp1))
                         
-
-                        
+                        if counter < 5:
+                            counter = counter + 1
 
                         print('Angle found: ', anglefound)
                         print('Center X coordinate: ', cX)
                         print('Center Y coordinate: ', cY)
-        
-        
+                else:
+                        counter = 0
+                        bottlefound = 0
 
+        else:
+            counter = 0
+            bottlefound = 0
+                        
+                        
+                        
+        
+        
+        bottlebyte = bytearray(struct.pack("i", int(anglefound)))
+        bottlebyte += (bytearray(struct.pack("i", int(cX))))
+        bottlebyte += (bytearray(struct.pack("i", int(cY))))
+        bottlebyte += (bytearray(struct.pack("i", int(bottlefound))))
+        bottleSock.sendto(bottlebyte, (UDP_IP_ADDRESS, udp1))
+        
+            
         cv2.imshow("image", image)
         cv2.imshow("mask", mask)
 
