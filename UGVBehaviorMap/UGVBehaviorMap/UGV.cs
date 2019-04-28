@@ -9,6 +9,8 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Windows;
+using System.Net;
+using System.Net.Sockets;
 using UGV.Core.Sensors;
 using UGV.Core.IO;
 using UGV.Core.Maths;
@@ -80,40 +82,56 @@ namespace NGCP.UGV
         /// <summary>
         /// Speed factor of front wheel driving from -1000 to 1000
         /// </summary>
-        private double speed;      
+        private double speed;
         public double Speed
         {
             get { return speed; }
             set
             {
                 speed = value;
-                if(speed != lastSpeed)
+                if (speed != lastSpeed)
                     //SendControl();
-                lastSpeed = speed;
+                    lastSpeed = speed;
             }
         }
         private double lastSpeed;
-      
+
 
         /// <summary>
         /// Steering factor of driving from -1000 to 1000
         /// </summary>
-        private double steering;           
+        private double steering;
         public double Steering
         {
             get { return steering; }
             set
             {
                 steering = value;
-                if(steering != lastSteering)
+                if (steering != lastSteering)
                     //SendControl();
-                lastSteering = steering;
+                    lastSteering = steering;
             }
         }
         private double lastSteering;
-        
 
-
+        private float gimbalpitch;
+        public float GimbalPitch
+        {
+            get { return gimbalpitch; }
+            set
+            {
+                gimbalpitch = value;
+            }
+        }
+        private float gimbalyaw;
+        public float GimbalYaw
+        {
+            get { return gimbalyaw; }
+            set
+            {
+                gimbalyaw = value; 
+            }
+        }
         #endregion Autonomous Related
 
         /// <summary>
@@ -283,7 +301,12 @@ namespace NGCP.UGV
         /// </summary>
         public Payload main_payload;
         private Stopwatch sw;
-
+        private int BottleData;
+        private int BottleX;
+        private int BottleY;
+        private int BallX;
+        private int BallY;
+        private int Targetbit;
         public int x_mainpayload = 0;
         public int y_mainpayload = 0;
         #region Dynamixel Settings
@@ -472,7 +495,11 @@ namespace NGCP.UGV
         /// UDP for Camera
         /// </summary>
         UdpClientSocket udp_camera { get; set; }
-
+        UdpClientSocket udp_bottle { get; set; }
+        UdpClientSocket udp_ball { get; set;  }
+        Socket udp_CameraMode { get; set; }
+        IPEndPoint endPoint { get; set; }
+        
         /// <summary>
         /// Protonet of UGV
         /// </summary>
@@ -933,7 +960,36 @@ namespace NGCP.UGV
                 udp_camera.Start();//pointgrey
                 udp_armcam.Start();//armwebcam
             }
+            udp_bottle = new UdpClientSocket(
+    System.Net.IPAddress.Parse(Settings.VisionHostIP), 6789);
+            udp_ball = new UdpClientSocket(
+            System.Net.IPAddress.Parse(Settings.VisionHostIP), 6790);
+            Socket udp_CameraMode = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 6800);
+            udp_CameraMode.SendTo(new byte[] { 0x02 }, endPoint);
+            //define call back
+            udp_bottle.PackageReceived = (bytes =>
+            {
+                BottleData = BitConverter.ToInt32(bytes, 0);
+                BottleX = BitConverter.ToInt32(bytes, sizeof(int));
+                BottleY = BitConverter.ToInt32(bytes, 2 * sizeof(int));
+                Targetbit = BitConverter.ToInt32(bytes, 3 * sizeof(int));
+                if (Targetbit == 1)
+                {
+                    GimbalTracking(BottleX, BottleY);
+                }
 
+            });
+            udp_ball.PackageReceived = (bytes =>
+            {
+                BallX = BitConverter.ToInt32(bytes, 0);
+                BallY = BitConverter.ToInt32(bytes, sizeof(int));
+                Targetbit = BitConverter.ToInt32(bytes, 2 * sizeof(int));
+
+
+            });
+            udp_bottle.Start();
+            udp_ball.Start();
             #endregion Vision Connection
 
             #region Robotic Arm Connection
@@ -1343,6 +1399,25 @@ namespace NGCP.UGV
 
         }
 
+        void GimbalTracking(int xError, int yError)
+        {
+            //640 height
+            //480 width
+            float FloatxError = ((float)xError - 240) / 50;
+            float FloatyError = ((float)yError - 340) / 50;
+            if ((gimbalY - FloatyError < 50 && gimbalY - FloatyError > 0) && (Math.Abs(FloatyError * 50) > 10))
+                gimbalY -= FloatyError;
+            if ((gimbalX - FloatxError < 360 && gimbalX - FloatxError > 0) && (Math.Abs(FloatxError * 50) > 10))
+                gimbalX -= FloatxError;
+            GimbalPhi((int)gimbalX);
+            GimbalTheta((int)gimbalY);
+            int DynamixelgimbalY = Remap(gimbalY, 100, 0, 512, 1655);
+            int DynamixelgimbalX = Remap(gimbalX, 360, 0, 4000, 0);
+            //dynamixel stuff
+            dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, GIMBALYAW, ADDR_MX_GOAL_POSITION, (ushort)DynamixelgimbalX);
+            //Dynamixel stuff
+            dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, GIMBALPITCH, ADDR_MX_GOAL_POSITION, (ushort)DynamixelgimbalY);
+        }
         #endregion arm and motor controls
 
 
@@ -1362,8 +1437,6 @@ namespace NGCP.UGV
 
         int dividerCount = 0;
         private UdpClientSocket udp_armcam;
-        private int x;
-        private int y;
 
         /// <summary>
         /// Board Cast System State
