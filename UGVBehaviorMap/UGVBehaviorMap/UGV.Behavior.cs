@@ -1,4 +1,4 @@
-﻿//#define USE_MISSION
+//#define USE_MISSION
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -146,6 +146,10 @@ namespace NGCP.UGV
         /// Whether to use search path generated from autonomous behavior method
         /// </summary>
         bool usePathGen = false; //false for testing purposes
+        bool ObjectFound = false;
+        bool goToObject = false;
+        double Yaw = 0;
+        int oneTime = 1;
 
         #region Properties for SearchTarget() Behaivor
 
@@ -284,8 +288,6 @@ namespace NGCP.UGV
 
         void GenerateSearchPath() // Red Ball has been found and we have the distance to the ball as 3 meters
         {
-            WayPoint nextWayPoint = null;
-
             if (ObjectFound && !goToObject)
             {
                 State = DriveState.DriveToStart; // set to Drive to Object
@@ -330,8 +332,8 @@ namespace NGCP.UGV
                         Waypoints.Enqueue(map[i]);
                     }
                 }
-        }   // end of GenerateMap
-
+            }   // end of GenerateMap
+        }
       #endregion
 
       #region Search Target
@@ -460,7 +462,7 @@ namespace NGCP.UGV
         #endregion
 
         #region Go To ball
-        public void GoToBall()
+        void GoToBall()
         {
             if (TargetFound)//only works if ball is seen by camera
             {
@@ -545,7 +547,7 @@ namespace NGCP.UGV
                 State = DriveState.SearchTarget;
             }
         }
-        public void CenterUGV()
+        void CenterUGV()
         {
 
             //bool center = false;
@@ -683,7 +685,7 @@ namespace NGCP.UGV
         bool StartWaiting = false;
         long StartTime;
         long WaitTime = 10000;
-        private List<WayPoint> spiralPath_Payload = new List<WayPoint>();
+        public List<WayPoint> spiralPath_Payload = new List<WayPoint>();
         private int turret_Payload_Position = 0;
 
         //void SearchPayload()
