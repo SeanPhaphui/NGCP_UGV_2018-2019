@@ -315,7 +315,7 @@ namespace UGVBehaviorMap
             ugv.DefaultLocation = EMDefault;
 
             // added this line to change state of the ugv and start in the grabPayloadManual method
-            ugv.State = NGCP.UGV.UGV.DriveState.Test;
+            ugv.State = NGCP.UGV.UGV.DriveState.Idle;
 
             //check for enable
             do
@@ -369,6 +369,10 @@ namespace UGVBehaviorMap
                 else if (keyInfo.Key == ConsoleKey.O)
                 {
                     ZoomOut = true;
+                }
+                else if(keyInfo.Key == ConsoleKey.U)
+                {
+                    ugv.State = NGCP.UGV.UGV.DriveState.Test;
                 }
 #if logging
                 else if (keyInfo.Key == ConsoleKey.L)
@@ -459,7 +463,7 @@ namespace UGVBehaviorMap
             Console.WriteLine(output);
             Console.WriteLine("(E = Safety Switch) (P = Bypass 1st Waypoint) (WASD = Local Control)");
             Console.WriteLine("(M = Map) (C = Center Tracking) (Z = Zero Control)");
-            Console.WriteLine("(F1 = Local Mode) (F2 = SemiAuto Mode) (F3 = Auto Mode) (R = Reset Mission)");
+            Console.WriteLine("(F1 = Local Mode) (F2 = SemiAuto Mode) (F3 = Auto Mode) (R = Reset Mission)(U = Test State)");
         }
 
 #region Registry
