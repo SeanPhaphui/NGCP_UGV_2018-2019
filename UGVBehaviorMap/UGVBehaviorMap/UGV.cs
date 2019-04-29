@@ -968,7 +968,7 @@ namespace NGCP.UGV
             System.Net.IPAddress.Parse(Settings.VisionHostIP), 6790);
             Socket udp_CameraMode = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 6800);
-            udp_CameraMode.SendTo(new byte[] { 0x01 }, endPoint);
+            udp_CameraMode.SendTo(new byte[] { 0x02 }, endPoint);
             //define call back
             udp_bottle.PackageReceived = (bytes =>
             {

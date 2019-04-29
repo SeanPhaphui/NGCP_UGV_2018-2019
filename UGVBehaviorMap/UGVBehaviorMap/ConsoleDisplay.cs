@@ -191,10 +191,10 @@ namespace UGVBehaviorMap
                UGV.Core.Navigation.WayPoint WaypointD = new UGV.Core.Navigation.WayPoint(34.0587586, -117.8218449, 0);
    */
 
-            ugv.Waypoints.Enqueue(WaypointA);
+         //   ugv.Waypoints.Enqueue(WaypointA);
             
-            ugv.Waypoints.Enqueue(WaypointB);
-            ugv.Waypoints.Enqueue(WaypointC);
+          //  ugv.Waypoints.Enqueue(WaypointB);
+         //   ugv.Waypoints.Enqueue(WaypointC);
 
             ////ugv.Waypoints.Enqueue(WaypointD);
             //ugv.TargetWaypoint = WaypointC;
@@ -315,7 +315,7 @@ namespace UGVBehaviorMap
             ugv.DefaultLocation = EMDefault;
 
             // added this line to change state of the ugv and start in the grabPayloadManual method
-            ugv.State = NGCP.UGV.UGV.DriveState.SearchTarget;
+            ugv.State = NGCP.UGV.UGV.DriveState.Test;
 
             //check for enable
             do

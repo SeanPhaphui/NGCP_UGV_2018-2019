@@ -38,12 +38,12 @@ cv2.createTrackbar("MinSat", "UGV Filter",0,2550,update)
 cv2.createTrackbar("MaxLum", "UGV Filter",0,2550,update)
 cv2.createTrackbar("MinLum", "UGV Filter",0,2550,update)
 
-cv2.setTrackbarPos("MaxHue", "UGV Filter",1800)
-cv2.setTrackbarPos("MinHue", "UGV Filter",1693)
-cv2.setTrackbarPos("MaxSat", "UGV Filter",2010)
-cv2.setTrackbarPos("MinSat", "UGV Filter",792)
-cv2.setTrackbarPos("MaxLum", "UGV Filter",1035)
-cv2.setTrackbarPos("MinLum", "UGV Filter",228)
+cv2.setTrackbarPos("MaxHue", "UGV Filter",1795)
+cv2.setTrackbarPos("MinHue", "UGV Filter",1590)
+cv2.setTrackbarPos("MaxSat", "UGV Filter",1918)
+cv2.setTrackbarPos("MinSat", "UGV Filter",320)
+cv2.setTrackbarPos("MaxLum", "UGV Filter",1636)
+cv2.setTrackbarPos("MinLum", "UGV Filter",0)
 
 x =0
 y= 0

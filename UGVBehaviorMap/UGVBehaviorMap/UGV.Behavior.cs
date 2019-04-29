@@ -147,7 +147,7 @@ namespace NGCP.UGV
         /// <summary>
         /// Whether to use search path generated from autonomous behavior method
         /// </summary>
-        bool usePathGen = false; //false for testing purposes
+        bool usePathGen = true; //false for testing purposes
         bool ObjectFound = false;
         bool goToObject = false;
         double Yaw = 0;
