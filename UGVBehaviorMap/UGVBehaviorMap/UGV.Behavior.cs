@@ -294,19 +294,10 @@ namespace NGCP.UGV
 
         void GenerateSearchPath() // Red Ball has been found and we have the distance to the ball as 3 meters
         {
-            if (ObjectFound && !goToObject)
-            {
-                State = DriveState.DriveToStart; // set to Drive to Object
-                Speed = 0;
-                Steering = 0;
-                //ToObject();
-                ObjectFound = false;
-                goToObject = true;
-            }
-            else if (Waypoints.Count == 0 && !ObjectFound)
-            {
-                // create new waypoints
-                List<WayPoint> map = new List<WayPoint>();
+
+            // create new waypoints
+            WayPoint currentLocation = new WayPoint(Latitude, Longitude, 0);
+            List<WayPoint> map = new List<WayPoint>();
                 double Total_Orintation;
                 double distance = 3;
                 if (Yaw < 0)
@@ -319,8 +310,8 @@ namespace NGCP.UGV
                     Total_Orintation = Total_Orintation - 2 * Math.PI;
                 }
                 //Calculate Distance to Ball
-                double Ball_X = Math.Cos(Heading) + distance * Math.Cos(Total_Orintation);
-                double Ball_Y = Math.Sin(Heading) + distance * Math.Sin(Total_Orintation);
+                double Ball_X = Longitude + distance * Math.Cos(Total_Orintation);
+                double Ball_Y = Latitude + distance * Math.Sin(Total_Orintation);
 
                 // Create WayPoint Map based on location
                 if (oneTime == 1)
@@ -338,10 +329,10 @@ namespace NGCP.UGV
                         Waypoints.Enqueue(map[i]);
                     }
                 }
-            }   // end of GenerateMap
+               // end of GenerateMap
         }
       #endregion
-
+          
       #region Search Target
 
       /// <summary>
