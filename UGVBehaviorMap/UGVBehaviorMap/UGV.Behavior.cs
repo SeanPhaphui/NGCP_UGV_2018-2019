@@ -290,7 +290,7 @@ namespace NGCP.UGV
 
         #region Autonomous Behaivors
 
-        #region Generate Search Path
+               #region Generate Search Path
 
         void GenerateSearchPath() // Red Ball has been found and we have the distance to the ball as 3 meters
         {
@@ -298,37 +298,42 @@ namespace NGCP.UGV
             // create new waypoints
             WayPoint currentLocation = new WayPoint(Latitude, Longitude, 0);
             List<WayPoint> map = new List<WayPoint>();
-                double Total_Orintation;
-                double distance = 3;
-                if (Yaw < 0)
-                {
-                    Yaw = (2 * Math.PI + Yaw);
-                }
-                Total_Orintation = Heading + Yaw;
-                if (Total_Orintation > 2 * Math.PI)
-                {
-                    Total_Orintation = Total_Orintation - 2 * Math.PI;
-                }
-                //Calculate Distance to Ball
-                double Ball_X = Longitude + distance * Math.Cos(Total_Orintation);
-                double Ball_Y = Latitude + distance * Math.Sin(Total_Orintation);
+            double Total_Orintation;
+            double distance = 3;
+            if (Yaw < 0)
+            {
+                Yaw = (2 * Math.PI + Yaw);
+            }
+            Total_Orintation = Heading + Yaw;
+            if (Total_Orintation > 2 * Math.PI)
+            {
+                Total_Orintation = Total_Orintation - 2 * Math.PI;
+            }
+            //Calculate Distance to Ball
+            // Convert to Way Points 
+            double dR = distance / 6371000;
+            double a = Math.Sin(dR) * Math.Cos(Latitude);
 
-                // Create WayPoint Map based on location
-                if (oneTime == 1)
+            
+            double Ball_Y = Math.Asin(Math.Sin(Latitude) * Math.Cos(dR) + a * Math.Cos(Total_Orintation));
+            double Ball_X = Longitude + Math.Atan2(Math.Sin(Total_Orintation) * a , Math.Cos(dR) - Math.Sin(Latitude) * Math.Sin(Ball_Y));
+
+            // Create WayPoint Map based on location
+            if (oneTime == 1)
+            {
+                oneTime = 2;
+                double phi = Total_Orintation;
+                int radius = 5;
+                for (int i = 0; i < 16; i++)
                 {
-                    oneTime = 2;
-                    double phi = Total_Orintation;
-                    int radius = 5;
-                    for (int i = 0; i < 16; i++)
-                    {
-                        map.Add(new WayPoint(Ball_X + radius * Math.Cos(phi), Ball_Y + radius * Math.Sin(phi), Altitude));
-                        phi = phi + (Math.PI / 8);
-                    }
-                    for (int i = 0; i < 16; i++)
-                    {
-                        Waypoints.Enqueue(map[i]);
-                    }
+                    map.Add(new WayPoint(Ball_X + radius * Math.Cos(phi), Ball_Y + radius * Math.Sin(phi), 0));
+                    phi = phi + (Math.PI / 8);
                 }
+                for (int i = 0; i < 16; i++)
+                {
+                    Waypoints.Enqueue(map[i]);
+                }
+            }
                // end of GenerateMap
         }
       #endregion
