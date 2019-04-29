@@ -299,7 +299,7 @@ namespace NGCP.UGV
             WayPoint currentLocation = new WayPoint(Latitude, Longitude, 0);
             List<WayPoint> map = new List<WayPoint>();
             double Total_Orintation;
-            double distance = 3;
+            double distance = 0;
             if (Yaw < 0)
             {
                 Yaw = (2 * Math.PI + Yaw);
@@ -321,7 +321,7 @@ namespace NGCP.UGV
             Ball_X = Ball_X * 180 / Math.PI;
             // Create WayPoint Map based on location
             double phi = Total_Orintation;
-            int radius = 5;
+            double radius = 3;
             for (int i = 0; i < 16; i++)
             {
                 double dR2 = radius / 6372797.6;
