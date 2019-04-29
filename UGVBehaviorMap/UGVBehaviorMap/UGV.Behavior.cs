@@ -292,7 +292,7 @@ namespace NGCP.UGV
 
                #region Generate Search Path
 
-        void GenerateSearchPath() // Red Ball has been found and we have the distance to the ball as 3 meters
+      void GenerateSearchPath() // Red Ball has been found and we have the distance to the ball as 3 meters
         {
 
             // create new waypoints
@@ -311,36 +311,38 @@ namespace NGCP.UGV
             }
             //Calculate Distance to Ball
             // Convert to Way Points 
-            double dR = distance / 6371000;
-            double a = Math.Sin(dR) * Math.Cos(Latitude);
+            double dR = distance / 6372797.6;
+            double lat1 = Latitude * Math.PI / 180;
+            double lon1 = Longitude * Math.PI / 180;
 
-            
-            double Ball_Y = Math.Asin(Math.Sin(Latitude) * Math.Cos(dR) + a * Math.Cos(Total_Orintation));
-            double Ball_X = Longitude + Math.Atan2(Math.Sin(Total_Orintation) * a , Math.Cos(dR) - Math.Sin(Latitude) * Math.Sin(Ball_Y));
-
+            double Ball_Y = Math.Asin(Math.Sin(lat1) * Math.Cos(dR) + Math.Cos(lat1) * Math.Sin(dR) * Math.Cos(Total_Orintation));
+            double Ball_X = lon1 + Math.Atan2(Math.Sin(Total_Orintation) * Math.Sin(dR) * Math.Cos(Total_Orintation), Math.Cos(dR) - Math.Sin(lat1) * Math.Sin(Ball_Y));
+            Ball_Y = Ball_Y * 180 / Math.PI;
+            Ball_X = Ball_X * 180 / Math.PI;
             // Create WayPoint Map based on location
-            if (Latitude != 0 && Longitude != 0)
+            double phi = Total_Orintation;
+            int radius = 5;
+            for (int i = 0; i < 16; i++)
             {
-                double phi = Total_Orintation;
-                int radius = 5;
-                for (int i = 0; i < 16; i++)
-                {
-                    double dR2 = radius / 6371000;
-                    double a2 = Math.Sin(dR2) * Math.Cos(Ball_X);
-                    double Lat = Math.Asin(Math.Sin(Ball_Y) * Math.Cos(dR2) + a2 * Math.Cos(phi));
-                    double Long = Ball_X + Math.Atan2(Math.Sin(phi) * a2, Math.Cos(dR2) - Math.Sin(Ball_Y) * Math.Sin(Lat));
-                    map.Add(new WayPoint(Long, Lat, 0));
-                    phi = phi + (Math.PI / 8);
-                }
-                for (int i = 0; i < 16; i++)
-                {
-                    Waypoints.Enqueue(map[i]);
-                }
+                double dR2 = radius / 6372797.6;
+                lat1 = Ball_Y * Math.PI / 180;
+                lon1 = Ball_X * Math.PI / 180;
+
+                double Lat = Math.Asin(Math.Sin(lat1) * Math.Cos(dR2) + Math.Cos(lat1) * Math.Sin(dR2) * Math.Cos(phi));
+                double Long = lon1 + Math.Atan2(Math.Sin(phi) * Math.Sin(dR2) * Math.Cos(phi), Math.Cos(dR2) - Math.Sin(lat1) * Math.Sin(Lat));
+                Lat = Lat * 180 / Math.PI;
+                Long = Long * 180 / Math.PI;
+
+
+                map.Add(new WayPoint(Long, Lat, 0));
+                phi = phi + (Math.PI / 8);
             }
-            else
-                Waypoints.Enqueue(currentLocation);
-               // end of GenerateMap
+            for (int i = 0; i < 16; i++)
+            {
+                Waypoints.Enqueue(map[i]);
+            }
         }
+    
       #endregion
           
       #region Search Target
@@ -1246,7 +1248,7 @@ namespace NGCP.UGV
             //    State = DriveState.GotoBall;
             //    return;
             //}
-            if (Waypoints.Count == 0 && usePathGen && !goToSafe && Longitude !=0 && Latitude !=0)
+            if (Waypoints.Count == 0 && usePathGen && !goToSafe)
             {
 
                 State = DriveState.GenerateSearchPath;
