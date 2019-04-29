@@ -38,13 +38,16 @@ cv2.createTrackbar("MinSat", "UGV Filter",0,2550,update)
 cv2.createTrackbar("MaxLum", "UGV Filter",0,2550,update)
 cv2.createTrackbar("MinLum", "UGV Filter",0,2550,update)
 
-cv2.setTrackbarPos("MaxHue", "UGV Filter",1773)
-cv2.setTrackbarPos("MinHue", "UGV Filter",1494)
-cv2.setTrackbarPos("MaxSat", "UGV Filter",2124)
-cv2.setTrackbarPos("MinSat", "UGV Filter",282)
-cv2.setTrackbarPos("MaxLum", "UGV Filter",2550)
-cv2.setTrackbarPos("MinLum", "UGV Filter",0)
-   
+cv2.setTrackbarPos("MaxHue", "UGV Filter",1800)
+cv2.setTrackbarPos("MinHue", "UGV Filter",1693)
+cv2.setTrackbarPos("MaxSat", "UGV Filter",2010)
+cv2.setTrackbarPos("MinSat", "UGV Filter",792)
+cv2.setTrackbarPos("MaxLum", "UGV Filter",1035)
+cv2.setTrackbarPos("MinLum", "UGV Filter",228)
+
+x =0
+y= 0
+r= 0
 
 while phase == 1:
 
@@ -67,11 +70,11 @@ while phase == 1:
     mask = cv2.inRange(hsv, lowh, upph)
     edges = cv2.Canny(mask,150,200)
     ret,thresh = cv2.threshold(mask, 40, 255, 0) 
-    radius = 24.324324324324326
+    radius = 5.324324324324326
     ksize = int(6 * round(radius) + 1)
     output = image.copy()
     res2=cv2.GaussianBlur(thresh,(ksize, ksize), round(radius))
-    circles = cv2.HoughCircles(res2, cv2.HOUGH_GRADIENT, 1, 200, param1=30, param2=35, minRadius=5, maxRadius=0)
+    circles = cv2.HoughCircles(res2, cv2.HOUGH_GRADIENT, 1, 200, param1=29, param2=25.34560, minRadius=15, maxRadius=120)
 
     if circles is not None:
 		# convert the (x, y) coordinates and radius of the circles to integers
