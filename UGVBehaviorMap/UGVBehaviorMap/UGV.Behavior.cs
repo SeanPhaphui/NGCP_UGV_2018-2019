@@ -319,9 +319,8 @@ namespace NGCP.UGV
             double Ball_X = Longitude + Math.Atan2(Math.Sin(Total_Orintation) * a , Math.Cos(dR) - Math.Sin(Latitude) * Math.Sin(Ball_Y));
 
             // Create WayPoint Map based on location
-            if (oneTime == 1)
+            if (Latitude != 0 && Longitude != 0)
             {
-                oneTime = 2;
                 double phi = Total_Orintation;
                 int radius = 5;
                 for (int i = 0; i < 16; i++)
