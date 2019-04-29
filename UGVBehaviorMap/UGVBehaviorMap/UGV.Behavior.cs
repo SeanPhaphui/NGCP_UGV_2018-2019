@@ -1246,7 +1246,7 @@ namespace NGCP.UGV
             //    State = DriveState.GotoBall;
             //    return;
             //}
-            if (Waypoints.Count == 0 && usePathGen && !goToSafe)
+            if (Waypoints.Count == 0 && usePathGen && !goToSafe && Latitude != 0 && Longitude != 0)
             {
                 State = DriveState.GenerateSearchPath;
                 Speed = 0;
