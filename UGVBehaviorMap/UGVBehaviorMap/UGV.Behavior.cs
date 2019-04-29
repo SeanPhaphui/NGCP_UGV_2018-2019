@@ -1253,7 +1253,7 @@ namespace NGCP.UGV
                 GenerateSearchPath();
                 usePathGen = false;
                 goToSafe = true;
-                State = DriveState.SearchTarget;
+                State = DriveState.Test;
             }
             else if (Waypoints.Count == 0 && !usePathGen)
             {
