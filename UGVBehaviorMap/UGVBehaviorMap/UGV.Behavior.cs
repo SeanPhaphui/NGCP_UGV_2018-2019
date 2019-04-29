@@ -326,7 +326,11 @@ namespace NGCP.UGV
                 int radius = 5;
                 for (int i = 0; i < 16; i++)
                 {
-                    map.Add(new WayPoint(Ball_X + radius * Math.Cos(phi), Ball_Y + radius * Math.Sin(phi), 0));
+                    double dR2 = radius / 6371000;
+                    double a2 = Math.Sin(dR2) * Math.Cos(Ball_X);
+                    double Lat = Math.Asin(Math.Sin(Ball_Y) * Math.Cos(dR2) + a2 * Math.Cos(phi));
+                    double Long = Ball_X + Math.Atan2(Math.Sin(phi) * a2, Math.Cos(dR2) - Math.Sin(Ball_Y) * Math.Sin(Lat));
+                    map.Add(new WayPoint(Long,Lat, 0));
                     phi = phi + (Math.PI / 8);
                 }
                 for (int i = 0; i < 16; i++)
