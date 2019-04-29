@@ -312,8 +312,8 @@ namespace NGCP.UGV
             //Calculate Distance to Ball
             // Convert to Way Points 
             double dR = distance / 6372797.6;
-            double lat1 = Latitude * Math.PI / 180;
-            double lon1 = Longitude * Math.PI / 180;
+            double lat1 = this.Latitude * Math.PI / 180;
+            double lon1 = this.Longitude * Math.PI / 180;
 
             double Ball_Y = Math.Asin(Math.Sin(lat1) * Math.Cos(dR) + Math.Cos(lat1) * Math.Sin(dR) * Math.Cos(Total_Orintation));
             double Ball_X = lon1 + Math.Atan2(Math.Sin(Total_Orintation) * Math.Sin(dR) * Math.Cos(Total_Orintation), Math.Cos(dR) - Math.Sin(lat1) * Math.Sin(Ball_Y));
