@@ -319,9 +319,8 @@ namespace NGCP.UGV
             double Ball_X = Longitude + Math.Atan2(Math.Sin(Total_Orintation) * a , Math.Cos(dR) - Math.Sin(Latitude) * Math.Sin(Ball_Y));
 
             // Create WayPoint Map based on location
-            if (oneTime == 1)
+            if (Latitude != 0 && Longitude != 0)
             {
-                oneTime = 2;
                 double phi = Total_Orintation;
                 int radius = 5;
                 for (int i = 0; i < 16; i++)
@@ -330,7 +329,7 @@ namespace NGCP.UGV
                     double a2 = Math.Sin(dR2) * Math.Cos(Ball_X);
                     double Lat = Math.Asin(Math.Sin(Ball_Y) * Math.Cos(dR2) + a2 * Math.Cos(phi));
                     double Long = Ball_X + Math.Atan2(Math.Sin(phi) * a2, Math.Cos(dR2) - Math.Sin(Ball_Y) * Math.Sin(Lat));
-                    map.Add(new WayPoint(Long,Lat, 0));
+                    map.Add(new WayPoint(Long, Lat, 0));
                     phi = phi + (Math.PI / 8);
                 }
                 for (int i = 0; i < 16; i++)
@@ -338,6 +337,8 @@ namespace NGCP.UGV
                     Waypoints.Enqueue(map[i]);
                 }
             }
+            else
+                Waypoints.Enqueue(currentLocation);
                // end of GenerateMap
         }
       #endregion
@@ -1245,8 +1246,9 @@ namespace NGCP.UGV
             //    State = DriveState.GotoBall;
             //    return;
             //}
-            if (Waypoints.Count == 0 && usePathGen && !goToSafe)
+            if (Waypoints.Count == 0 && usePathGen && !goToSafe && Longitude !=0 && Latitude !=0)
             {
+
                 State = DriveState.GenerateSearchPath;
                 Speed = 0;
                 Steering = 0;
