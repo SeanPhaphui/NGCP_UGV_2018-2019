@@ -341,7 +341,7 @@ namespace NGCP.UGV
                     Long = Long * 180 / Math.PI;
 
                     //map.Add(Circle);
-                    map.Add(new WayPoint(Long, Lat, 0));
+                    map.Add(new WayPoint(Lat, Long, 0));
                     phi = phi + (Math.PI / 16);
                 }
                 for (int i = 0; i < 16; i++)
