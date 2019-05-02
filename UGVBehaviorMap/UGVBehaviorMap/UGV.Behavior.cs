@@ -314,7 +314,11 @@ namespace NGCP.UGV
             double dR = distance / 6372797.6;
             double lat1 = this.Latitude * Math.PI / 180;
             double lon1 = this.Longitude * Math.PI / 180;
-
+            
+            
+            //WayPoint Ball_Center = WayPoint.Projection(new WayPoint(this.Latitude, this.Longitude, 0), Total_Orintation, distance);
+            
+            
             double Ball_Y = Math.Asin(Math.Sin(lat1) * Math.Cos(dR) + Math.Cos(lat1) * Math.Sin(dR) * Math.Cos(Total_Orintation));
             double Ball_X = lon1 + Math.Atan2(Math.Sin(Total_Orintation) * Math.Sin(dR) * Math.Cos(Total_Orintation), Math.Cos(dR) - Math.Sin(lat1) * Math.Sin(Ball_Y));
             Ball_Y = Ball_Y * 180 / Math.PI;
@@ -326,6 +330,7 @@ namespace NGCP.UGV
             {
                 for (int i = 0; i < 16; i++)
                 {
+                    //WayPoint Circle = WayPoint.Projection(Ball_Center, phi, radius);
                     double dR2 = radius / 6372797.6;
                     lat1 = Ball_Y * Math.PI / 180;
                     lon1 = Ball_X * Math.PI / 180;
@@ -335,6 +340,7 @@ namespace NGCP.UGV
                     Lat = Lat * 180 / Math.PI;
                     Long = Long * 180 / Math.PI;
 
+                    //map.Add(Circle);
                     map.Add(new WayPoint(Long, Lat, 0));
                     phi = phi + (Math.PI / 16);
                 }
