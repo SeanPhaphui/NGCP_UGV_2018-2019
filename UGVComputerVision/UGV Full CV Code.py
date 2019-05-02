@@ -58,7 +58,7 @@ while phase == 1:
 
     
     output = image.copy()
-    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HLS)
+    hsl = cv2.cvtColor(image, cv2.COLOR_BGR2HLS)
     maxhue =(cv2.getTrackbarPos("MaxHue", "UGV Filter"))/10
     minhue = (cv2.getTrackbarPos("MinHue", "UGV Filter"))/10
     maxsat=(cv2.getTrackbarPos("MaxSat", "UGV Filter"))/10
@@ -68,19 +68,19 @@ while phase == 1:
     
     lowh = np.array([minhue, minlum, minsat])
     upph = np.array([maxhue, maxlum, maxsat])
-    lowh2 = np.array([0, 457, 655])
-    upph2 = np.array([21, 1294, 2550])
+    lowh2 = np.array([51.6, 11.4, 128.6])
+    upph2 = np.array([180.0, 57.9, 255.0])
     
     
-    mask = cv2.inRange(hsv, lowh, upph)
-    mask2 = cv2.inRange(hsv, lowh2, upph2)
+    mask = cv2.inRange(hsl, lowh, upph)
+    mask2 = cv2.inRange(hsl, lowh2, upph2)
+    total = cv2.add(mask, mask2)
     
     
 ##    edges = cv2.Canny(mask,150,200)
-    ret,thresh = cv2.threshold(mask, 40, 255, 0)
+    ret,thresh = cv2.threshold(total, 40, 255, 0)
     im2,contours,hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-    if ta < 1500:
-        ta = ta + 10
+    
       
     if counter == 0:
         ballfound = 0
@@ -103,6 +103,8 @@ while phase == 1:
 
             cv2.putText(output, "center", (x - 20, y - 20),
             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+            if ta < 1500:
+                ta = ta + 10
             if counter < 5:
                 counter = counter + 1
     
@@ -137,12 +139,13 @@ while phase == 1:
             bcenterSock.sendto(ballbyte, (UDP_IP_ADDRESS, udp2))
         else:
             counter = 0
+            ta = 500
 
     ballbyte = bytearray(struct.pack("i", int(x)))
     ballbyte += bytearray(struct.pack("i", int(y)))
     ballbyte += bytearray(struct.pack("i", int(ballfound)))
     bcenterSock.sendto(ballbyte, (UDP_IP_ADDRESS, udp2))
-    cv2.imshow('mask', mask)
+    cv2.imshow('mask', total)
     cv2.imshow('image',output)
     
     RecieverSock.setblocking(0)
