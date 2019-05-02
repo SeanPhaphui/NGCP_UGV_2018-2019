@@ -12,10 +12,10 @@ UDP_IP_ADDRESS = "127.0.0.1"
 udp_reciever = 6800
 udp1 = 6789
 udp2 = 6790
-bottlefound = 0
-ballfound = 0 
 
-ta = 0
+bottleSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+bcenterSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
 
 def update(x):
     pass
@@ -38,24 +38,26 @@ cv2.createTrackbar("MinSat", "UGV Filter",0,2550,update)
 cv2.createTrackbar("MaxLum", "UGV Filter",0,2550,update)
 cv2.createTrackbar("MinLum", "UGV Filter",0,2550,update)
 
-cv2.setTrackbarPos("MaxHue", "UGV Filter",1795)
-cv2.setTrackbarPos("MinHue", "UGV Filter",1590)
-cv2.setTrackbarPos("MaxSat", "UGV Filter",1918)
-cv2.setTrackbarPos("MinSat", "UGV Filter",320)
-cv2.setTrackbarPos("MaxLum", "UGV Filter",1636)
-cv2.setTrackbarPos("MinLum", "UGV Filter",0)
+cv2.setTrackbarPos("MaxHue", "UGV Filter",1800)
+cv2.setTrackbarPos("MinHue", "UGV Filter",1671)
+cv2.setTrackbarPos("MaxSat", "UGV Filter",2063)
+cv2.setTrackbarPos("MinSat", "UGV Filter",556)
+cv2.setTrackbarPos("MaxLum", "UGV Filter",2154)
+cv2.setTrackbarPos("MinLum", "UGV Filter",571)
 
 x =0
 y= 0
-r= 0
+ballfound = 0
+ta = 500
 
+counter = 0
 while phase == 1:
 
     
     _, image = maincam.read()
 
     
-
+    output = image.copy()
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HLS)
     maxhue =(cv2.getTrackbarPos("MaxHue", "UGV Filter"))/10
     minhue = (cv2.getTrackbarPos("MinHue", "UGV Filter"))/10
@@ -66,43 +68,81 @@ while phase == 1:
     
     lowh = np.array([minhue, minlum, minsat])
     upph = np.array([maxhue, maxlum, maxsat])
+    lowh2 = np.array([0, 457, 655])
+    upph2 = np.array([21, 1294, 2550])
+    
     
     mask = cv2.inRange(hsv, lowh, upph)
-    edges = cv2.Canny(mask,150,200)
-    ret,thresh = cv2.threshold(mask, 40, 255, 0) 
-    radius = 5.324324324324326
-    ksize = int(6 * round(radius) + 1)
-    output = image.copy()
-    res2=cv2.GaussianBlur(thresh,(ksize, ksize), round(radius))
-    circles = cv2.HoughCircles(res2, cv2.HOUGH_GRADIENT, 1, 200, param1=29, param2=25.34560, minRadius=15, maxRadius=120)
+    mask2 = cv2.inRange(hsv, lowh2, upph2)
+    
+    
+##    edges = cv2.Canny(mask,150,200)
+    ret,thresh = cv2.threshold(mask, 40, 255, 0)
+    im2,contours,hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    if ta < 1500:
+        ta = ta + 10
+      
+    if counter == 0:
+        ballfound = 0
+        
+        
 
-    if circles is not None:
-		# convert the (x, y) coordinates and radius of the circles to integers
+    if len(contours) != 0:
+        c = max(contours, key = cv2.contourArea)
+        M = cv2.moments(c)
+        a = cv2.contourArea(c)
+        if a > ta:
+            if counter == 5:                     
+                ballfound =  1
 
-        ballfound = 1;
-        circles = np.round(circles[0, :]).astype("int")
-		
-		# loop over the (x, y) coordinates and radius of the circles
-        for (x, y, r) in circles:
-            cv2.circle(output, (x, y), r, (0, 255, 0), 4)
-            cv2.rectangle(output, (x - 5, y - 5), (x + 5, y + 5), (0, 128, 255), -1)
-                #time.sleep(0.5)
-            print ("X coordinate:")
-            print (x)
-            print ("Y coordinate: ")
-            print (y)
-            print ("Radius is: ")
-            print (r)
+            cv2.drawContours(output, c, -1, (0, 0, 255), 3)
+            x = int(M["m10"] / M["m00"])
+            y = int(M["m01"] / M["m00"])
+                                                
+            cv2.circle(output, (x, y), 7, (255, 255, 255), -1)
+
+            cv2.putText(output, "center", (x - 20, y - 20),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+            if counter < 5:
+                counter = counter + 1
+    
+##    radius = 24.324324324324326
+##    ksize = int(6 * round(radius) + 1)
+##    output = image.copy()
+##    res2=cv2.GaussianBlur(thresh,(ksize, ksize), round(radius))
+##    circles = cv2.HoughCircles(res2, cv2.HOUGH_GRADIENT, 1, 200, param1=30, param2=65, minRadius=50, maxRadius=0)
+##    ballfound = 0 
+##    if circles is not None:
+##		# convert the (x, y) coordinates and radius of the circles to integers
+##
+##        ballfound = 1;
+##        circles = np.round(circles[0, :]).astype("int")
+##		
+##		# loop over the (x, y) coordinates and radius of the circles
+##        for (x, y, r) in circles:
+##            cv2.circle(output, (x, y), r, (0, 255, 0), 4)
+##            cv2.rectangle(output, (x - 5, y - 5), (x + 5, y + 5), (0, 128, 255), -1)
+##                #time.sleep(0.5)
+##            print ("X coordinate:")
+##            print (x)
+##            print ("Y coordinate: ")
+##            print (y)
+##            print ("Radius is: ")
+##            print (r)
 
         
             ballbyte = bytearray(struct.pack("i", int(x)))
             ballbyte += bytearray(struct.pack("i", int(y)))
             ballbyte += bytearray(struct.pack("i", int(ballfound)))
-            bcenterSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             bcenterSock.sendto(ballbyte, (UDP_IP_ADDRESS, udp2))
+        else:
+            counter = 0
 
-
-    cv2.imshow('mask',res2)
+    ballbyte = bytearray(struct.pack("i", int(x)))
+    ballbyte += bytearray(struct.pack("i", int(y)))
+    ballbyte += bytearray(struct.pack("i", int(ballfound)))
+    bcenterSock.sendto(ballbyte, (UDP_IP_ADDRESS, udp2))
+    cv2.imshow('mask', mask)
     cv2.imshow('image',output)
     
     RecieverSock.setblocking(0)
@@ -137,6 +177,13 @@ cv2.setTrackbarPos("MaxLum", "UGV Filter",1814)
 cv2.setTrackbarPos("MinLum", "UGV Filter",22)
 
 ta = 500
+
+counter = 0
+
+anglefound = 0
+cX = 0
+cY = 0
+
 while phase==2:
 
         _, image = maincam.read()
@@ -161,15 +208,23 @@ while phase==2:
         
         im2,contours,hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
-        if ta < 2000:
+        if ta < 1500:
             ta = ta + 10
-            
+
+       
+        if counter == 0:
+            bottlefound = 0
+        
+        
+
         if len(contours) != 0:
-                bottlefound =  1; 
                 c = max(contours, key = cv2.contourArea)
                 M = cv2.moments(c)
                 a = cv2.contourArea(c)
-                if a > ta:                        
+                if a > ta:
+                        if counter == 5:                     
+                            bottlefound =  1
+                          
                         cv2.drawContours(image, c, -1, 255, 3)
                         cX = int(M["m10"] / M["m00"])
                         cY = int(M["m01"] / M["m00"])
@@ -197,15 +252,22 @@ while phase==2:
                         bottleSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                         bottleSock.sendto(bottlebyte, (UDP_IP_ADDRESS, udp1))
                         
-
-                        
+                        if counter < 5:
+                            counter = counter + 1
 
                         print('Angle found: ', anglefound)
                         print('Center X coordinate: ', cX)
                         print('Center Y coordinate: ', cY)
+                else:
+                    counter = 0
+                
         
-        
-
+        bottlebyte = bytearray(struct.pack("i", int(anglefound)))
+        bottlebyte += (bytearray(struct.pack("i", int(cX))))
+        bottlebyte += (bytearray(struct.pack("i", int(cY))))
+        bottlebyte += (bytearray(struct.pack("i", int(bottlefound))))
+        bottleSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        bottleSock.sendto(bottlebyte, (UDP_IP_ADDRESS, udp1))   
         cv2.imshow("image", image)
         cv2.imshow("mask", mask)
 
