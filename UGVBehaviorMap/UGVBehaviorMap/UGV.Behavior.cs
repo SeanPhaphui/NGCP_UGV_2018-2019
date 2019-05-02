@@ -142,7 +142,7 @@ namespace NGCP.UGV
         /// <summary>
         /// The distance considered hit a waypoint
         /// </summary>
-        const double ReachWaypointZone = 3.0;               //measured in meters
+        const double ReachWaypointZone = 1;               //measured in meters
 
         /// <summary>
         /// Whether to use search path generated from autonomous behavior method
@@ -328,7 +328,7 @@ namespace NGCP.UGV
             double radius = 1;
             for (int j = 0; j < 4; j++)
             {
-                for (int i = 0; i < 16; i++)
+                for (int i = 0; i < 8; i++)
                 {
                     //WayPoint Circle = WayPoint.Projection(Ball_Center, phi, radius);
                     double dR2 = radius / 6372797.6;
@@ -342,9 +342,9 @@ namespace NGCP.UGV
 
                     //map.Add(Circle);
                     map.Add(new WayPoint(Lat, Long, 0));
-                    phi = phi + (Math.PI / 16);
+                    phi = phi + (Math.PI / 8);
                 }
-                for (int i = 0; i < 16; i++)
+                for (int i = 0; i < 8; i++)
                 {
                     Waypoints.Enqueue(map[i]);
                 }
