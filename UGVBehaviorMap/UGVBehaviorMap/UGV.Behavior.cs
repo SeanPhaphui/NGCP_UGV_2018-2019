@@ -103,6 +103,7 @@ namespace NGCP.UGV
 
             Test = 12,
 
+            TestObjectFound = 13,
 
         }
 
@@ -271,6 +272,8 @@ namespace NGCP.UGV
                 }
                 else if (State == DriveState.Test)
                     Test();
+                else if (State == DriveState.TestObjectFound)
+                    TestObjectFound();
                 //prevent Overload
                 Thread.Sleep(SleepTime);
             }
@@ -290,7 +293,7 @@ namespace NGCP.UGV
 
         #region Autonomous Behaivors
 
-               #region Generate Search Path
+        #region Generate Search Path
 
       void GenerateSearchPath() // Red Ball has been found and we have the distance to the ball as 3 meters
         {
@@ -355,7 +358,7 @@ namespace NGCP.UGV
     
       #endregion
           
-      #region Search Target
+        #region Search Target
 
       /// <summary>
       /// Search target mode
@@ -1271,7 +1274,8 @@ namespace NGCP.UGV
             }
             else if (Waypoints.Count == 0 && !usePathGen)
             {
-                //State = DriveState.Idle;
+                State = DriveState.Idle;
+                Idle();
             }
             if (Waypoints.Count > 0 && Waypoints.TryPeek(out nextWaypoint))
             {
@@ -1356,6 +1360,36 @@ namespace NGCP.UGV
                 State = DriveState.Idle;
             }
         }
+        #endregion
+
+        #region Test Object Found
+        void TestObjectFound()
+        {
+           if(ObjectFound)
+            {
+                double error = .5;
+                // use camera angle to guide the UGV to object
+                if (gimbalyaw < 180 - error)
+                {
+                    // rotate the wheels to move in the direction the gimbal is pointing
+                    //steering = -gimbalyaw;
+                    FinalSteering = 0;
+                }
+                else if (gimbalyaw > 180 + error)
+                {
+                    //rotate the wheels to the direction of the gimbal 
+                    //steering = gimbalyaw;
+                    FinalSteering = 54;
+                }
+                else
+                {
+                    // set steering to 0
+                    //steering = 0;
+                    FinalSteering = 27;
+                }
+            }
+        }
+
         #endregion
         const double Alpha = 1.0;
 
