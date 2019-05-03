@@ -16,6 +16,15 @@ udp2 = 6790
 bottleSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 bcenterSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+def settrackbarvalues(minhue, maxhue, minsat, maxsat, minlum, maxlum):
+    cv2.setTrackbarPos("MaxHue", "UGV Filter",maxhue)
+    cv2.setTrackbarPos("MinHue", "UGV Filter",minhue)
+    cv2.setTrackbarPos("MaxSat", "UGV Filter",maxsat)
+    cv2.setTrackbarPos("MinSat", "UGV Filter",minsat)
+    cv2.setTrackbarPos("MaxLum", "UGV Filter",maxlum)
+    cv2.setTrackbarPos("MinLum", "UGV Filter",minlum)
+    
+
 
 def ballsend(x, y, ballfound, phase):
     ballbyte = bytearray(struct.pack("i", int(x)))
@@ -81,12 +90,11 @@ cv2.createTrackbar("MinSat", "UGV Filter",0,2550,update)
 cv2.createTrackbar("MaxLum", "UGV Filter",0,2550,update)
 cv2.createTrackbar("MinLum", "UGV Filter",0,2550,update)
 
-cv2.setTrackbarPos("MaxHue", "UGV Filter",1800)
-cv2.setTrackbarPos("MinHue", "UGV Filter",1671)
-cv2.setTrackbarPos("MaxSat", "UGV Filter",2063)
-cv2.setTrackbarPos("MinSat", "UGV Filter",556)
-cv2.setTrackbarPos("MaxLum", "UGV Filter",2154)
-cv2.setTrackbarPos("MinLum", "UGV Filter",571)
+# settrackbarvalues(minhue, maxhue, minsat, maxsat, minlum, maxlum):
+
+## 1:30 PM No clouds (Pomona) Bright Red Values
+settrackbarvalues(1709, 1800, 1096, 2550, 76, 2474)
+
 
 x = 0
 y = 0
@@ -111,8 +119,10 @@ while phase == 1:
     
     lowh = np.array([minhue, minlum, minsat])
     upph = np.array([maxhue, maxlum, maxsat])
-    lowh2 = np.array([51.6, 11.4, 128.6])
-    upph2 = np.array([180.0, 57.9, 255.0])
+
+    ## 1:30 PM No clouds (Pomona) Dark Red Values
+    lowh2 = np.array([124.7, 12.2, 152.2])
+    upph2 = np.array([180.0, 47.2, 197.1])
     
     
     mask = cv2.inRange(hsl, lowh, upph)
@@ -120,7 +130,7 @@ while phase == 1:
     total = cv2.add(mask, mask2)
     
     
-##    edges = cv2.Canny(mask,150,200)
+
     ret,thresh = cv2.threshold(total, 40, 255, 0)
     im2,contours,hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     
@@ -243,14 +253,16 @@ cv2.createTrackbar("MinSat", "UGV Filter",0,2550,update)
 cv2.createTrackbar("MaxLum", "UGV Filter",0,2550,update)
 cv2.createTrackbar("MinLum", "UGV Filter",0,2550,update)
 
-cv2.setTrackbarPos("MaxHue", "UGV Filter",1301)
-cv2.setTrackbarPos("MinHue", "UGV Filter",1060)
-cv2.setTrackbarPos("MaxSat", "UGV Filter",2550)
-cv2.setTrackbarPos("MinSat", "UGV Filter",1041)
-cv2.setTrackbarPos("MaxLum", "UGV Filter",1814)
-cv2.setTrackbarPos("MinLum", "UGV Filter",22)
+# settrackbarvalues(minhue, maxhue, minsat, maxsat, minlum, maxlum):
 
-ta = 500
+# initial values inside lighting 
+settrackbarvalues(177, 387, 1050, 2550, 579, 2093)
+
+
+
+
+
+ta = 100
 
 counter = 0
 
@@ -282,7 +294,7 @@ while phase==2:
     
     im2,contours,hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
-    if ta < 1500:
+    if ta < 200:
         ta = ta + 10
 
    
@@ -299,7 +311,7 @@ while phase==2:
                     if counter == 5:                     
                         bottlefound =  1
                       
-                    cv2.drawContours(image, c, -1, 255, 3)
+                    cv2.drawContours(image, c, -1,(0, 255, 255), 3)
                     cX = int(M["m10"] / M["m00"])
                     cY = int(M["m01"] / M["m00"])
                                             
