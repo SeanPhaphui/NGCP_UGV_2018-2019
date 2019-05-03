@@ -11,7 +11,7 @@ namespace UGV.Core.Navigation
         /// <summary>
         /// Radius of earth
         /// </summary>
-        const double R = 6371000; // meter
+        const double R = 6372797.6; // meter Of Eatrhs radius :: old value was 6371000
         /// <summary>
         /// Guid of waypoint
         /// </summary>

@@ -142,7 +142,7 @@ namespace NGCP.UGV
         /// <summary>
         /// The distance considered hit a waypoint
         /// </summary>
-        const double ReachWaypointZone = 1;               //measured in meters
+        const double ReachWaypointZone = 2;               //measured in meters Nav440 has a 2.5m accracy or less
 
         /// <summary>
         /// Whether to use search path generated from autonomous behavior method
@@ -325,7 +325,7 @@ namespace NGCP.UGV
             Ball_X = Ball_X * 180 / Math.PI;
             // Create WayPoint Map based on location
             double phi = Total_Orintation;
-            double radius = 1;
+            double radius = 2;
             for (int j = 0; j < 4; j++)
             {
                 for (int i = 0; i < 8; i++)
