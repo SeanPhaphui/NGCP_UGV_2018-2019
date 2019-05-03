@@ -316,13 +316,13 @@ namespace NGCP.UGV
             double lon1 = this.Longitude * Math.PI / 180;
             
             
-            //WayPoint Ball_Center = WayPoint.Projection(new WayPoint(this.Latitude, this.Longitude, 0), Total_Orintation, distance);
+            WayPoint Ball_Center = WayPoint.Projection(new WayPoint(this.Latitude, this.Longitude, 0), Total_Orintation, distance);
             
             
-            double Ball_Y = Math.Asin(Math.Sin(lat1) * Math.Cos(dR) + Math.Cos(lat1) * Math.Sin(dR) * Math.Cos(Total_Orintation));
-            double Ball_X = lon1 + Math.Atan2(Math.Sin(Total_Orintation) * Math.Sin(dR) * Math.Cos(Total_Orintation), Math.Cos(dR) - Math.Sin(lat1) * Math.Sin(Ball_Y));
-            Ball_Y = Ball_Y * 180 / Math.PI;
-            Ball_X = Ball_X * 180 / Math.PI;
+            //double Ball_Y = Math.Asin(Math.Sin(lat1) * Math.Cos(dR) + Math.Cos(lat1) * Math.Sin(dR) * Math.Cos(Total_Orintation));
+            //double Ball_X = lon1 + Math.Atan2(Math.Sin(Total_Orintation) * Math.Sin(dR) * Math.Cos(Total_Orintation), Math.Cos(dR) - Math.Sin(lat1) * Math.Sin(Ball_Y));
+            //Ball_Y = Ball_Y * 180 / Math.PI;
+            //Ball_X = Ball_X * 180 / Math.PI;
             // Create WayPoint Map based on location
             double phi = Total_Orintation;
             double radius = 2;
@@ -330,18 +330,18 @@ namespace NGCP.UGV
             {
                 for (int i = 0; i < 8; i++)
                 {
-                    //WayPoint Circle = WayPoint.Projection(Ball_Center, phi, radius);
-                    double dR2 = radius / 6372797.6;
-                    lat1 = Ball_Y * Math.PI / 180;
-                    lon1 = Ball_X * Math.PI / 180;
+                    WayPoint Circle = WayPoint.Projection(Ball_Center, phi, radius);
+                    //double dR2 = radius / 6372797.6;
+                    //lat1 = Ball_Y * Math.PI / 180;
+                    //lon1 = Ball_X * Math.PI / 180;
 
-                    double Lat = Math.Asin(Math.Sin(lat1) * Math.Cos(dR2) + Math.Cos(lat1) * Math.Sin(dR2) * Math.Cos(phi));
-                    double Long = lon1 + Math.Atan2(Math.Sin(phi) * Math.Sin(dR2) * Math.Cos(phi), Math.Cos(dR2) - Math.Sin(lat1) * Math.Sin(Lat));
-                    Lat = Lat * 180 / Math.PI;
-                    Long = Long * 180 / Math.PI;
+                    //double Lat = Math.Asin(Math.Sin(lat1) * Math.Cos(dR2) + Math.Cos(lat1) * Math.Sin(dR2) * Math.Cos(phi));
+                    //double Long = lon1 + Math.Atan2(Math.Sin(phi) * Math.Sin(dR2) * Math.Cos(lat1), Math.Cos(dR2) - Math.Sin(lat1) * Math.Sin(Lat));
+                    //Lat = Lat * 180 / Math.PI;
+                    //Long = Long * 180 / Math.PI;
 
-                    //map.Add(Circle);
-                    map.Add(new WayPoint(Lat, Long, 0));
+                    map.Add(Circle);
+                    //map.Add(new WayPoint(Lat, Long, 0));
                     phi = phi + (Math.PI / 8);
                 }
                 for (int i = 0; i < 8; i++)
@@ -349,7 +349,7 @@ namespace NGCP.UGV
                     Waypoints.Enqueue(map[i]);
                 }
                 radius += 2;
-                phi = 0;
+                phi = Total_Orintation;
             }
         }
     
