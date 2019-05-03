@@ -458,7 +458,7 @@ namespace NGCP.UGV
         /// Port of the Nav440
         /// </summary>
         Serial Nav { get; set; }
-
+       
 
         public int VehicleWaypointCommandCallback(Comnet.Header header, Comnet.ABSPacket packet, Comnet.CommNode node)
         {
