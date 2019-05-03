@@ -17,6 +17,50 @@ bottleSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 bcenterSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 
+def ballsend(x, y, ballfound, phase):
+    ballbyte = bytearray(struct.pack("i", int(x)))
+    ballbyte += bytearray(struct.pack("i", int(y)))
+    ballbyte += bytearray(struct.pack("i", int(ballfound)))
+    bcenterSock.sendto(ballbyte, (UDP_IP_ADDRESS, udp2))
+          
+    RecieverSock.setblocking(0)
+    try:
+        data, address = RecieverSock.recvfrom(1024)
+        phase = int.from_bytes(data,byteorder='little')
+    except socket.error:
+        phase = 1
+
+    return phase
+        
+    
+    
+
+
+def bottlesend(cX, cY, anglefound, bottlefound, phase):
+    bottlebyte = bytearray(struct.pack("i", int(anglefound)))
+    bottlebyte += (bytearray(struct.pack("i", int(cX))))
+    bottlebyte += (bytearray(struct.pack("i", int(cY))))
+    bottlebyte += (bytearray(struct.pack("i", int(bottlefound))))
+    bottleSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    bottleSock.sendto(bottlebyte, (UDP_IP_ADDRESS, udp1))
+    print('Angle found: ', anglefound)
+    print('Center X coordinate: ', cX)
+    print('Center Y coordinate: ', cY)
+    
+    RecieverSock.setblocking(0)
+    try:
+        data, address = RecieverSock.recvfrom(1024)
+        phase = int.from_bytes(data,byteorder='little')
+    except socket.error:
+        phase = 2
+
+
+    return phase
+
+
+    
+
+
 def update(x):
     pass
 
@@ -24,7 +68,6 @@ def update(x):
 
 
 RecieverSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-##RecieverSock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 RecieverSock.bind((UDP_IP_ADDRESS, udp_reciever))
 data, address = RecieverSock.recvfrom(1024)
 phase = int.from_bytes(data,byteorder='little')
@@ -45,8 +88,8 @@ cv2.setTrackbarPos("MinSat", "UGV Filter",556)
 cv2.setTrackbarPos("MaxLum", "UGV Filter",2154)
 cv2.setTrackbarPos("MinLum", "UGV Filter",571)
 
-x =0
-y= 0
+x = 0
+y = 0
 ballfound = 0
 ta = 500
 
@@ -109,44 +152,24 @@ while phase == 1:
                 counter = counter + 1
         
     
-##    radius = 24.324324324324326
-##    ksize = int(6 * round(radius) + 1)
-##    output = image.copy()
-##    res2=cv2.GaussianBlur(thresh,(ksize, ksize), round(radius))
-##    circles = cv2.HoughCircles(res2, cv2.HOUGH_GRADIENT, 1, 200, param1=30, param2=65, minRadius=50, maxRadius=0)
-##    ballfound = 0 
-##    if circles is not None:
-##		# convert the (x, y) coordinates and radius of the circles to integers
-##
-##        ballfound = 1;
-##        circles = np.round(circles[0, :]).astype("int")
-##		
-##		# loop over the (x, y) coordinates and radius of the circles
-##        for (x, y, r) in circles:
-##            cv2.circle(output, (x, y), r, (0, 255, 0), 4)
-##            cv2.rectangle(output, (x - 5, y - 5), (x + 5, y + 5), (0, 128, 255), -1)
-##                #time.sleep(0.5)
-##            print ("X coordinate:")
-##            print (x)
-##            print ("Y coordinate: ")
-##            print (y)
-##            print ("Radius is: ")
-##            print (r)
-
-        
-            ballbyte = bytearray(struct.pack("i", int(x)))
-            ballbyte += bytearray(struct.pack("i", int(y)))
-            ballbyte += bytearray(struct.pack("i", int(ballfound)))
-            bcenterSock.sendto(ballbyte, (UDP_IP_ADDRESS, udp2))
             cv2.imshow('mask', total)
             cv2.imshow('image',output)
-            
-            RecieverSock.setblocking(0)
-            try:
-                data, address = RecieverSock.recvfrom(1024)
-                phase = int.from_bytes(data,byteorder='little')
-            except socket.error:
-                phase = 1
+
+            phase = ballsend(x, y, ballfound, phase)
+
+                   
+##            ballbyte = bytearray(struct.pack("i", int(x)))
+##            ballbyte += bytearray(struct.pack("i", int(y)))
+##            ballbyte += bytearray(struct.pack("i", int(ballfound)))
+##            bcenterSock.sendto(ballbyte, (UDP_IP_ADDRESS, udp2))
+##            
+##            
+##            RecieverSock.setblocking(0)
+##            try:
+##                data, address = RecieverSock.recvfrom(1024)
+##                phase = int.from_bytes(data,byteorder='little')
+##            except socket.error:
+##                phase = 1
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 maincam.release()
@@ -159,19 +182,24 @@ while phase == 1:
             counter = 0
             ta = 500
             ballfound = 0
-            ballbyte = bytearray(struct.pack("i", int(x)))
-            ballbyte += bytearray(struct.pack("i", int(y)))
-            ballbyte += bytearray(struct.pack("i", int(ballfound)))
-            bcenterSock.sendto(ballbyte, (UDP_IP_ADDRESS, udp2))
+
             cv2.imshow('mask', total)
             cv2.imshow('image',output)
+
+            phase = ballsend(x, y, ballfound, phase)
             
-            RecieverSock.setblocking(0)
-            try:
-                data, address = RecieverSock.recvfrom(1024)
-                phase = int.from_bytes(data,byteorder='little')
-            except socket.error:
-                phase = 1
+##            ballbyte = bytearray(struct.pack("i", int(x)))
+##            ballbyte += bytearray(struct.pack("i", int(y)))
+##            ballbyte += bytearray(struct.pack("i", int(ballfound)))
+##            bcenterSock.sendto(ballbyte, (UDP_IP_ADDRESS, udp2))
+##            
+##            
+##            RecieverSock.setblocking(0)
+##            try:
+##                data, address = RecieverSock.recvfrom(1024)
+##                phase = int.from_bytes(data,byteorder='little')
+##            except socket.error:
+##                phase = 1
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 maincam.release()
@@ -180,20 +208,23 @@ while phase == 1:
 
             continue
         
-
-    ballbyte = bytearray(struct.pack("i", int(x)))
-    ballbyte += bytearray(struct.pack("i", int(y)))
-    ballbyte += bytearray(struct.pack("i", int(ballfound)))
-    bcenterSock.sendto(ballbyte, (UDP_IP_ADDRESS, udp2))
     cv2.imshow('mask', total)
     cv2.imshow('image',output)
+
+    phase = ballsend(x, y, ballfound, phase)
     
-    RecieverSock.setblocking(0)
-    try:
-        data, address = RecieverSock.recvfrom(1024)
-        phase = int.from_bytes(data,byteorder='little')
-    except socket.error:
-         phase = 1
+##    ballbyte = bytearray(struct.pack("i", int(x)))
+##    ballbyte += bytearray(struct.pack("i", int(y)))
+##    ballbyte += bytearray(struct.pack("i", int(ballfound)))
+##    bcenterSock.sendto(ballbyte, (UDP_IP_ADDRESS, udp2))
+##
+##
+##    RecieverSock.setblocking(0)
+##    try:
+##        data, address = RecieverSock.recvfrom(1024)
+##        phase = int.from_bytes(data,byteorder='little')
+##    except socket.error:
+##         phase = 1
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         maincam.release()
@@ -288,27 +319,32 @@ while phase==2:
                     else:
                             anglefound = 180 + math.atan2(right-cY, (cols-1) - cX ) * (180/3.141592653589793)
 
-                    bottlebyte = bytearray(struct.pack("i", int(anglefound)))
-                    bottlebyte += (bytearray(struct.pack("i", int(cX))))
-                    bottlebyte += (bytearray(struct.pack("i", int(cY))))
-                    bottlebyte += (bytearray(struct.pack("i", int(bottlefound))))
-                    bottleSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                    bottleSock.sendto(bottlebyte, (UDP_IP_ADDRESS, udp1))
-                    
                     if counter < 5:
                         counter = counter + 1
 
-                    print('Angle found: ', anglefound)
-                    print('Center X coordinate: ', cX)
-                    print('Center Y coordinate: ', cY)
+                    
                     cv2.imshow("image", image)
                     cv2.imshow("mask", mask)
-                    RecieverSock.setblocking(0)
-                    try:
-                        data, address = RecieverSock.recvfrom(1024)
-                        phase = int.from_bytes(data,byteorder='little')
-                    except socket.error:
-                        phase = 2
+
+                    phase = bottlesend(cX, cY, anglefound, bottlefound,phase)
+                    
+##                    bottlebyte = bytearray(struct.pack("i", int(anglefound)))
+##                    bottlebyte += (bytearray(struct.pack("i", int(cX))))
+##                    bottlebyte += (bytearray(struct.pack("i", int(cY))))
+##                    bottlebyte += (bytearray(struct.pack("i", int(bottlefound))))
+##                    bottleSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+##                    bottleSock.sendto(bottlebyte, (UDP_IP_ADDRESS, udp1))
+##                    
+##                    print('Angle found: ', anglefound)
+##                    print('Center X coordinate: ', cX)
+##                    print('Center Y coordinate: ', cY)
+##                    
+##                    RecieverSock.setblocking(0)
+##                    try:
+##                        data, address = RecieverSock.recvfrom(1024)
+##                        phase = int.from_bytes(data,byteorder='little')
+##                    except socket.error:
+##                        phase = 2
                     
 
                     if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -319,28 +355,27 @@ while phase==2:
                     continue
                     
             else:
-
-                
-                counter = 0
-                bottlefound = 0
-                bottlebyte = bytearray(struct.pack("i", int(anglefound)))
-                bottlebyte += (bytearray(struct.pack("i", int(cX))))
-                bottlebyte += (bytearray(struct.pack("i", int(cY))))
-                bottlebyte += (bytearray(struct.pack("i", int(bottlefound))))
-                bottleSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                bottleSock.sendto(bottlebyte, (UDP_IP_ADDRESS, udp1))   
                 cv2.imshow("image", image)
                 cv2.imshow("mask", mask)
-                print('Angle found: ', anglefound)
-                print('Center X coordinate: ', cX)
-                print('Center Y coordinate: ', cY)
-
-                RecieverSock.setblocking(0)
-                try:
-                    data, address = RecieverSock.recvfrom(1024)
-                    phase = int.from_bytes(data,byteorder='little')
-                except socket.error:
-                    phase = 2
+                counter = 0
+                bottlefound = 0
+                phase = bottlesend(cX, cY, anglefound, bottlefound,phase)
+##                bottlebyte = bytearray(struct.pack("i", int(anglefound)))
+##                bottlebyte += (bytearray(struct.pack("i", int(cX))))
+##                bottlebyte += (bytearray(struct.pack("i", int(cY))))
+##                bottlebyte += (bytearray(struct.pack("i", int(bottlefound))))
+##                bottleSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+##                bottleSock.sendto(bottlebyte, (UDP_IP_ADDRESS, udp1))   
+##                print('Angle found: ', anglefound)
+##                print('Center X coordinate: ', cX)
+##                print('Center Y coordinate: ', cY)
+##
+##                RecieverSock.setblocking(0)
+##                try:
+##                    data, address = RecieverSock.recvfrom(1024)
+##                    phase = int.from_bytes(data,byteorder='little')
+##                except socket.error:
+##                    phase = 2
 
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     maincam.release()
@@ -349,22 +384,23 @@ while phase==2:
                 
                 continue
             
-    
-    bottlebyte = bytearray(struct.pack("i", int(anglefound)))
-    bottlebyte += (bytearray(struct.pack("i", int(cX))))
-    bottlebyte += (bytearray(struct.pack("i", int(cY))))
-    bottlebyte += (bytearray(struct.pack("i", int(bottlefound))))
-    bottleSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    bottleSock.sendto(bottlebyte, (UDP_IP_ADDRESS, udp1))   
     cv2.imshow("image", image)
     cv2.imshow("mask", mask)
-
-    RecieverSock.setblocking(0)
-    try:
-        data, address = RecieverSock.recvfrom(1024)
-        phase = int.from_bytes(data,byteorder='little')
-    except socket.error:
-        phase = 2
+    phase = bottlesend(cX, cY, anglefound, bottlefound,phase)
+##    bottlebyte = bytearray(struct.pack("i", int(anglefound)))
+##    bottlebyte += (bytearray(struct.pack("i", int(cX))))
+##    bottlebyte += (bytearray(struct.pack("i", int(cY))))
+##    bottlebyte += (bytearray(struct.pack("i", int(bottlefound))))
+##    bottleSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+##    bottleSock.sendto(bottlebyte, (UDP_IP_ADDRESS, udp1))   
+##    
+##
+##    RecieverSock.setblocking(0)
+##    try:
+##        data, address = RecieverSock.recvfrom(1024)
+##        phase = int.from_bytes(data,byteorder='little')
+##    except socket.error:
+##        phase = 2
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         maincam.release()
