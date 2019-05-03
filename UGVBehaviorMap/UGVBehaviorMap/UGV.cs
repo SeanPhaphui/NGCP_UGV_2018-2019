@@ -938,10 +938,24 @@ namespace NGCP.UGV
             if (Settings.UseUGVXbee)
             {
                 xbee = new UGVXbee(Settings.CommPort, Settings.CommBaud, Settings.CommAddress);
-                xbee.ReceiveConnAck += (o, eventArgs) => { }; // start sending update messages 
-                xbee.ReceiveAddMission += (o, eventArgs) => { }; // start task 
-                xbee.ReceivePause += (o, eventArgs) => { }; // pause 
-                xbee.ReceiveResume += (o, eventArgs) => { }; // resume 
+                xbee.ReceiveConnAck += (o, eventArgs) => 
+                {
+       
+                }; // start sending update messages 
+                xbee.ReceiveAddMission += (o, eventArgs) => 
+                {
+                    Waypoints.Enqueue(xbee.AddUGVWaypoint());
+                    State = xbee.SetUGVState();
+                }; // start task 
+                xbee.ReceivePause += (o, eventArgs) => 
+                {
+                    xbee.GetUGVState(State);
+                    State = DriveState.Idle;
+                }; // pause 
+                xbee.ReceiveResume += (o, eventArgs) => 
+                {
+
+                }; // resume 
                 xbee.ReceiveStop += (o, eventArgs) => { }; // stop mission 
             }
 

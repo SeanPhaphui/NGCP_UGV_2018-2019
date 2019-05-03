@@ -6,8 +6,9 @@ using System.Timers;
 using MessagePack;
 using MessagePack.Resolvers;
 using XBee;
+using UGV.Core.Navigation;
 
-namespace UGVBehaviorMap
+namespace NGCP.UGV
 {
     class UGVXbee
     {
@@ -16,7 +17,9 @@ namespace UGVBehaviorMap
         private int MessageId = 0;
 
         private string VehicleStatus = "disconnected"; // status types: disconnected, ready, waiting, running, paused, error
-
+        private UGV.DriveState UGVState = UGV.DriveState.Idle;
+        private UGV.DriveState SavedUGVStateDuringPause;
+        private WayPoint NextUGVWaypoint; 
         private readonly XBeeController Xbee = new XBeeController();
         private XBeeNode ToXbee;
 
@@ -33,7 +36,18 @@ namespace UGVBehaviorMap
         {
             InitializeConnection(PortName, BaudRate, DestinationMAC);
         }
-
+        public UGV.DriveState SetUGVState()
+        {
+            return UGVState;
+        }
+        public void GetUGVState(UGV.DriveState UGVDriveState)
+        {
+            SavedUGVStateDuringPause = UGVDriveState;
+        }
+        public WayPoint AddUGVWaypoint()
+        {
+            return NextUGVWaypoint;
+        }
         private async void InitializeConnection(string PortName, int BaudRate, string DestinationMAC)
         {
             // Opens Xbee connection
@@ -273,6 +287,8 @@ namespace UGVBehaviorMap
 
                 ReceiveAddMissionEventArgs args = new ReceiveAddMissionEventArgs();
                 args.Msg = Msg;
+                NextUGVWaypoint = new WayPoint(Msg.MissionInfo.Lat, Msg.MissionInfo.Lng,0);
+                UGVState = UGV.DriveState.SearchTarget;
                 EventHandler<ReceiveAddMissionEventArgs> handler = ReceiveAddMission;
                 handler?.Invoke(this, args);
                 VehicleStatus = "running";

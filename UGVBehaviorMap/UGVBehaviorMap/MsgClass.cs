@@ -1,6 +1,6 @@
 ﻿using MessagePack;
 
-namespace UGVBehaviorMap
+namespace NGCP.UGV
 {
      // *** Name all float/long types to double
 
