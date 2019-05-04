@@ -1208,6 +1208,10 @@ namespace NGCP.UGV
         /// <summary>
         /// Seqencial action to send control
         /// </summary>
+        private int FinalSteeringTemp = -2000; //Initial Value so it is set off
+        private int BottleXtemp = -2000;
+        private int BottleYtemp = -2000;
+        private int WheelSpeedtemp = -2000; 
         void SendControl()
         {
             //Compute Control
@@ -1258,24 +1262,36 @@ namespace NGCP.UGV
 
             //Controls for Steering 
             int FrontWheelAngle = (int)FinalSteering;
-            int DynamixelFrontWheelAngle = Remap(FrontWheelAngle, 54, 0, 2330, 1730);
-            int DynamixelBackWheelAngle = Remap(FrontWheelAngle, 54, 0, 1730, 2330);
-            dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, BACKWHEEL, ADDR_MX_GOAL_POSITION, (ushort)DynamixelBackWheelAngle);
-            dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, FRONTWHEEL, ADDR_MX_GOAL_POSITION, (ushort)DynamixelFrontWheelAngle);
-            if (TargetbitBottle == 1)
+            if (FrontWheelAngle != FinalSteeringTemp)
             {
-               GimbalTracking(BottleX, BottleY);
+                FinalSteeringTemp = FrontWheelAngle;
+                int DynamixelFrontWheelAngle = Remap(FrontWheelAngle, 54, 0, 2330, 1730);
+                int DynamixelBackWheelAngle = Remap(FrontWheelAngle, 54, 0, 1730, 2330);
+                dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, BACKWHEEL, ADDR_MX_GOAL_POSITION, (ushort)DynamixelBackWheelAngle);
+                dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, FRONTWHEEL, ADDR_MX_GOAL_POSITION, (ushort)DynamixelFrontWheelAngle);
             }
-
+            if (BottleX != BottleXtemp || BottleY != BottleYtemp)
+            {
+                BottleXtemp = BottleX;
+                BottleYtemp = BottleY; 
+                if (TargetbitBottle == 1)
+                {
+                    GimbalTracking(BottleX, BottleY);
+                }
+            }
          //Controls for Wheel speed
-         int WheelSpeed = (int)FinalFrontWheel;
-            int FPGAWheelSpeed = Remap(WheelSpeed, 99, 0, 255, 0);
-            byte[] FPGAWheelSpeedbytes = ConvertInt32ToByteArray(FPGAWheelSpeed);
-            byte[] _FPGAWheelSpeedPackage = new byte[] {
+            int WheelSpeed = (int)FinalFrontWheel;
+            if (WheelSpeed != WheelSpeedtemp)
+            {
+                WheelSpeedtemp = WheelSpeed;
+                int FPGAWheelSpeed = Remap(WheelSpeed, 99, 0, 255, 0);
+                byte[] FPGAWheelSpeedbytes = ConvertInt32ToByteArray(FPGAWheelSpeed);
+                byte[] _FPGAWheelSpeedPackage = new byte[] {
                 FPGAWheelSpeedbytes[0],
                 };
 
-            tempfpga.Send(_FPGAWheelSpeedPackage);
+                tempfpga.Send(_FPGAWheelSpeedPackage);
+            }
             //prepare control
             //RearWheelDirection = Math.Abs(FinalRearWheel) < Settings.DeadZone ? (byte)0x00 : RearWheelDirection;
             //FrontWheelDirection = Math.Abs(FinalFrontWheel) < Settings.DeadZone ? (byte)0x00 : FrontWheelDirection;
