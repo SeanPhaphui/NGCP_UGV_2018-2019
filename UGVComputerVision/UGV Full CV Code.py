@@ -7,7 +7,7 @@ import socket
 import struct
 
 
-maincam = cv2.VideoCapture(0)
+maincam = cv2.VideoCapture(1)
 UDP_IP_ADDRESS = "127.0.0.1"
 udp_reciever = 6800
 udp1 = 6789

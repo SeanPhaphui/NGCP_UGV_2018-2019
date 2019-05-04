@@ -315,7 +315,7 @@ namespace UGVBehaviorMap
             ugv.DefaultLocation = EMDefault;
 
             // added this line to change state of the ugv and start in the grabPayloadManual method
-            ugv.State = NGCP.UGV.UGV.DriveState.Idle;
+            ugv.State = NGCP.UGV.UGV.DriveState.TestObjectFound;
 
             //check for enable
             do

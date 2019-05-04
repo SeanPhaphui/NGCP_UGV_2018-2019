@@ -110,7 +110,7 @@ namespace NGCP.UGV
         /// <summary>
         /// Sleep Time each cycle
         /// </summary>
-        const int SleepTime = 100;
+        const int SleepTime = 10;
 
         /// <summary>
         /// Full Speed for Autonomous
@@ -149,7 +149,7 @@ namespace NGCP.UGV
         /// Whether to use search path generated from autonomous behavior method
         /// </summary>
         bool usePathGen = true; //false for testing purposes
-        bool ObjectFound = false;
+
         bool goToObject = false;
         double Yaw = 0;
         int oneTime = 1;
@@ -1365,27 +1365,27 @@ namespace NGCP.UGV
         #region Test Object Found
         void TestObjectFound()
         {
-           if(ObjectFound)
+           if(TargetbitBottle==1)
             {
-                double error = .5;
+                double error = 10;
                 // use camera angle to guide the UGV to object
                 if (gimbalyaw < 180 - error)
                 {
                     // rotate the wheels to move in the direction the gimbal is pointing
                     //steering = -gimbalyaw;
-                    FinalSteering = 0;
+                    steering = 1000;
                 }
                 else if (gimbalyaw > 180 + error)
                 {
                     //rotate the wheels to the direction of the gimbal 
                     //steering = gimbalyaw;
-                    FinalSteering = 54;
+                    steering =-1000;
                 }
                 else
                 {
                     // set steering to 0
                     //steering = 0;
-                    FinalSteering = 27;
+                    steering = 0;
                 }
             }
         }

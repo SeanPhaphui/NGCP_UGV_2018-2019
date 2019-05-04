@@ -306,7 +306,8 @@ namespace NGCP.UGV
         private int BottleY;
         private int BallX;
         private int BallY;
-        private int Targetbit;
+        private int TargetbitBottle;
+        private int TargetbitBall; 
         public int x_mainpayload = 0;
         public int y_mainpayload = 0;
         #region Dynamixel Settings
@@ -679,7 +680,7 @@ namespace NGCP.UGV
             dynamixel.write1ByteTxRx(port_num, PROTOCOL_VERSION, FRONTWHEEL, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE);
             dynamixel.write1ByteTxRx(port_num, PROTOCOL_VERSION, BACKWHEEL, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE);
             //SET START POS
-            gimbalpitch = 50;
+            gimbalpitch = 40;
             gimbalyaw = 180;
             dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, GIMBALPITCH, ADDR_MX_GOAL_POSITION, GIMBALPITCHSTART);
             dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, GIMBALYAW, ADDR_MX_GOAL_POSITION, GIMBALYAWSTART);
@@ -700,7 +701,7 @@ namespace NGCP.UGV
             //define callback
             fpga.PackageReceived = (bytes =>
             {
-                Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
+                Thread.CurrentThread.Priority = ThreadPriority.Normal;
                 Console.WriteLine("package length: {0}", bytes.Length);
                 for (int i = 0; i < bytes.Length; i++)
                 {
@@ -713,7 +714,7 @@ namespace NGCP.UGV
             if (Settings.UseFPGA)
                 fpga.Start();
             //For temporary solution
-            tempfpga.Start();
+            //tempfpga.Start();
             //
             #endregion FPGA Connection
 
@@ -975,19 +976,14 @@ namespace NGCP.UGV
                 BottleData = BitConverter.ToInt32(bytes, 0);
                 BottleX = BitConverter.ToInt32(bytes, sizeof(int));
                 BottleY = BitConverter.ToInt32(bytes, 2 * sizeof(int));
-                Targetbit = BitConverter.ToInt32(bytes, 3 * sizeof(int));
-                if (Targetbit == 1)
-                {
-                    GimbalTracking(BottleX, BottleY);
-                }
-
+                TargetbitBottle = BitConverter.ToInt32(bytes, 3 * sizeof(int));
             });
             udp_ball.PackageReceived = (bytes =>
             {
                 BallX = BitConverter.ToInt32(bytes, 0);
                 BallY = BitConverter.ToInt32(bytes, sizeof(int));
-                Targetbit = BitConverter.ToInt32(bytes, 2 * sizeof(int));
-                if (Targetbit == 1)
+                TargetbitBall = BitConverter.ToInt32(bytes, 2 * sizeof(int));
+                if (TargetbitBall == 1)
                 {
                     GimbalTracking(BallX, BallY);
                 }
@@ -1044,7 +1040,7 @@ namespace NGCP.UGV
                 //define callback
                 Xbee.PackageReceived = (bytes =>
                 {
-                    Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
+                    Thread.CurrentThread.Priority = ThreadPriority.BelowNormal;
                     if (bytes.Length != 4)
                         return;
                     if (bytes[0] != 0 || bytes[3] != 0)
@@ -1191,8 +1187,8 @@ namespace NGCP.UGV
         /// <param name="e"></param>
         void Timer_Tick(object sender, System.Timers.ElapsedEventArgs e)
         {   
-            //controlTimer.Enabled = false;
-            Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
+           //controlTimer.Enabled = false;
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
             if(Settings.DriveMode == DriveMode.Autonomous || Settings.DriveMode == DriveMode.SemiAutonomous)
                 SendControl();
             //controlTimer.Enabled = true; 
@@ -1266,8 +1262,13 @@ namespace NGCP.UGV
             int DynamixelBackWheelAngle = Remap(FrontWheelAngle, 54, 0, 1730, 2330);
             dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, BACKWHEEL, ADDR_MX_GOAL_POSITION, (ushort)DynamixelBackWheelAngle);
             dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, FRONTWHEEL, ADDR_MX_GOAL_POSITION, (ushort)DynamixelFrontWheelAngle);
-            //Controls for Wheel speed
-            int WheelSpeed = (int)FinalFrontWheel;
+            if (TargetbitBottle == 1)
+            {
+               GimbalTracking(BottleX, BottleY);
+            }
+
+         //Controls for Wheel speed
+         int WheelSpeed = (int)FinalFrontWheel;
             int FPGAWheelSpeed = Remap(WheelSpeed, 99, 0, 255, 0);
             byte[] FPGAWheelSpeedbytes = ConvertInt32ToByteArray(FPGAWheelSpeed);
             byte[] _FPGAWheelSpeedPackage = new byte[] {
@@ -1276,7 +1277,6 @@ namespace NGCP.UGV
 
             tempfpga.Send(_FPGAWheelSpeedPackage);
             //prepare control
-            byte FrontWheelDirection = FinalFrontWheel >= 0 ? (byte)'1' : (byte)'0';
             //RearWheelDirection = Math.Abs(FinalRearWheel) < Settings.DeadZone ? (byte)0x00 : RearWheelDirection;
             //FrontWheelDirection = Math.Abs(FinalFrontWheel) < Settings.DeadZone ? (byte)0x00 : FrontWheelDirection;
 #if USE_ABS
@@ -1314,93 +1314,8 @@ namespace NGCP.UGV
             }
 #endif
 
-            int FrontWheelSpeed = (int)Math.Abs(FinalFrontWheel);
-            int Steering = (int)(FinalSteering * 10);
-
-
-            byte[] FrontWheelSpeedByte = Encoding.ASCII.GetBytes(FrontWheelSpeed.ToString());
-            List<byte> FrontWheelSpeedList = FrontWheelSpeedByte.ToList();  //  MSB = index0,  LSB = index1,                  
-            if (FrontWheelSpeedList.Count == 1)
-                FrontWheelSpeedList.Insert(0,0x30);                     // add 0 in ascii to first item in list 
-
-            byte[] SteeringByte = Encoding.ASCII.GetBytes(Steering.ToString());
-            List<byte> SteeringList = SteeringByte.ToList();  //  MSB = index0,  LSB = index1,                  
-            if (SteeringList.Count == 2)
-                SteeringList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-            else if (SteeringList.Count == 1)
-            {
-                SteeringList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-                SteeringList.Insert(0, 0x30);                     // add 0 in ascii to first item in list 
-            }
-
-
-
-            #region old control packet
-            /* old control
-            //Apply Control
-            //Construct Motor Package
-            // #3
-            byte[] _motorPackage = new byte[] {
-                    0,                  3,                  111,                    111,
-                    111,                111,                111,                    111,
-                    111,                111,                111,                    111,
-                    RearWheelDirection, RearWheelSpeed,     FrontWheelDirection,    FrontWheelSpeed
-            };
-            //Construct Servo Package
-            // #4
-            byte[] _servoPackage = new byte[] {
-                    0,                      4,                      111,                    111,
-                    111,                    111,                    111,                    111,
-                    111,                    111,                    111,                    111,
-                    SteeringAngle[1],       SteeringAngle[0], ReverseSteeringAngle[1], ReverseSteeringAngle[0]        //oj - reversed byte order output
-            };
-            */
-            #endregion old control packet
-
-            // new control
-            //Apply Control
-            //Construct Motor Package
-            // #3
-            byte checkSum =0x00;
+           
             
-            //send
-            if (Settings.UseFPGA)
-            {
-                byte[] _motorPackage = new byte[] {
-                0x01,                                   // Start of Transmission
-                0x41,                                   // ID of Device to be controlled (ALPHABETIC)
-                0x02,                                   // Start of Data (Parameters of Device)
-                FrontWheelDirection,           // direction  ASCII '1-forward' or '0-backward'
-                FrontWheelSpeedList[0],           // MSB - speed 0x-9x
-                FrontWheelSpeedList[1],           // LSB - speed x0-x9
-                0x03,                                   // End of Data
-                0x00,                                   // Checksum = ~(ID + DATA) 1 BYTE!
-                0x04                                    // End of Transmission
-                };
-
-                checkSum = (byte)(~(0x41 + FrontWheelDirection + FrontWheelSpeedList[0] + FrontWheelSpeedList[1]));
-
-                _motorPackage.SetValue(checkSum, 7);
-                
-                byte[] _servoPackage = new byte[] {
-                0x01,                                   // Start of Transmission
-                0x42,                                   // ID of Device to be controlled (ALPHABETIC)
-                0x02,                                   // Start of Data (Parameters of Device)
-                SteeringList[0],                        // MSB - speed -ex:5
-                SteeringList[1],                        // --- - speed -ex:4
-                SteeringList[2],                        // LSB - speed -ex:.0
-                0x03,                                   // End of Data
-                0x00,                                   // Checksum = ~(ID + DATA) 1 BYTE!
-                0x04                                    // End of Transmission
-                };
-
-                checkSum = (byte)(~(0x42 + SteeringList[0] + SteeringList[1] + SteeringList[2]));
-
-                _servoPackage.SetValue(checkSum, 7);
-
-                fpga.Send(_motorPackage);
-                fpga.Send(_servoPackage);
-            }
 
         }
 
@@ -1432,7 +1347,7 @@ namespace NGCP.UGV
         void BoardCast_Tick(object sender, System.Timers.ElapsedEventArgs e)
         {
             boardcastTimer.Enabled = false;
-            Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
+            Thread.CurrentThread.Priority = ThreadPriority.Lowest;
             BoardCast();
             boardcastTimer.Enabled = true;
 
@@ -1481,6 +1396,7 @@ namespace NGCP.UGV
         }
 
 #if FPGA_Sensors
+      /*
         void FPGACallback(byte[] bytes)
         {
             Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
@@ -1491,6 +1407,7 @@ namespace NGCP.UGV
             }
 
         }
+        */
 #else
         void FPGACallback(byte[] bytes)
         {
@@ -1702,7 +1619,7 @@ namespace NGCP.UGV
             /// <summary>
             /// Rate of update in sequencial control in ms
             /// </summary>
-            public int ControlRate = 50;
+            public int ControlRate = 16;
             /// <summary>
             /// Rate of board cast in sequencial control in ms
             /// </summary>
