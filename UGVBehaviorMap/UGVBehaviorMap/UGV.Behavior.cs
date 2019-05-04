@@ -1367,25 +1367,31 @@ namespace NGCP.UGV
         {
            if(TargetbitBottle==1)
             {
-                double error = 10;
                 // use camera angle to guide the UGV to object
-                if (gimbalyaw < 180 - error)
+                if (gimbalyaw <= 160)
                 {
                     // rotate the wheels to move in the direction the gimbal is pointing
                     //steering = -gimbalyaw;
                     steering = 1000;
                 }
-                else if (gimbalyaw > 180 + error)
+                else if (gimbalyaw >= 200)
                 {
                     //rotate the wheels to the direction of the gimbal 
                     //steering = gimbalyaw;
                     steering =-1000;
                 }
-                else
+                else if(gimbalyaw > 160 && gimbalyaw < 179)
                 {
                     // set steering to 0
-                    //steering = 0;
-                    steering = 0;
+                    steering = (180 - gimbalyaw) * 50; //Map steering from 1000 to 50;
+                }
+                else if(gimbalyaw < 200 && gimbalyaw > 181)
+                {
+                    steering = (180 - gimbalyaw) * 50; //Map steering from -1000 to -50;
+                }
+                else
+                {
+                    steering = 0; 
                 }
             }
         }
