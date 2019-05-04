@@ -129,7 +129,16 @@ namespace NGCP.UGV
             get { return gimbalyaw; }
             set
             {
-                gimbalyaw = value; 
+                gimbalyaw = value;
+            }
+        }
+        private int armrotation;
+        public int ArmRotation
+        {
+            get { return armrotation; }
+            set
+            {
+                armrotation = value; 
             }
         }
         #endregion Autonomous Related
@@ -337,7 +346,7 @@ namespace NGCP.UGV
         public const int GIMBALPITCHSTART = 1000;
         public const int FRONTWHEELSTART = 2000;
         public const int BACKWHEELSTART = 2000;
-        public const int TURRENTSTART = 1300;
+        public const int TURRENTSTART = 0;
         ///DYNAMIXEL VALUES    
         int port_num = dynamixel.portHandler(DEVICENAME);
         #endregion Dynamixel Settings
@@ -676,7 +685,7 @@ namespace NGCP.UGV
             //ENABLE TORQUE
             dynamixel.write1ByteTxRx(port_num, PROTOCOL_VERSION, GIMBALPITCH, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE);
             dynamixel.write1ByteTxRx(port_num, PROTOCOL_VERSION, GIMBALYAW, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE);
-            //  dynamixel.write1ByteTxRx(port_num, PROTOCOL_VERSION, TURRENT, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE);
+            dynamixel.write1ByteTxRx(port_num, PROTOCOL_VERSION, TURRENT, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE);
             dynamixel.write1ByteTxRx(port_num, PROTOCOL_VERSION, FRONTWHEEL, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE);
             dynamixel.write1ByteTxRx(port_num, PROTOCOL_VERSION, BACKWHEEL, ADDR_MX_TORQUE_ENABLE, TORQUE_ENABLE);
             //SET START POS
@@ -684,7 +693,7 @@ namespace NGCP.UGV
             gimbalyaw = 180;
             dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, GIMBALPITCH, ADDR_MX_GOAL_POSITION, GIMBALPITCHSTART);
             dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, GIMBALYAW, ADDR_MX_GOAL_POSITION, GIMBALYAWSTART);
-            // dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, TURRENT, ADDR_MX_GOAL_POSITION, TURRENTSTART);
+            dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, TURRENT, ADDR_MX_GOAL_POSITION, TURRENTSTART);
             dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, FRONTWHEEL, ADDR_MX_GOAL_POSITION, FRONTWHEELSTART);
             dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, BACKWHEEL, ADDR_MX_GOAL_POSITION, BACKWHEELSTART);
             #endregion Dynamixel Start up 
@@ -1209,9 +1218,10 @@ namespace NGCP.UGV
         /// Seqencial action to send control
         /// </summary>
         private int FinalSteeringTemp = -2000; //Initial Value so it is set off
-        private int BottleXtemp = -2000;
-        private int BottleYtemp = -2000;
-        private int WheelSpeedtemp = -2000; 
+        private int BottleXtemp = -2000;//^^
+        private int BottleYtemp = -2000;//^^
+        private int WheelSpeedtemp = -2000;//^^
+        private int ArmRotationtemp = -50000; //^^
         void SendControl()
         {
             //Compute Control
@@ -1278,6 +1288,12 @@ namespace NGCP.UGV
                 {
                     GimbalTracking(BottleX, BottleY);
                 }
+            }
+            if(armrotation != ArmRotationtemp)
+            {
+                ArmRotationtemp = armrotation;
+                int DynamixelArmRotation = Remap((float)armrotation, 180, 0, 4000, -4000);
+                dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, TURRENT, ADDR_MX_GOAL_POSITION, (ushort)DynamixelArmRotation);
             }
          //Controls for Wheel speed
             int WheelSpeed = (int)FinalFrontWheel;
