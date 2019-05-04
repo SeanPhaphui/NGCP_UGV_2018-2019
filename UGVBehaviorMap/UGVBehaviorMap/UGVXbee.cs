@@ -7,18 +7,19 @@ using System.Timers;
 using MessagePack;
 using MessagePack.Resolvers;
 using XBee;
-
-namespace UGVBehaviorMap
+using UGV.Core.Navigation;
+namespace NGCP.UGV
 {
     class UGVXbee
     {
         private double Offset = 0;
-        private const int SendRate = 10000; // in milliseconds
+        private const int SendRate = 100; // in milliseconds
         private int MessageId = 0;
-        private int Timemout = 20000;
 
         private string VehicleStatus = "disconnected"; // status types: disconnected, ready, waiting, running, paused, error
-
+        private UGV.DriveState UGVState = UGV.DriveState.Idle;
+        private UGV.DriveState SavedUGVStateDuringPause;
+        private WayPoint NextUGVWaypoint;
         private readonly XBeeController Xbee = new XBeeController();
         private XBeeNode ToXbee;
 
@@ -27,26 +28,41 @@ namespace UGVBehaviorMap
         public event EventHandler<ReceivePauseEventArgs> ReceivePause;
         public event EventHandler<ReceiveResumeEventArgs> ReceiveResume;
         public event EventHandler<ReceiveStopEventArgs> ReceiveStop;
+        //public event EventHandler<EventArgs> SendMsgAsync;
 
+        private readonly Dictionary<int, Timer> TimerOutbox = new Dictionary<int, Timer>();
         private readonly Dictionary<int, int> LastReceivedMessageId = new Dictionary<int, int>();
 
         public Dictionary<int, Timer> Sending = new Dictionary<int, Timer>();
         public Dictionary<int, int> LastSentMessageID = new Dictionary<int, int>();
         public Dictionary<int, ArrayList> Outbox = new Dictionary<int, ArrayList>();
-        public Dictionary<int, Timer> Timeout = new Dictionary<int, Timer>();
 
 
         public UGVXbee(string PortName, int BaudRate, string DestinationMAC)
         {
             InitializeConnection(PortName, BaudRate, DestinationMAC);
         }
-
+        public UGV.DriveState SetUGVState()
+        {
+            return UGVState;
+        }
+        public void GetUGVState(UGV.DriveState UGVDriveState)
+        {
+            SavedUGVStateDuringPause = UGVDriveState;
+        }
+        public WayPoint AddUGVWaypoint()
+        {
+            return NextUGVWaypoint;
+        }
+        public UGV.DriveState ReturnFromPause()
+        {
+            return SavedUGVStateDuringPause;
+        }
         private async void InitializeConnection(string PortName, int BaudRate, string DestinationMAC)
         {
             // Opens Xbee connection
             await Xbee.OpenAsync(PortName, BaudRate);
             ToXbee = await Xbee.GetNodeAsync(new NodeAddress(new LongAddress(UInt64.Parse(DestinationMAC, System.Globalization.NumberStyles.AllowHexSpecifier))));
-
             // Callback function to whenever we receive a message from the GCS (or other Xbee)
             Xbee.DataReceived += (o, eventArgs) => ReceiveMessage(eventArgs.Data);
 
@@ -60,7 +76,7 @@ namespace UGVBehaviorMap
         public void SendMessage(int VehicleID, Msg Msg)
         {
             Msg.Tid = VehicleID;
-            Msg.Sid = 100;
+            Msg.Sid = 200;
             Msg.Id = MessageId;
             MessageId += 1;
             ArrayList list;
@@ -151,8 +167,7 @@ namespace UGVBehaviorMap
                 LastSentMessageID.Add(Msg.Tid, Msg.Id);
             }
             Sending.Add(Msg.Tid, MessageTimer);
-            Sending[0].Start();
-
+            Sending[Msg.Tid].Start();
         }
 
         private void ReceiveMessage(byte[] Bytes)
@@ -263,10 +278,12 @@ namespace UGVBehaviorMap
 
                 ReceiveAddMissionEventArgs args = new ReceiveAddMissionEventArgs();
                 args.Msg = Msg;
+                NextUGVWaypoint = new WayPoint(Msg.MissionInfo.Lat, Msg.MissionInfo.Lng, 0);
+                UGVState = UGV.DriveState.SearchTarget;
                 EventHandler<ReceiveAddMissionEventArgs> handler = ReceiveAddMission;
                 handler?.Invoke(this, args);
                 VehicleStatus = "running";
-                Console.WriteLine("Starting {0} Task, Lat: {1}, Lng: {2}", Msg.MissionInfo.TaskType, Msg.MissionInfo.Lat, Msg.MissionInfo.Lng);
+                //Console.WriteLine("Starting {0} Task, Lat: {1}, Lng: {2}", Msg.MissionInfo.TaskType, Msg.MissionInfo.Lat, Msg.MissionInfo.Lng);
             }
 
             // Acknowledge all valid messages
@@ -375,7 +392,7 @@ namespace UGVBehaviorMap
 
             Console.WriteLine("Bad message received {0}", Msg.Error);
         }
-
+        
         private void IronManDies(int VehicleId)
         {
             Sending[VehicleId].Stop();
