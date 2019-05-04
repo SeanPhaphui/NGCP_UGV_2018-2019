@@ -13,7 +13,7 @@ namespace NGCP.UGV
     class UGVXbee
     {
         private double Offset = 0;
-        private const int SendRate = 10000; // in milliseconds
+        private const int SendRate = 100; // in milliseconds
         private int MessageId = 0;
 
         private string VehicleStatus = "disconnected"; // status types: disconnected, ready, waiting, running, paused, error
@@ -54,12 +54,15 @@ namespace NGCP.UGV
         {
             return NextUGVWaypoint;
         }
+        public UGV.DriveState ReturnFromPause()
+        {
+            return SavedUGVStateDuringPause;
+        }
         private async void InitializeConnection(string PortName, int BaudRate, string DestinationMAC)
         {
             // Opens Xbee connection
             await Xbee.OpenAsync(PortName, BaudRate);
             ToXbee = await Xbee.GetNodeAsync(new NodeAddress(new LongAddress(UInt64.Parse(DestinationMAC, System.Globalization.NumberStyles.AllowHexSpecifier))));
-
             // Callback function to whenever we receive a message from the GCS (or other Xbee)
             Xbee.DataReceived += (o, eventArgs) => ReceiveMessage(eventArgs.Data);
 

@@ -954,7 +954,7 @@ namespace NGCP.UGV
                 }; // pause 
                 xbee.ReceiveResume += (o, eventArgs) => 
                 {
-
+                    State = xbee.ReturnFromPause();
                 }; // resume 
                 xbee.ReceiveStop += (o, eventArgs) => { }; // stop mission 
             }
