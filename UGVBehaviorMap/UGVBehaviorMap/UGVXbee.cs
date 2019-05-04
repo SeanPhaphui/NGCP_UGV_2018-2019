@@ -76,7 +76,7 @@ namespace NGCP.UGV
         public void SendMessage(int VehicleID, Msg Msg)
         {
             Msg.Tid = VehicleID;
-            Msg.Sid = 100;
+            Msg.Sid = 200;
             Msg.Id = MessageId;
             MessageId += 1;
             ArrayList list;
@@ -167,8 +167,7 @@ namespace NGCP.UGV
                 LastSentMessageID.Add(Msg.Tid, Msg.Id);
             }
             Sending.Add(Msg.Tid, MessageTimer);
-            Sending[0].Start();                 
-
+            Sending[Msg.Tid].Start();
         }
 
         private void ReceiveMessage(byte[] Bytes)
