@@ -15,6 +15,7 @@ namespace UGVBehaviorMap
         private double Offset = 0;
         private const int SendRate = 10000; // in milliseconds
         private int MessageId = 0;
+        private int Timemout = 20000;
 
         private string VehicleStatus = "disconnected"; // status types: disconnected, ready, waiting, running, paused, error
 
@@ -32,6 +33,7 @@ namespace UGVBehaviorMap
         public Dictionary<int, Timer> Sending = new Dictionary<int, Timer>();
         public Dictionary<int, int> LastSentMessageID = new Dictionary<int, int>();
         public Dictionary<int, ArrayList> Outbox = new Dictionary<int, ArrayList>();
+        public Dictionary<int, Timer> Timeout = new Dictionary<int, Timer>();
 
 
         public UGVXbee(string PortName, int BaudRate, string DestinationMAC)
