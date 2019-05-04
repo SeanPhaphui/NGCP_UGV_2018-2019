@@ -1228,6 +1228,7 @@ namespace NGCP.UGV
             Steering = 0;
             LocalSpeed = 0;
             LocalSteering = 0;
+            armrotation = 90;
             SendControl();
             //Enabled = false;
         }
@@ -1392,18 +1393,10 @@ namespace NGCP.UGV
                 {
                     // set steering to 0
                     steering = (180 - gimbalyaw) * 50; //Map steering from 1000 to 50;
-                //    if (armrotation <= 90)
-              //      {
-                        ArmMove(-1);
-                 //   }
                 }
                 else if (gimbalyaw < 200 && gimbalyaw > 181)
                 {
                     steering = (180 - gimbalyaw) * 50; //Map steering from -1000 to -50;
-                   // if (armrotation >= 90)
-                 //   {
-                        ArmMove(1);
-                   // }
                 }
                 else
                 {
@@ -1416,12 +1409,12 @@ namespace NGCP.UGV
             if (direction == 1)
             {
                 // move the arm to the right
-                armrotation = 180;
+                armrotation = 145;
             }
             else if (direction == -1)
             {
                 // move the arm to the left
-                armrotation = 0;
+                armrotation =35;
             }
             else
             {
