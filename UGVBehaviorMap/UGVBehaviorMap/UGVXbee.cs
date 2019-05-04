@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Timers;
@@ -11,10 +12,6 @@ namespace UGVBehaviorMap
 {
     class UGVXbee
     {
-        private const string PortName = "COM8";
-        private const int BaudRate = 57600;
-        private const string DestinationMAC = "0013A200418EA9DE";
-
         private double Offset = 0;
         private const int SendRate = 10000; // in milliseconds
         private int MessageId = 0;
@@ -24,22 +21,25 @@ namespace UGVBehaviorMap
         private readonly XBeeController Xbee = new XBeeController();
         private XBeeNode ToXbee;
 
-        public EventHandler ReceiveConnectionAck;
-        public EventHandler ReceiveStart;
-        public EventHandler ReceiveAddMission;
-        public EventHandler ReceivePause;
-        public EventHandler ReceiveResume;
-        public EventHandler ReceiveStop;
+        public event EventHandler<ReceiveConnAckEventArgs> ReceiveConnAck;
+        public event EventHandler<ReceiveAddMissionEventArgs> ReceiveAddMission;
+        public event EventHandler<ReceivePauseEventArgs> ReceivePause;
+        public event EventHandler<ReceiveResumeEventArgs> ReceiveResume;
+        public event EventHandler<ReceiveStopEventArgs> ReceiveStop;
 
-        private readonly Dictionary<int, Timer> TimerOutbox = new Dictionary<int, Timer>();
         private readonly Dictionary<int, int> LastReceivedMessageId = new Dictionary<int, int>();
 
-        public UGVXbee()
+        public Dictionary<int, Timer> Sending = new Dictionary<int, Timer>();
+        public Dictionary<int, int> LastSentMessageID = new Dictionary<int, int>();
+        public Dictionary<int, ArrayList> Outbox = new Dictionary<int, ArrayList>();
+
+
+        public UGVXbee(string PortName, int BaudRate, string DestinationMAC)
         {
-            InitializeConnection();
+            InitializeConnection(PortName, BaudRate, DestinationMAC);
         }
 
-        private async void InitializeConnection()
+        private async void InitializeConnection(string PortName, int BaudRate, string DestinationMAC)
         {
             // Opens Xbee connection
             await Xbee.OpenAsync(PortName, BaudRate);
@@ -55,15 +55,40 @@ namespace UGVBehaviorMap
             });
         }
 
-        private void SendMessage(int TargetID, Msg Msg)
+        public void SendMessage(int VehicleID, Msg Msg)
         {
+            Msg.Tid = VehicleID;
+            Msg.Sid = 100;
             Msg.Id = MessageId;
-            Msg.Sid = 200;
-            Msg.Tid = TargetID;
-            Msg.Time = Time();
-
             MessageId += 1;
+            ArrayList list;
 
+            if (Sending.ContainsKey(VehicleID))
+            {
+                if (!Outbox.ContainsKey(VehicleID))
+                    list = new ArrayList();
+                else
+                    list = Outbox[VehicleID];
+                list.Add(Msg);
+                Outbox.Add(VehicleID, list);
+            }
+            else
+                SendMessageAsync(Msg);
+        }
+
+        /**
+         * Rules:
+         * 1. Never acknowledge an invalid message. This means the following:
+         *    - message with invalid information (missing info, wrong source)
+         *    - message sent while vehicle in incorrect state (connectionAck while vehicle is running a mission)
+         * 3. Always send SendBadMessage to ALL invalid messages.
+         * 4. Same above applies to incrementing last message received ID.
+         * 5. Ignore messages of old ID. See following link: https://ground-control-station.readthedocs.io/en/latest/communications/messages/other-messages.html#acknowledgement-message
+         *    - however, ALWAYS acknowledge old messages if they are valid, otherwise send BAD MESSAGE
+         */
+
+        private void SendMessageAsync(Msg Msg)
+        {
             byte[] bytes = new byte[] { };
             string json = "";
 
@@ -106,7 +131,7 @@ namespace UGVBehaviorMap
             Console.WriteLine("Sending " + json);
             ToXbee.TransmitDataAsync(bytes);
 
-            if (Msg.Type == "ack" || Msg.Type == "SendBadMessage") return;
+            if (Msg.Type == "ack" || Msg.Type == "badMessage" || Msg.Type == "connectionAck") return;
 
             // Repeatedly send message if it was not accepted. Transmit above is to send it once,
             // then keep sending it if it was not accepted. An ack message would stop these
@@ -117,26 +142,17 @@ namespace UGVBehaviorMap
             // Special case to cover connect message
             if (Msg.Type == "connect")
             {
-                TimerOutbox.Add(-1, MessageTimer);
-                TimerOutbox[-1].Start();
+                LastSentMessageID.Add(Msg.Tid, -1);
             }
             else
             {
-                TimerOutbox.Add(Msg.Id, MessageTimer);
-                TimerOutbox[Msg.Id].Start();
+                LastSentMessageID.Add(Msg.Tid, Msg.Id);
             }
+            Sending.Add(Msg.Tid, MessageTimer);
+            Sending[0].Start();
+
         }
 
-        /**
-         * Rules:
-         * 1. Never acknowledge an invalid message. This means the following:
-         *    - message with invalid information (missing info, wrong source)
-         *    - message sent while vehicle in incorrect state (connectionAck while vehicle is running a mission)
-         * 3. Always send SendBadMessage to ALL invalid messages.
-         * 4. Same above applies to incrementing last message received ID.
-         * 5. Ignore messages of old ID. See following link: https://ground-control-station.readthedocs.io/en/latest/communications/messages/other-messages.html#acknowledgement-message
-         *    - however, ALWAYS acknowledge old messages if they are valid, otherwise send BAD MESSAGE
-         */
         private void ReceiveMessage(byte[] Bytes)
         {
             Msg Msg;
@@ -197,34 +213,6 @@ namespace UGVBehaviorMap
             }
         }
 
-        private void ProcessConnAckMsg(bool NewMessage, ConnAckMsg Msg)
-        {
-            if (VehicleStatus != "disconnected")
-            {
-                SendBadMessage(Msg, "Received connectionAck message while status is " + VehicleStatus);
-                return;
-            }
-
-            // Only process each message once (so if the same message gets sent twice, ignore the second message)
-            if (NewMessage)
-            {
-                LastReceivedMessageId[Msg.Sid] = Msg.Id;
-
-                // Stop sending connect message
-                TimerOutbox[-1].Stop();
-                TimerOutbox.Remove(-1);
-
-                // Set UGV time to GCS time through offset
-                Offset = Msg.Time - DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-                VehicleStatus = "ready";
-
-                Console.WriteLine("Received connection acknowledgement from GCS, systems are ready");
-            }
-
-            // Acknowledge all valid messages
-            SendAcknowledgement(Msg);
-        }
-
         public void ProcessStartMsg(bool NewMessage, StartMsg Msg)
         {
             if (VehicleStatus != "ready")
@@ -244,8 +232,6 @@ namespace UGVBehaviorMap
             {
                 LastReceivedMessageId[Msg.Sid] = Msg.Id;
 
-                EventHandler handler = ReceiveStart;
-                handler?.Invoke(this, new EventArgs());
                 VehicleStatus = "waiting";
                 Console.WriteLine("Starting {0} Mission", Msg.JobType);
             }
@@ -273,8 +259,10 @@ namespace UGVBehaviorMap
             {
                 LastReceivedMessageId[Msg.Sid] = Msg.Id;
 
-                EventHandler handler = ReceiveAddMission;
-                handler?.Invoke(this, new EventArgs());
+                ReceiveAddMissionEventArgs args = new ReceiveAddMissionEventArgs();
+                args.Msg = Msg;
+                EventHandler<ReceiveAddMissionEventArgs> handler = ReceiveAddMission;
+                handler?.Invoke(this, args);
                 VehicleStatus = "running";
                 Console.WriteLine("Starting {0} Task, Lat: {1}, Lng: {2}", Msg.MissionInfo.TaskType, Msg.MissionInfo.Lat, Msg.MissionInfo.Lng);
             }
@@ -293,8 +281,10 @@ namespace UGVBehaviorMap
             {
                 LastReceivedMessageId[Msg.Sid] = Msg.Id;
 
-                EventHandler handler = ReceivePause;
-                handler?.Invoke(this, new EventArgs());
+                ReceivePauseEventArgs args = new ReceivePauseEventArgs();
+                args.Msg = Msg;
+                EventHandler<ReceivePauseEventArgs> handler = ReceivePause;
+                handler?.Invoke(this, args);
                 VehicleStatus = "paused";
                 Console.WriteLine("Paused task");
             }
@@ -314,8 +304,10 @@ namespace UGVBehaviorMap
             {
                 LastReceivedMessageId[Msg.Sid] = Msg.Id;
 
-                EventHandler handler = ReceiveResume;
-                handler?.Invoke(this, new EventArgs());
+                ReceiveResumeEventArgs args = new ReceiveResumeEventArgs();
+                args.Msg = Msg;
+                EventHandler<ReceiveResumeEventArgs> handler = ReceiveResume;
+                handler?.Invoke(this, args);
                 VehicleStatus = "running";
                 Console.WriteLine("Resumed task");
             }
@@ -333,8 +325,10 @@ namespace UGVBehaviorMap
             {
                 LastReceivedMessageId[Msg.Sid] = Msg.Id;
 
-                EventHandler handler = ReceiveStop;
-                handler?.Invoke(this, new EventArgs());
+                ReceiveStopEventArgs args = new ReceiveStopEventArgs();
+                args.Msg = Msg;
+                EventHandler<ReceiveStopEventArgs> handler = ReceiveStop;
+                handler?.Invoke(this, args);
                 VehicleStatus = "ready";
                 Console.WriteLine("Stopped mission");
             }
@@ -343,19 +337,33 @@ namespace UGVBehaviorMap
             SendAcknowledgement(Msg);
         }
 
+        private void ProcessConnAckMsg(bool NewMessage, ConnAckMsg Msg)
+        {
+            if (!NewMessage) return;
+            LastReceivedMessageId[Msg.Sid] = Msg.Id;
+
+            if (!LastSentMessageID.ContainsKey(Msg.Sid) || LastSentMessageID[Msg.Sid] != -1) return;
+
+            Offset = Msg.Time - DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+            ReceiveConnAckEventArgs args = new ReceiveConnAckEventArgs();
+            args.Msg = Msg;
+            EventHandler<ReceiveConnAckEventArgs> handler = ReceiveConnAck;
+            handler?.Invoke(this, args);
+            VehicleStatus = "ready";
+            Console.WriteLine("Received connection acknowledgement from GCS, systems are ready");
+
+            IronManDies(Msg.Sid);
+        }
+
         private void ProcessAckMsg(bool NewMessage, AckMsg Msg)
         {
             if (!NewMessage) return;
             LastReceivedMessageId[Msg.Sid] = Msg.Id;
 
-            if (TimerOutbox.ContainsKey(Msg.AckId))
-            {
-                // Stop sending the message that was acknowleged
-                TimerOutbox[Msg.AckId].Stop();
+            if (!LastSentMessageID.ContainsKey(Msg.Sid) || LastSentMessageID[Msg.Sid] != Msg.AckId) return;
 
-                // Keep size of dictionary small and not exceed memory
-                TimerOutbox.Remove(Msg.AckId);
-            }
+            IronManDies(Msg.Sid);
         }
 
         private void ProcessBadMsg(bool NewMessage, BadMsg Msg)
@@ -364,6 +372,21 @@ namespace UGVBehaviorMap
             LastReceivedMessageId[Msg.Sid] = Msg.Id;
 
             Console.WriteLine("Bad message received {0}", Msg.Error);
+        }
+
+        private void IronManDies(int VehicleId)
+        {
+            Sending[VehicleId].Stop();
+            if (Outbox.ContainsKey(VehicleId) && Outbox[VehicleId].Count > 0)
+            {
+                ArrayList list = Outbox[VehicleId];
+                Msg NextMsg = (Msg)list[0];
+                list.RemoveAt(0);
+                SendMessageAsync(NextMsg);
+                Outbox.Add(VehicleId, list);
+            }
+            else
+                Sending.Remove(VehicleId);
         }
 
         public void SendUpdate(string MissionStatus, int lat, int lng, int heading)
@@ -420,4 +443,30 @@ namespace UGVBehaviorMap
                 || Msg.Sid == 600;
         }
     }
+
+    public class ReceiveConnAckEventArgs : EventArgs
+    {
+        public ConnAckMsg Msg;
+    }
+
+    public class ReceiveAddMissionEventArgs : EventArgs
+    {
+        public AddMissionMsg Msg;
+    }
+
+    public class ReceivePauseEventArgs : EventArgs
+    {
+        public PauseMsg Msg;
+    }
+
+    public class ReceiveResumeEventArgs : EventArgs
+    {
+        public ResumeMsg Msg;
+    }
+
+    public class ReceiveStopEventArgs : EventArgs
+    {
+        public StopMsg Msg;
+    }
+
 }
