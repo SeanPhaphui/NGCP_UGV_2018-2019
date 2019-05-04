@@ -1375,7 +1375,7 @@ namespace NGCP.UGV
                     steering = 1000;
                     if (armrotation <= 90)
                     {
-                        ArmMove(1);
+                        ArmMove(-1);
                     }
                 }
                 else if (gimbalyaw >= 200)
@@ -1384,7 +1384,7 @@ namespace NGCP.UGV
                     //steering = gimbalyaw;
                     if (armrotation >= 90)
                     {
-                        ArmMove(-1);
+                        ArmMove(1);
                     }
                     steering = -1000;
                 }
@@ -1392,7 +1392,7 @@ namespace NGCP.UGV
                 {
                     // set steering to 0
                     steering = (180 - gimbalyaw) * 50; //Map steering from 1000 to 50;
-                    if (armrotation < 91 && armrotation > 89)
+                    if (armrotation <= 90)
                     {
                         ArmMove(-1);
                     }
@@ -1400,9 +1400,9 @@ namespace NGCP.UGV
                 else if (gimbalyaw < 200 && gimbalyaw > 181)
                 {
                     steering = (180 - gimbalyaw) * 50; //Map steering from -1000 to -50;
-                    if (armrotation > 91)
+                    if (armrotation >= 90)
                     {
-                        ArmMove(-1);
+                        ArmMove(1);
                     }
                 }
                 else
@@ -1416,12 +1416,12 @@ namespace NGCP.UGV
             if (direction == -1)
             {
                 // move the arm to the right
-                armrotation = 0;
+                armrotation = 180;
             }
             else if (direction == 1)
             {
                 // move the arm to the left
-                armrotation = 180;
+                armrotation = 0;
             }
             else
             {
