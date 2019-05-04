@@ -328,7 +328,7 @@ namespace NGCP.UGV
         public const int FRONTWHEEL = 2;
         public const int BACKWHEEL = 1;
         public const int TURRENT = 3;
-        public const int BAUDRATE = 57600;
+        public const int BAUDRATE = 117647;                 // This is the Dynamixel's closet approximation of a 115200 baud rate
         public const string DEVICENAME = "COM14";              // Check which port is being used on your controller                                                // ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
 
         public const int TORQUE_ENABLE = 1;                   // Value for enabling the torque
@@ -1187,11 +1187,11 @@ namespace NGCP.UGV
         /// <param name="e"></param>
         void Timer_Tick(object sender, System.Timers.ElapsedEventArgs e)
         {   
-           //controlTimer.Enabled = false;
+           controlTimer.Enabled = false;
             Thread.CurrentThread.Priority = ThreadPriority.Highest;
             if(Settings.DriveMode == DriveMode.Autonomous || Settings.DriveMode == DriveMode.SemiAutonomous)
                 SendControl();
-            //controlTimer.Enabled = true; 
+            controlTimer.Enabled = true; 
         }
         private int Remap(float OldValue, int OldMax, int OldMin, int NewMax, int NewMin)
         {
@@ -1635,7 +1635,7 @@ namespace NGCP.UGV
             /// <summary>
             /// Rate of update in sequencial control in ms
             /// </summary>
-            public int ControlRate = 16;
+            public int ControlRate = 1;
             /// <summary>
             /// Rate of board cast in sequencial control in ms
             /// </summary>
