@@ -1365,7 +1365,7 @@ namespace NGCP.UGV
         #region Test Object Found
         void TestObjectFound()
         {
-           if(TargetbitBottle==1)
+            if (TargetbitBottle == 1)
             {
                 // use camera angle to guide the UGV to object
                 if (gimbalyaw <= 160)
@@ -1373,26 +1373,60 @@ namespace NGCP.UGV
                     // rotate the wheels to move in the direction the gimbal is pointing
                     //steering = -gimbalyaw;
                     steering = 1000;
+                    if (armrotation <= 90)
+                    {
+                        ArmMove(1);
+                    }
                 }
                 else if (gimbalyaw >= 200)
                 {
                     //rotate the wheels to the direction of the gimbal 
                     //steering = gimbalyaw;
-                    steering =-1000;
+                    if (armrotation >= 90)
+                    {
+                        ArmMove(-1);
+                    }
+                    steering = -1000;
                 }
-                else if(gimbalyaw > 160 && gimbalyaw < 179)
+                else if (gimbalyaw > 160 && gimbalyaw < 179)
                 {
                     // set steering to 0
                     steering = (180 - gimbalyaw) * 50; //Map steering from 1000 to 50;
+                    if (armrotation < 91 && armrotation > 89)
+                    {
+                        ArmMove(-1);
+                    }
                 }
-                else if(gimbalyaw < 200 && gimbalyaw > 181)
+                else if (gimbalyaw < 200 && gimbalyaw > 181)
                 {
                     steering = (180 - gimbalyaw) * 50; //Map steering from -1000 to -50;
+                    if (armrotation > 91)
+                    {
+                        ArmMove(-1);
+                    }
                 }
                 else
                 {
-                    steering = 0; 
+                    steering = 0;
                 }
+            }
+        }
+        void ArmMove(int direction) // if the arm is in the way of the camera move it out of the way
+        {
+            if (direction == -1)
+            {
+                // move the arm to the right
+                armrotation = 0;
+            }
+            else if (direction == 1)
+            {
+                // move the arm to the left
+                armrotation = 180;
+            }
+            else
+            {
+                // move the arm to the center
+                armrotation = 90;
             }
         }
 
