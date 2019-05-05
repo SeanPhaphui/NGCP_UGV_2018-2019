@@ -96,6 +96,7 @@ namespace NGCP.UGV
         }
     }
 
+    [MessagePackObject]
     public class MissionInfo
     {
         [Key("taskType")]

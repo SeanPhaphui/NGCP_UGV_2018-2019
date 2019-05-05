@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -13,13 +13,15 @@ namespace NGCP.UGV
     class UGVXbee
     {
         private double Offset = 0;
-        private const int SendRate = 100; // in milliseconds
+        private const int SendRate = 1000; // in milliseconds
         private int MessageId = 0;
 
         private string VehicleStatus = "disconnected"; // status types: disconnected, ready, waiting, running, paused, error
         private UGV.DriveState UGVState = UGV.DriveState.Idle;
         private UGV.DriveState SavedUGVStateDuringPause;
         private WayPoint NextUGVWaypoint;
+        private const int THANOS_GETS_DUSTED = -100;
+
         private readonly XBeeController Xbee = new XBeeController();
         private XBeeNode ToXbee;
 
@@ -28,7 +30,6 @@ namespace NGCP.UGV
         public event EventHandler<ReceivePauseEventArgs> ReceivePause;
         public event EventHandler<ReceiveResumeEventArgs> ReceiveResume;
         public event EventHandler<ReceiveStopEventArgs> ReceiveStop;
-        //public event EventHandler<EventArgs> SendMsgAsync;
 
         private readonly Dictionary<int, Timer> TimerOutbox = new Dictionary<int, Timer>();
         private readonly Dictionary<int, int> LastReceivedMessageId = new Dictionary<int, int>();
@@ -75,20 +76,46 @@ namespace NGCP.UGV
 
         public void SendMessage(int VehicleID, Msg Msg)
         {
+            if (Msg == null)
+                return;
+
             Msg.Tid = VehicleID;
             Msg.Sid = 200;
             Msg.Id = MessageId;
+            Msg.Time = Time();
             MessageId += 1;
             ArrayList list;
 
-            if (Sending.ContainsKey(VehicleID))
+
+            if (Msg.Type == "ack" || Msg.Type == "badMessage")
+            {
+                string json;
+                byte[] bytes;
+                if (Msg.Type == "ack")
+                {
+                    bytes = MessagePackSerializer.Serialize((AckMsg)Msg);
+                    json = MessagePackSerializer.ToJson((AckMsg)Msg);
+                    // send ack
+                }
+                else
+                {
+                    bytes = MessagePackSerializer.Serialize((BadMsg)Msg);
+                    json = MessagePackSerializer.ToJson((BadMsg)Msg);
+                }
+
+                Console.WriteLine("Sending {0}", json);
+                ToXbee.TransmitDataAsync(bytes);
+                return;
+            }
+
+            if (Sending.ContainsKey(VehicleID) && Sending[VehicleID] != null)
             {
                 if (!Outbox.ContainsKey(VehicleID))
                     list = new ArrayList();
                 else
                     list = Outbox[VehicleID];
                 list.Add(Msg);
-                Outbox.Add(VehicleID, list);
+                Outbox[VehicleID] = list;
             }
             else
                 SendMessageAsync(Msg);
@@ -137,7 +164,7 @@ namespace NGCP.UGV
                     json = MessagePackSerializer.ToJson((AckMsg)Msg);
                     break;
 
-                case "SendBadMessage":
+                case "badMessage":
                     bytes = MessagePackSerializer.Serialize((BadMsg)Msg);
                     json = MessagePackSerializer.ToJson((BadMsg)Msg);
                     break;
@@ -146,10 +173,8 @@ namespace NGCP.UGV
                     throw new IndexOutOfRangeException("Message type is wrong, cannot send this message");
             }
 
-            Console.WriteLine("Sending " + json);
+            Console.WriteLine("Sending {0}", json);
             ToXbee.TransmitDataAsync(bytes);
-
-            if (Msg.Type == "ack" || Msg.Type == "badMessage" || Msg.Type == "connectionAck") return;
 
             // Repeatedly send message if it was not accepted. Transmit above is to send it once,
             // then keep sending it if it was not accepted. An ack message would stop these
@@ -161,14 +186,16 @@ namespace NGCP.UGV
             if (Msg.Type == "connect")
             {
                 LastSentMessageID.Add(Msg.Tid, -1);
+
             }
             else
             {
-                LastSentMessageID.Add(Msg.Tid, Msg.Id);
+                LastSentMessageID[Msg.Tid] = Msg.Id;
             }
-            Sending.Add(Msg.Tid, MessageTimer);
+            Sending[Msg.Tid] = MessageTimer;
             Sending[Msg.Tid].Start();
         }
+
 
         private void ReceiveMessage(byte[] Bytes)
         {
@@ -190,37 +217,55 @@ namespace NGCP.UGV
             // New message if the ID of this message is larger than the previous message's
             bool NewMessage = LastReceivedMessageId.ContainsKey(Msg.Sid) ? LastReceivedMessageId[Msg.Sid] < Msg.Id : true;
 
+            //Console.WriteLine("Received message of type {0}", Msg.Type);
+
             switch (Msg.Type)
             {
                 case "connectionAck":
+                    ConnAckMsg CA = MessagePackSerializer.Deserialize<ConnAckMsg>(Bytes);
+                    Console.WriteLine(MessagePackSerializer.ToJson(CA));
                     ProcessConnAckMsg(NewMessage, MessagePackSerializer.Deserialize<ConnAckMsg>(Bytes));
                     break;
 
                 case "start":
+                    StartMsg ST = MessagePackSerializer.Deserialize<StartMsg>(Bytes);
+                    Console.WriteLine(MessagePackSerializer.ToJson(ST));
                     ProcessStartMsg(NewMessage, MessagePackSerializer.Deserialize<StartMsg>(Bytes));
                     break;
 
                 case "addMission":
+                    AddMissionMsg AM = MessagePackSerializer.Deserialize<AddMissionMsg>(Bytes);
+                    Console.WriteLine(MessagePackSerializer.ToJson(AM));
                     ProcessAddMissionMsg(NewMessage, MessagePackSerializer.Deserialize<AddMissionMsg>(Bytes));
                     break;
 
                 case "pause":
+                    PauseMsg PS = MessagePackSerializer.Deserialize<PauseMsg>(Bytes);
+                    Console.WriteLine(MessagePackSerializer.ToJson(PS));
                     ProcessPauseMsg(NewMessage, MessagePackSerializer.Deserialize<PauseMsg>(Bytes));
                     break;
 
                 case "resume":
+                    ResumeMsg RS = MessagePackSerializer.Deserialize<ResumeMsg>(Bytes);
+                    Console.WriteLine(MessagePackSerializer.ToJson(RS));
                     ProcessResumeMsg(NewMessage, MessagePackSerializer.Deserialize<ResumeMsg>(Bytes));
                     break;
 
                 case "stop":
+                    StopMsg SP = MessagePackSerializer.Deserialize<StopMsg>(Bytes);
+                    Console.WriteLine(MessagePackSerializer.ToJson(SP));
                     ProcessStopMsg(NewMessage, MessagePackSerializer.Deserialize<StopMsg>(Bytes));
                     break;
 
                 case "ack":
+                    AckMsg AK = MessagePackSerializer.Deserialize<AckMsg>(Bytes);
+                    Console.WriteLine(MessagePackSerializer.ToJson(AK));
                     ProcessAckMsg(NewMessage, MessagePackSerializer.Deserialize<AckMsg>(Bytes));
                     break;
 
                 case "badMessage":
+                    BadMsg BM = MessagePackSerializer.Deserialize<BadMsg>(Bytes);
+                    Console.WriteLine(MessagePackSerializer.ToJson(BM));
                     ProcessBadMsg(NewMessage, MessagePackSerializer.Deserialize<BadMsg>(Bytes));
                     break;
 
@@ -381,7 +426,7 @@ namespace NGCP.UGV
             LastReceivedMessageId[Msg.Sid] = Msg.Id;
 
             if (!LastSentMessageID.ContainsKey(Msg.Sid) || LastSentMessageID[Msg.Sid] != Msg.AckId) return;
-
+            
             IronManDies(Msg.Sid);
         }
 
@@ -392,35 +437,36 @@ namespace NGCP.UGV
 
             Console.WriteLine("Bad message received {0}", Msg.Error);
         }
-        
+
         private void IronManDies(int VehicleId)
         {
             Sending[VehicleId].Stop();
+            Console.Write("Stopped sending message ");
             if (Outbox.ContainsKey(VehicleId) && Outbox[VehicleId].Count > 0)
             {
-                ArrayList list = Outbox[VehicleId];
-                Msg NextMsg = (Msg)list[0];
-                list.RemoveAt(0);
-                SendMessageAsync(NextMsg);
-                Outbox.Add(VehicleId, list);
+                try
+                {
+                    int outboxSize = Outbox[VehicleId].Count;
+                    ArrayList list = Outbox[VehicleId];
+                    Msg NextMsg = (Msg)list[0];
+                    list.RemoveAt(0);
+                    Console.WriteLine("and will send next message, size = {0}", outboxSize);
+                    SendMessageAsync(NextMsg);
+
+                    Outbox[VehicleId] = list;
+                }
+                catch (Exception)
+                { }
             }
             else
-                Sending.Remove(VehicleId);
+            {
+                Sending[VehicleId] = null;
+                Console.WriteLine("and null'd the timer");
+            }
         }
 
-        public void SendUpdate(string MissionStatus, int lat, int lng, int heading)
+        public void SendUpdate(double lat, double lng, int heading)
         {
-            switch (MissionStatus)
-            {
-                case "blah":
-                case "blah2":
-                    VehicleStatus = "ready";
-                    break;
-                case "error":
-                    VehicleStatus = "error";
-                    break;
-            }
-
             SendMessage(0, new UpdateMsg()
             {
                 Status = VehicleStatus,
@@ -438,12 +484,33 @@ namespace NGCP.UGV
             });
         }
 
+        public void SendUpdates()   // fixture function, do not call unless for testing
+        {
+            Timer AckTimer = new Timer(750);
+            AckTimer.Elapsed += (o, eventArgs) =>
+            {
+
+                SendUpdate(0, 0, 0);
+            };
+
+            AckTimer.Start();
+            
+        }
+
         private void SendBadMessage(Msg Msg, string Error)
         {
             SendMessage(Msg.Sid, new BadMsg()
             {
                 Error = Error,
             });
+        }
+
+        public void CompleteTask()
+        {
+            if (VehicleStatus != "paused" && VehicleStatus != "running") return;
+
+            SendMessage(0, new CompleteMsg());
+            VehicleStatus = "waiting";
         }
 
         private double Time()
