@@ -108,7 +108,7 @@ namespace UGVBehaviorMap
 
             //read configuration
             ugv.Settings.UseFPGA = Boolean.Parse(Settings["UseFPGA"]);
-            ugv.Settings.UseXBeeComm = Boolean.Parse(Settings["UseXBeeComm"]);
+    //        ugv.Settings.UseUGVXbee = Boolean.Parse(Settings["UseUGVXBee"]);
             ugv.Settings.UseCommProtocol = Boolean.Parse(Settings["UseCommProtocol"]);
             ugv.Settings.UseNav = Boolean.Parse(Settings["UseNav"]);
             ugv.Settings.UseVision = Boolean.Parse(Settings["UseVision"]);
@@ -118,7 +118,7 @@ namespace UGVBehaviorMap
             ugv.Settings.CommPort = Settings["CommPort"];
             ugv.Settings.CommBaud = Convert.ToInt32(Settings["CommBaud"]);
             ugv.Settings.CommNode = Convert.ToInt32(Settings["CommNode"]);
-            ugv.Settings.CommAddresses = (Settings["CommAddresses"]);
+ //           ugv.Settings.CommAddress = (Settings["CommAddress"]);
             ugv.Settings.NavPort = Settings["NavPort"];
             ugv.Settings.NavBaud = Convert.ToInt32(Settings["NavBaud"]);
             ugv.Settings.ArmPort = Settings["ArmPort"];
