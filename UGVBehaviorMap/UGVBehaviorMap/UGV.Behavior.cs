@@ -1144,78 +1144,83 @@ namespace NGCP.UGV
         /// </summary>
         void DriveToStart()
         {
-            WayPoint nextWaypoint = StartWaypoint;
-            //set behavior
-
-            if (nextWaypoint != null)
+            WayPoint nextWaypoint = null;
+            if (Waypoints.Count > 0 && Waypoints.TryPeek(out nextWaypoint))
             {
-                WayPoint currentLocation = new WayPoint(Latitude, Longitude, 0);
-                WaypointVector = new Vector2d(currentLocation, nextWaypoint);
-                NextWaypointDistance = WayPoint.GetDistance(this.Latitude, this.Longitude, nextWaypoint.Lat, nextWaypoint.Long);
-                // ************* Obstacle Avoidance Code ******************
-                // Everything is in meters and radians
-                if (Settings.UseVision)
+                if (nextWaypoint != null)
                 {
-                    if (AvoidanceVector.magnitude > 0)
+                    WayPoint currentLocation = new WayPoint(Latitude, Longitude, 0);
+                    WaypointVector = new Vector2d(currentLocation, nextWaypoint);
+                    NextWaypointDistance = WayPoint.GetDistance(this.Latitude, this.Longitude, nextWaypoint.Lat, nextWaypoint.Long);
+
+                    //// ************* Obstacle Avoidance Code ******************
+                    nextWaypoint = obstacleAvoidance(nextWaypoint, currentLocation);
+                    // Everything is in meters and radians
+                    //if (Settings.UseVision)
+                    //{
+                    //    if (AvoidanceVector.magnitude > 0)
+                    //    {
+                    //        SumVector = new Vector2d(currentLocation, nextWaypoint);
+                    //        SumVector.magnitude /= SumVector.magnitude; //Normalize(Check if normalize is needed)
+                    //        SumVector.magnitude *= Alpha * MaxSpeed; // Influence(Check if maxspeed is needed)
+                    //        AvoidanceVector.angle = (AvoidanceVector.angle + 90 + Heading);// Make Lidar data relative to robot position 
+                    //        SumVector += AvoidanceVector; //combine Avoidance and Attraction vector                  
+                    //        SumVector.magnitude = Math.Max(ReachWaypointZone + 1, SumVector.magnitude); //set the minimum vector length to 4 meters
+                    //        nextWaypoint = WayPoint.Projection(currentLocation, SumVector.angle, SumVector.magnitude);
+                    //    }
+
+                    //}
+
+                    /*if (Settings.DriveMode == DriveMode.Autonomous)
                     {
-                        SumVector = new Vector2d(currentLocation, nextWaypoint);
-                        SumVector.magnitude /= SumVector.magnitude; //Normalize
-                        SumVector.magnitude *= 0.6; // Influence
+                        Speed = 
+                    }*/
+                    NextWaypointBearing = WayPoint.GetBearing(this.Latitude, this.Longitude, nextWaypoint.Lat, nextWaypoint.Long);
+                    //calculate difference angle
+                    double errorWaypoint = NextWaypointBearing - Heading;
+                    if (errorWaypoint > Math.PI)
+                        errorWaypoint -= Math.PI * 2.0;
+                    else if (errorWaypoint < -Math.PI)
+                        errorWaypoint += Math.PI * 2.0;
+                    NextWaypointBearingError = errorWaypoint;
+                }
+                //else
+                // State = DriveState.Idle;
 
-                        AvoidanceVector.magnitude /= AvoidanceVector.magnitude; //Normalize
-                        AvoidanceVector.magnitude *= 0.4; //Influence
-                                                          //SumVector -= AvoidanceVector;
-
-                        SumVector += AvoidanceVector;                   // changed from (-) --> (+)
-
-                        SumVector.magnitude = Math.Max(ReachWaypointZone + 1, SumVector.magnitude); //set the minimum vector length to 4 meters
-                        nextWaypoint = WayPoint.Projection(currentLocation, SumVector.angle, SumVector.magnitude);
+                if (imu.GoodData)
+                {
+                    //if use gps only to drive
+                    //apply steer control
+                    double TempSteering = NextWaypointBearingError * SteerRatio / Math.PI;
+                    // SteerPID.Feed(error);
+                    Steering = CloseBoundary ? Math.Min(Math.Max(TempSteering, -1000), 1000)
+                                             : Math.Min(Math.Max(TempSteering * OutsideSteerRatio, -1000), 1000);
+                    //set speed
+                    Speed = InsideBoundary ? FullSpeed : FullSpeed * OutsideSpeedRatio;
+                }
+                else
+                {
+                    //set all to 0 if no gps lock
+                    Speed = 0;
+                    Steering = 0;
+                }
+                //only reach target when drive auto
+                if (Settings.DriveMode == DriveMode.Autonomous || Settings.DriveMode == DriveMode.SemiAutonomous)
+                {
+                    //check if reached
+                    if (NextWaypointDistance < ReachWaypointZone)
+                    {
+                        State = DriveState.Idle;
                     }
 
+                    //TargetDistance = WayPoint.GetDistance(this.Latitude, this.Longitude, TargetWaypoint.Lat, TargetWaypoint.Long);
+
+                    //if (TargetDistance < ReachWaypointZone)
+                    //    State=DriveState.GrabPayloadManual;
+
+
                 }
-
-                /*if (Settings.DriveMode == DriveMode.Autonomous)
-                {
-                    Speed = 
-                }*/
-                NextWaypointBearing = WayPoint.GetBearing(this.Latitude, this.Longitude, nextWaypoint.Lat, nextWaypoint.Long);
-                //calculate difference angle
-                double errorWaypoint = NextWaypointBearing - Heading;
-                if (errorWaypoint > Math.PI)
-                    errorWaypoint -= Math.PI * 2.0;
-                else if (errorWaypoint < -Math.PI)
-                    errorWaypoint += Math.PI * 2.0;
-                NextWaypointBearingError = errorWaypoint;
             }
-            else
-                State = DriveState.Idle;
-
-            if (imu.GoodData)
-            {
-                //if use gps only to drive
-                //apply steer control
-                double TempSteering = NextWaypointBearingError * SteerRatio / Math.PI;
-                // SteerPID.Feed(error);
-                Steering = CloseBoundary ? Math.Min(Math.Max(TempSteering, -1000), 1000)
-                                         : Math.Min(Math.Max(TempSteering * OutsideSteerRatio, -1000), 1000);
-                //set speed
-                Speed = InsideBoundary ? FullSpeed : FullSpeed * OutsideSpeedRatio;
-            }
-            else
-            {
-                //set all to 0 if no gps lock
-                Speed = 0;
-                Steering = 0;
-            }
-
-            //only reach target when drive auto
-            if (Settings.DriveMode == DriveMode.Autonomous || Settings.DriveMode == DriveMode.SemiAutonomous)
-                {
-                //check if reached
-                if (NextWaypointDistance < ReachWaypointZone)
-                    State = DriveState.Idle;
-                }
-            
         }
 
         #endregion Drive To Start

@@ -1527,7 +1527,7 @@ namespace NGCP.UGV
             /// <summary>
             /// Rate of board cast in sequencial control in ms
             /// </summary>
-            public int BoardCastRate = 50;
+            public int BoardCastRate = 750;
 
             /// <summary>
             /// IMU Gain
