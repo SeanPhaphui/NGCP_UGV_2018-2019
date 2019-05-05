@@ -1294,6 +1294,7 @@ namespace NGCP.UGV
                 GenerateSearchPath();
                 usePathGen = false;
                 goToSafe = true;
+                udp_CameraMode.SendTo(new byte[] { 0x02 }, endPoint);
                 State = DriveState.Test;
             }
             else if (Waypoints.Count == 0 && !usePathGen)
