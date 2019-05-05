@@ -465,6 +465,7 @@ namespace NGCP.UGV
         /// </summary>
         public bool CommOverride { get; private set; }
 
+        UGVXbee xbee;
         /// <summary>
         /// IMU of UGV
         /// </summary>
@@ -938,23 +939,26 @@ namespace NGCP.UGV
             ////open communication port
             if(Settings.UseXBeeComm)
             {
-                //construct xbee
-                Xbee = new Serial(Settings.CommPort, Settings.CommBaud);
-                Xbee.EscapeToken = new byte[] { 253, 254, 255 };
-                Links.Add("XBee", Xbee);
-                //define callback
-                Xbee.PackageReceived = (bytes =>
+                xbee = new UGVXbee(Settings.CommPort, Settings.CommBaud, Settings.CommAddresses);
+                xbee.ReceiveConnAck += (o, eventArgs) =>
                 {
-                    Thread.CurrentThread.Priority = ThreadPriority.BelowNormal;
-                    if (bytes.Length != 4)
-                        return;
-                    if (bytes[0] != 0 || bytes[3] != 0)
-                        return;
-                    CommWheel = bytes[1];
-                    CommSteering = bytes[2];
-                });
-                //start                
-                Xbee.Start();
+                    boardcastTimer.Start();
+                }; // start sending update messages 
+                xbee.ReceiveAddMission += (o, eventArgs) =>
+                {
+                    Waypoints.Enqueue(xbee.AddUGVWaypoint());
+                    State = xbee.SetUGVState();
+                }; // start task 
+                xbee.ReceivePause += (o, eventArgs) =>
+                {
+                    xbee.GetUGVState(State);
+                    State = DriveState.Idle;
+                }; // pause 
+                xbee.ReceiveResume += (o, eventArgs) =>
+                {
+                    State = xbee.ReturnFromPause();
+                }; // resume 
+                xbee.ReceiveStop += (o, eventArgs) => { }; // stop mission 
             }
 
             #endregion Communication Connection
@@ -964,7 +968,7 @@ namespace NGCP.UGV
             boardcastTimer.Interval = Settings.BoardCastRate;
             //start timers
             controlTimer.Start();
-            boardcastTimer.Start();
+         //   boardcastTimer.Start();
             //start do work in a separate thread
             ThreadPool.QueueUserWorkItem(new WaitCallback(StartBehavior));
             Thread dowork = new Thread(new ThreadStart(DoWork));

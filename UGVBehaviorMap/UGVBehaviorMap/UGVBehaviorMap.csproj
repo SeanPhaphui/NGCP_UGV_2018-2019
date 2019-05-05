@@ -189,6 +189,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="dynamixel.cs" />
+    <Compile Include="MsgClass.cs" />
     <Compile Include="SystemState.cs" />
     <Compile Include="UGV.Behavior.cs" />
     <Compile Include="UGV.cs" />
