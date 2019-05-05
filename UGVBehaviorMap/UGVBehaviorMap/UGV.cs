@@ -141,6 +141,15 @@ namespace NGCP.UGV
                 armrotation = value; 
             }
         }
+        private int sonardistance; 
+        public int SonarDistance
+        {
+            get { return sonardistance; }
+            set
+            {
+                sonardistance = value; 
+            }
+        }
         #endregion Autonomous Related
 
         /// <summary>
@@ -703,7 +712,8 @@ namespace NGCP.UGV
             //open a fpga serial port
             fpga = new Serial(Settings.FPGAPort, Settings.FPGABaud);
             // for temp solution
-            tempfpga = new Serial("COM27", 115200);
+            tempfpga = new Serial("COM15", 115200);
+           // tempfpga.PackageMode = Serial.PackageModes.;
             //
             fpga.EscapeToken = new byte[] { 251, 252, 253, 254, 255 };
             Links.Add("FPGA FTDI", fpga);//change back to FPGA
@@ -719,11 +729,16 @@ namespace NGCP.UGV
                 
                 Console.WriteLine("\n");
             });
+            tempfpga.PackageReceived = (bytes =>
+            {
+                Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
+                sonardistance = (int)bytes[0] * 2;
+            });
             //start
             if (Settings.UseFPGA)
                 fpga.Start();
             //For temporary solution
-            //tempfpga.Start();
+            tempfpga.Start();
             //
             #endregion FPGA Connection
 
@@ -1293,7 +1308,7 @@ namespace NGCP.UGV
             {
                 ArmRotationtemp = armrotation;
                 int DynamixelArmRotation = Remap((float)armrotation, 180, 0, 4000, -4000);
-                dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, TURRENT, ADDR_MX_GOAL_POSITION, (ushort)DynamixelArmRotation);
+                //dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, TURRENT, ADDR_MX_GOAL_POSITION, (ushort)DynamixelArmRotation);
             }
          //Controls for Wheel speed
             int WheelSpeed = (int)FinalFrontWheel;

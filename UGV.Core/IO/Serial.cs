@@ -92,6 +92,7 @@ namespace UGV.Core.IO
             message = new List<byte>();
             COM = new SerialPort(portName, baudRate, Parity.None, 8, StopBits.One);
             COM.DataReceived += new SerialDataReceivedEventHandler(OnDataReceived);
+            COM.ReceivedBytesThreshold = 1;
         }
 
         public Serial(string portName, int baudRate, int checkTime)
@@ -171,7 +172,14 @@ namespace UGV.Core.IO
         /// </summary>
         void OnDataReceived(object sender, SerialDataReceivedEventArgs args)
         {
+
             //count++;
+            byte ReadPack = (byte)COM.ReadByte();
+            byte[] SendPack = new byte[1];
+            SendPack[0] = ReadPack;
+            PackageReceived(SendPack);
+            COM.DiscardInBuffer();
+            /* OLD UGV CODE PLEASE USE RETURN 
             while (COM.BytesToRead > 0)
             {
                 //read byte from port
@@ -260,7 +268,7 @@ namespace UGV.Core.IO
                         catch (IndexOutOfRangeException) { }
                     }
                 }
-            }
+            }*/
         }
         //reading a package
         void OnTick(object sender, System.Timers.ElapsedEventArgs e)
