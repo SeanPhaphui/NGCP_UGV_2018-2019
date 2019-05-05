@@ -105,6 +105,9 @@ namespace NGCP.UGV
 
             TestObjectFound = 13,
 
+            WaitForStart = 14,
+            
+            CameraSweep = 15 
         }
 
         /// <summary>
@@ -151,7 +154,6 @@ namespace NGCP.UGV
         bool usePathGen = true; //false for testing purposes
 
         bool goToObject = false;
-        double Yaw = 0;
         int oneTime = 1;
         bool swap = false;
         int DistanceLessCount = 0;
@@ -276,6 +278,10 @@ namespace NGCP.UGV
                     Test();
                 else if (State == DriveState.TestObjectFound)
                     TestObjectFound();
+                else if (State == DriveState.WaitForStart)
+                    WaitForStart();
+                else if (State == DriveState.CameraSweep)
+                    CamSweep(); 
                 //prevent Overload
                 Thread.Sleep(SleepTime);
             }
@@ -304,12 +310,12 @@ namespace NGCP.UGV
             WayPoint currentLocation = new WayPoint(Latitude, Longitude, 0);
             List<WayPoint> map = new List<WayPoint>();
             double Total_Orintation;
-            double distance = 0;
-            if (Yaw < 0)
+            double distance = sonardistance;
+            if (gimbalyaw < 0)
             {
-                Yaw = (2 * Math.PI + Yaw);
+                gimbalyaw = (2 * (float)Math.PI + gimbalyaw);
             }
-            Total_Orintation = Heading + Yaw;
+            Total_Orintation = Heading + gimbalyaw;
             if (Total_Orintation > 2 * Math.PI)
             {
                 Total_Orintation = Total_Orintation - 2 * Math.PI;
@@ -375,20 +381,7 @@ namespace NGCP.UGV
          //    State = DriveState.GotoBall;
          //    return;
          //}
-         if (Waypoints.Count == 0 && usePathGen && !goToSafe)
-         {
-            State = DriveState.GenerateSearchPath;
-            Speed = 0;
-            Steering = 0;
-            GenerateSearchPath();
-            usePathGen = false;
-            goToSafe = true;
-            State = DriveState.SearchTarget;
-         }
-         else if (Waypoints.Count == 0 && !usePathGen)
-         {
-            //State = DriveState.Idle;
-         }
+        
          if (Waypoints.Count > 0 && Waypoints.TryPeek(out nextWaypoint))
          {
             if (nextWaypoint != null)
@@ -469,7 +462,14 @@ namespace NGCP.UGV
          {
             Speed = 0;
             Steering = 0;
-            State = DriveState.Idle;
+            if(TargetbitBall == 1)
+                {
+                    State = DriveState.Test;
+                }
+            else
+                {
+                    State = DriveState.CameraSweep;
+                }
          }
       }
 
@@ -853,7 +853,7 @@ namespace NGCP.UGV
 
         //}
 
-        // modified generate search path behaivor
+        // modified search path behaivor
         void GenerateSearchPayloadPath()
         {
             List<WayPoint> map = new List<WayPoint>();
@@ -1232,10 +1232,21 @@ namespace NGCP.UGV
             LocalSpeed = 0;
             LocalSteering = 0;
             armrotation = 90;
-            SendControl();
             //Enabled = false;
         }
-
+        void WaitForStart()
+        {
+            Speed = 0;
+            Steering = 0;
+            LocalSpeed = 0;
+            LocalSteering = 0;
+            armrotation = 90;
+            //Enabled = false;
+            if (Waypoints.Count > 0)
+            {
+                State = DriveState.SearchTarget;
+            }
+        }
         #endregion Idle
 
         #region Grap Payload Manual
@@ -1266,14 +1277,9 @@ namespace NGCP.UGV
             //    return;
             //}
 
-            if (sonardistance >=400 )//centameters
+            if (sonardistance >=400 && Waypoints.Count == 0)//centameters
             {
-                DistanceLessCount++;
-                if (DistanceLessCount == 5)
-                { 
-                    TestObjectFound();
-                    DistanceLessCount = 0;
-                }
+                State = DriveState.TestObjectFound;
             }
             else if (Waypoints.Count == 0 && usePathGen && !goToSafe)
             {
@@ -1304,7 +1310,7 @@ namespace NGCP.UGV
                     NextWaypointDistance = WayPoint.GetDistance(this.Latitude, this.Longitude, nextWaypoint.Lat, nextWaypoint.Long);
 
                     //// ************* Obstacle Avoidance Code ******************
-                    nextWaypoint = obstacleAvoidance(nextWaypoint, currentLocation);
+                    //nextWaypoint = obstacleAvoidance(nextWaypoint, currentLocation);##### uncomment if you want obstacle avoidance
                     // Everything is in meters and radians
                     //if (Settings.UseVision)
                     //{
@@ -1383,8 +1389,16 @@ namespace NGCP.UGV
         #region Test Object Found
         void TestObjectFound()
         {
-            if ((TargetbitBottle == 1 || TargetBall == 1) && sonardistance > 100)
+            if (TargetbitBottle == 1 || TargetbitBall == 1) 
             {
+                if(TargetbitBottle == 1 && sonardistance <= 400)
+                {
+                    State = DriveState.Test;
+                }
+                if(TargetbitBottle == 1 && sonardistance <= 100)
+                {
+                    State = DriveState.Idle;
+                }
                 // use camera angle to guide the UGV to object
                 if (gimbalyaw <= 160)
                 {
@@ -1419,10 +1433,6 @@ namespace NGCP.UGV
                 {
                     steering = 0;
                 }
-                if(TargetbitBall == 1)
-                {
-                    State = DriveState.Test;
-                }
             }
         }
         void ArmMove(int direction) // if the arm is in the way of the camera move it out of the way
@@ -1447,23 +1457,27 @@ namespace NGCP.UGV
         #endregion
         const double Alpha = 1.0;
         #region CamSweap
-        void CamSweap()
+        void CamSweep()
         {
             if(TargetbitBall == 1)
             {
                 State = DriveState.Test;
             }
-            if(Yaw <= 180 && Yaw > 10 && swap == false)
+            if(swap == false)
             {
-                Yaw -= 5;
-                if (Yaw < 10)
+                gimbalyaw -= (float)0.5;
+                if (gimbalyaw < 10)
                 {
                     swap = true;
                 }
             }
-            else if (swap == true && Yaw < 360)
+            else if (swap == true )
             {
-                Yaw += 5;
+                gimbalyaw += (float).5;
+                if(gimbalyaw > 350)
+                {
+                    swap = false; 
+                }
             }
             
            

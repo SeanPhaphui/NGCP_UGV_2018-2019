@@ -186,7 +186,7 @@ namespace UGVBehaviorMap
             UGV.Core.Navigation.WayPoint WaypointB = new UGV.Core.Navigation.WayPoint(34.0590510, -117.8219402,0);
             UGV.Core.Navigation.WayPoint WaypointC = new UGV.Core.Navigation.WayPoint(34.0594426, -117.8220626,0);
 
-            //UGV.Core.Navigation.WayPoint WaypointB = new UGV.Core.Navigation.WayPoint(34.0590760, -117.8213999, 0);
+          //  UGV.Core.Navigation.WayPoint WaypointB = new UGV.Core.Navigation.WayPoint(34.0590760, -117.8213999, 0);
             /*   UGV.Core.Navigation.WayPoint WaypointC = new UGV.Core.Navigation.WayPoint(34.0590225, -117.8216451, 0);
                UGV.Core.Navigation.WayPoint WaypointD = new UGV.Core.Navigation.WayPoint(34.0587586, -117.8218449, 0);
    */
@@ -315,7 +315,7 @@ namespace UGVBehaviorMap
             ugv.DefaultLocation = EMDefault;
 
             // added this line to change state of the ugv and start in the grabPayloadManual method
-            ugv.State = NGCP.UGV.UGV.DriveState.TestObjectFound;
+            ugv.State = NGCP.UGV.UGV.DriveState.WaitForStart;
 
             //check for enable
             do

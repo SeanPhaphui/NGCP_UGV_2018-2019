@@ -738,7 +738,7 @@ namespace NGCP.UGV
             if (Settings.UseFPGA)
                 fpga.Start();
             //For temporary solution
-            tempfpga.Start();
+            //tempfpga.Start();
             //
             #endregion FPGA Connection
 
