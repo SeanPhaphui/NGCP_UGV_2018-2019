@@ -712,7 +712,7 @@ namespace NGCP.UGV
             //open a fpga serial port
             fpga = new Serial(Settings.FPGAPort, Settings.FPGABaud);
             // for temp solution
-            tempfpga = new Serial("COM27", 115200);
+            tempfpga = new Serial("COM8", 115200);
             //
             fpga.EscapeToken = new byte[] { 251, 252, 253, 254, 255 };
             Links.Add("FPGA FTDI", fpga);//change back to FPGA
@@ -1307,7 +1307,7 @@ namespace NGCP.UGV
             {
                 ArmRotationtemp = armrotation;
                 int DynamixelArmRotation = Remap((float)armrotation, 180, 0, 4000, -4000);
-                dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, TURRENT, ADDR_MX_GOAL_POSITION, (ushort)DynamixelArmRotation);
+                //dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, TURRENT, ADDR_MX_GOAL_POSITION, (ushort)DynamixelArmRotation);
             }
          //Controls for Wheel speed
             int WheelSpeed = (int)FinalFrontWheel;
