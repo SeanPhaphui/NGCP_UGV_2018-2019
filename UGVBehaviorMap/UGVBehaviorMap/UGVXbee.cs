@@ -325,6 +325,10 @@ namespace NGCP.UGV
                 args.Msg = Msg;
                 NextUGVWaypoint = new WayPoint(Msg.MissionInfo.Lat, Msg.MissionInfo.Lng, 0);
                 UGVState = UGV.DriveState.SearchTarget;
+                if(Msg.MissionInfo.TaskType == "deliverTarget")
+                {
+                    UGVState = UGV.DriveState.DriveToStart;
+                }
                 EventHandler<ReceiveAddMissionEventArgs> handler = ReceiveAddMission;
                 handler?.Invoke(this, args);
                 VehicleStatus = "running";

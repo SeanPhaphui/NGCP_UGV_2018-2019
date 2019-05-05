@@ -958,7 +958,11 @@ namespace NGCP.UGV
                 {
                     State = xbee.ReturnFromPause();
                 }; // resume 
-                xbee.ReceiveStop += (o, eventArgs) => { }; // stop mission 
+                xbee.ReceiveStop += (o, eventArgs) => 
+                {
+                    State = DriveState.WaitForStart;
+                    Waypoints = new ConcurrentQueue<WayPoint>();
+                }; // stop mission 
             }
 
             #endregion Communication Connection
