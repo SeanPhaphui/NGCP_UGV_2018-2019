@@ -92,6 +92,7 @@ namespace UGV.Core.IO
             message = new List<byte>();
             COM = new SerialPort(portName, baudRate, Parity.None, 8, StopBits.One);
             COM.DataReceived += new SerialDataReceivedEventHandler(OnDataReceived);
+            COM.ReceivedBytesThreshold = 1;
         }
 
         public Serial(string portName, int baudRate, int checkTime)

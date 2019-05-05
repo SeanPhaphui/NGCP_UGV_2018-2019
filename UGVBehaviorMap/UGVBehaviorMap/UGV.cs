@@ -712,7 +712,8 @@ namespace NGCP.UGV
             //open a fpga serial port
             fpga = new Serial(Settings.FPGAPort, Settings.FPGABaud);
             // for temp solution
-            tempfpga = new Serial("COM8", 115200);
+            tempfpga = new Serial("COM15", 115200);
+           // tempfpga.PackageMode = Serial.PackageModes.;
             //
             fpga.EscapeToken = new byte[] { 251, 252, 253, 254, 255 };
             Links.Add("FPGA FTDI", fpga);//change back to FPGA
@@ -730,7 +731,7 @@ namespace NGCP.UGV
             });
             tempfpga.PackageReceived = (bytes =>
             {
-                Thread.CurrentThread.Priority = ThreadPriority.Normal;
+                Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
                 sonardistance = (int)bytes[0] * 2;
             });
             //start
