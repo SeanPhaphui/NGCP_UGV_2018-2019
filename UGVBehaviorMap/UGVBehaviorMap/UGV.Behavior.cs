@@ -103,13 +103,14 @@ namespace NGCP.UGV
 
             Test = 12,
 
+            TestObjectFound = 13,
 
         }
 
         /// <summary>
         /// Sleep Time each cycle
         /// </summary>
-        const int SleepTime = 100;
+        const int SleepTime = 10;
 
         /// <summary>
         /// Full Speed for Autonomous
@@ -148,7 +149,7 @@ namespace NGCP.UGV
         /// Whether to use search path generated from autonomous behavior method
         /// </summary>
         bool usePathGen = true; //false for testing purposes
-        bool ObjectFound = false;
+
         bool goToObject = false;
         double Yaw = 0;
         int oneTime = 1;
@@ -271,6 +272,8 @@ namespace NGCP.UGV
                 }
                 else if (State == DriveState.Test)
                     Test();
+                else if (State == DriveState.TestObjectFound)
+                    TestObjectFound();
                 //prevent Overload
                 Thread.Sleep(SleepTime);
             }
@@ -290,7 +293,7 @@ namespace NGCP.UGV
 
         #region Autonomous Behaivors
 
-               #region Generate Search Path
+        #region Generate Search Path
 
       void GenerateSearchPath() // Red Ball has been found and we have the distance to the ball as 3 meters
         {
@@ -355,7 +358,7 @@ namespace NGCP.UGV
     
       #endregion
           
-      #region Search Target
+        #region Search Target
 
       /// <summary>
       /// Search target mode
@@ -1225,6 +1228,7 @@ namespace NGCP.UGV
             Steering = 0;
             LocalSpeed = 0;
             LocalSteering = 0;
+            armrotation = 90;
             SendControl();
             //Enabled = false;
         }
@@ -1271,7 +1275,8 @@ namespace NGCP.UGV
             }
             else if (Waypoints.Count == 0 && !usePathGen)
             {
-                //State = DriveState.Idle;
+                State = DriveState.Idle;
+                Idle();
             }
             if (Waypoints.Count > 0 && Waypoints.TryPeek(out nextWaypoint))
             {
@@ -1356,6 +1361,69 @@ namespace NGCP.UGV
                 State = DriveState.Idle;
             }
         }
+        #endregion
+
+        #region Test Object Found
+        void TestObjectFound()
+        {
+            if (TargetbitBottle == 1 && sonardistance > 200)
+            {
+                // use camera angle to guide the UGV to object
+                if (gimbalyaw <= 160)
+                {
+                    // rotate the wheels to move in the direction the gimbal is pointing
+                    //steering = -gimbalyaw;
+                    steering = 1000;
+              //      if (armrotation <= 90)
+              //      {
+                        ArmMove(-1);
+                //    }
+                }
+                else if (gimbalyaw >= 200)
+                {
+                    //rotate the wheels to the direction of the gimbal 
+                    //steering = gimbalyaw;
+                //   if (armrotation >= 90)
+                //    {
+                        ArmMove(1);
+                //    }
+                    steering = -1000;
+                }
+                else if (gimbalyaw > 160 && gimbalyaw < 179)
+                {
+                    // set steering to 0
+                    steering = (180 - gimbalyaw) * 50; //Map steering from 1000 to 50;
+                }
+                else if (gimbalyaw < 200 && gimbalyaw > 181)
+                {
+                    steering = (180 - gimbalyaw) * 50; //Map steering from -1000 to -50;
+                }
+                else
+                {
+                    steering = 0;
+                    localSpeed = 0; 
+                }
+            }
+        }
+        void ArmMove(int direction) // if the arm is in the way of the camera move it out of the way
+        {
+            if (direction == 1)
+            {
+                // move the arm to the right
+                armrotation = 145;
+            }
+            else if (direction == -1)
+            {
+                // move the arm to the left
+                armrotation =35;
+            }
+            else
+            {
+                // move the arm to the center
+                armrotation = 90;
+            }
+        }
+
         #endregion
         const double Alpha = 1.0;
 
