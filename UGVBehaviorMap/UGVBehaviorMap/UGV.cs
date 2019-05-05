@@ -141,6 +141,15 @@ namespace NGCP.UGV
                 armrotation = value; 
             }
         }
+        private int sonardistance; 
+        public int SonarDistance
+        {
+            get { return sonardistance; }
+            set
+            {
+                sonardistance = value; 
+            }
+        }
         #endregion Autonomous Related
 
         /// <summary>
@@ -719,11 +728,16 @@ namespace NGCP.UGV
                 
                 Console.WriteLine("\n");
             });
+            tempfpga.PackageReceived = (bytes =>
+            {
+                Thread.CurrentThread.Priority = ThreadPriority.Normal;
+                sonardistance = (int)bytes[0] * 2;
+            });
             //start
             if (Settings.UseFPGA)
                 fpga.Start();
             //For temporary solution
-            //tempfpga.Start();
+            tempfpga.Start();
             //
             #endregion FPGA Connection
 
