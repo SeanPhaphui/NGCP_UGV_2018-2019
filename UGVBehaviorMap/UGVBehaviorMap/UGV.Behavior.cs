@@ -1401,6 +1401,7 @@ namespace NGCP.UGV
                 else
                 {
                     steering = 0;
+                    localSpeed = 0; 
                 }
             }
         }
