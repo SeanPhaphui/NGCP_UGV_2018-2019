@@ -118,16 +118,16 @@ createtrackbar()
 # settrackbarvalues(minhue, maxhue, minsat, maxsat, minlum, maxlum):
 
 ## 1:30 PM No clouds (Pomona) Bright Red Values
-##settrackbarvalues(1709, 1800, 1096, 2550, 76, 2474)
+settrackbarvalues(1709, 1800, 1096, 2550, 76, 2474)
 
 ## AirBnb Filter
-settrackbarvalues(1736,1800, 1036, 2550, 489, 2474)
+##settrackbarvalues(1736,1800, 1036, 2550, 489, 2474)
 
 
 x = 0
 y = 0
 ballfound = 0
-ta = 835
+ta = 800
 
 counter = 0
 while phase == 1:
@@ -159,7 +159,7 @@ while phase == 1:
     
     
 
-    ret,thresh = cv2.threshold(mask, 40, 255, 0)
+    ret,thresh = cv2.threshold(total, 40, 255, 0)
     im2,contours,hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     
       
@@ -173,7 +173,7 @@ while phase == 1:
         M = cv2.moments(c)
         a = cv2.contourArea(c)
         if a > ta:
-            if counter == 5:                     
+            if counter == 6:                     
                 ballfound =  1
 
             cv2.drawContours(output, c, -1, (0, 0, 255), 3)
@@ -186,7 +186,7 @@ while phase == 1:
             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
             if ta < 900:
                 ta = ta + 4
-            if counter < 5:
+            if counter < 6:
                 counter = counter + 1
         
     
@@ -205,7 +205,7 @@ while phase == 1:
         
         else:
             counter = 0
-            ta = 835
+            ta = 800
             ballfound = 0
 
             cv2.imshow('mask', total)
@@ -224,7 +224,7 @@ while phase == 1:
     cv2.imshow('image',output)
 
     phase = ballsend(x, y, ballfound, phase)
-    
+    ta = 800
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         maincam.release()
@@ -477,5 +477,5 @@ cv2.destroyAllWindows()
 ##    
 ##
 ##armcam.release()
-##cv2.destroyAllWindows() 
+##cv2.destroyAllWindows()
 
