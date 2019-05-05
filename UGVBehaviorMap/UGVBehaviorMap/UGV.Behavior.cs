@@ -1281,7 +1281,7 @@ namespace NGCP.UGV
             //    State = DriveState.GotoBall;
             //    return;
             //}
-
+            gimbalyaw = 180;
             if (sonardistance >=400 && Waypoints.Count == 0)//centameters
             {
                 State = DriveState.TestObjectFound;
