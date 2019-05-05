@@ -465,7 +465,7 @@ namespace NGCP.UGV
             }
         }
 
-        public void SendUpdate(double lat, double lng, int heading)
+        public void SendUpdate(double lat, double lng, double heading)
         {
             SendMessage(0, new UpdateMsg()
             {

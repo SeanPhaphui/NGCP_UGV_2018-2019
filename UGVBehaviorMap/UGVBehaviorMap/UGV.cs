@@ -940,7 +940,7 @@ namespace NGCP.UGV
                 xbee = new UGVXbee(Settings.CommPort, Settings.CommBaud, Settings.CommAddress);
                 xbee.ReceiveConnAck += (o, eventArgs) => 
                 {
-       
+                    boardcastTimer.Start();
                 }; // start sending update messages 
                 xbee.ReceiveAddMission += (o, eventArgs) => 
                 {
@@ -966,7 +966,7 @@ namespace NGCP.UGV
             boardcastTimer.Interval = Settings.BoardCastRate;
             //start timers
             controlTimer.Start(); 
-            boardcastTimer.Start();
+            //boardcastTimer.Start();
             //start do work in a separate thread
             ThreadPool.QueueUserWorkItem(new WaitCallback(StartBehavior));
             Thread dowork = new Thread(new ThreadStart(DoWork));
@@ -1596,19 +1596,7 @@ namespace NGCP.UGV
         /// </summary>
         void BoardCast()
         {
-            //capture current state
-            UGVState state = UGVState.Capture(this);
-            if (Settings.UseVision && GPSLock)
-            {
-                SystemState sysState = state.ToSystemState(this);
-                //serialize state and send out
-                //@TODO I have no idea what this is trying to do it doesn't work on my compueter
-                /*
-                string xml = Serialize.XmlSerialize<SystemState>(sysState);
-                udp_lidar.Send(Encoding.ASCII.GetBytes(xml));
-                */
-            }
-            //inc
+            xbee.SendUpdate(Latitude, Longitude, Heading);
             dividerCount++;
 
         }
@@ -1839,7 +1827,7 @@ namespace NGCP.UGV
             /// <summary>
             /// Rate of board cast in sequencial control in ms
             /// </summary>
-            public int BoardCastRate = 50;
+            public int BoardCastRate = 750;
 
             /// <summary>
             /// IMU Gain
