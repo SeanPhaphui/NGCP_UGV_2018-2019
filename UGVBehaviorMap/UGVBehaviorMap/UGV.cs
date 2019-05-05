@@ -1294,18 +1294,7 @@ namespace NGCP.UGV
         void BoardCast()
         {
             //capture current state
-            UGVState state = UGVState.Capture(this);
-            if (Settings.UseVision && GPSLock)
-            {
-                SystemState sysState = state.ToSystemState(this);
-                //serialize state and send out
-                //@TODO I have no idea what this is trying to do it doesn't work on my compueter
-                /*
-                string xml = Serialize.XmlSerialize<SystemState>(sysState);
-                udp_lidar.Send(Encoding.ASCII.GetBytes(xml));
-                */
-            }
-            //inc
+            xbee.SendUpdate(Latitude, Longitude, Heading);
             dividerCount++;
 
         }
