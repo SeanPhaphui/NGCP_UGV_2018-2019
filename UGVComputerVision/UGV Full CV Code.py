@@ -121,13 +121,13 @@ createtrackbar()
 ##settrackbarvalues(1709, 1800, 1096, 2550, 76, 2474)
 
 ## AirBnb Filter
-settrackbarvalues(1736,1800, 1036, 2550, 489, 2474)
+settrackbarvalues(1166,1800, 609, 2550, 540, 2550)
 
 
 x = 0
 y = 0
 ballfound = 0
-ta = 835
+ta = 200
 
 counter = 0
 while phase == 1:
@@ -184,7 +184,7 @@ while phase == 1:
 
             cv2.putText(output, "center", (x - 20, y - 20),
             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-            if ta < 900:
+            if ta < 500:
                 ta = ta + 4
             if counter < 5:
                 counter = counter + 1
@@ -205,7 +205,7 @@ while phase == 1:
         
         else:
             counter = 0
-            ta = 835
+            ta = 200
             ballfound = 0
 
             cv2.imshow('mask', total)
@@ -222,7 +222,7 @@ while phase == 1:
         
     cv2.imshow('mask', total)
     cv2.imshow('image',output)
-
+    ta = 200
     phase = ballsend(x, y, ballfound, phase)
     
 
