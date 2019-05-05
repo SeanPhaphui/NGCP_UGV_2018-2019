@@ -1383,7 +1383,7 @@ namespace NGCP.UGV
         #region Test Object Found
         void TestObjectFound()
         {
-            if ((TargetbitBottle == 1 || TargetbitBall == 1) && sonardistance > 100)
+            if ((TargetbitBottle == 1 || TargetBall == 1) && sonardistance > 100)
             {
                 // use camera angle to guide the UGV to object
                 if (gimbalyaw <= 160)

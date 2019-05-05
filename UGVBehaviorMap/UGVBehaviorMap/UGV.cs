@@ -465,8 +465,6 @@ namespace NGCP.UGV
         /// </summary>
         public bool CommOverride { get; private set; }
 
-
-        UGVXbee xbee;
         /// <summary>
         /// IMU of UGV
         /// </summary>
@@ -740,7 +738,7 @@ namespace NGCP.UGV
             if (Settings.UseFPGA)
                 fpga.Start();
             //For temporary solution
-            //tempfpga.Start();
+            tempfpga.Start();
             //
             #endregion FPGA Connection
 
@@ -1038,7 +1036,7 @@ namespace NGCP.UGV
                 commProtocol.initializeConnection(Settings.CommPort, Settings.CommBaud);
                 //parse address to add
                 //this is a bad way to do this should be changed michael wallace 5/12/2017
-                string[] words = Settings.CommAddress.Split(null);
+                string[] words = Settings.CommAddresses.Split(null);
                 int[] destNode = Array.ConvertAll(words.Where((str, ix) => ix % 2 == 0).ToArray(), int.Parse);//even
                 string[] destAddress = words.Where((str, ix) => ix % 2 == 1).ToArray();//odd
                 if (destNode.Length == destAddress.Length)
@@ -1057,30 +1055,26 @@ namespace NGCP.UGV
 
                 commProtocol.start();
             }
-            else if(true)
+            else if(Settings.UseXBeeComm)
             {
-                xbee = new UGVXbee(Settings.CommPort, Settings.CommBaud, "0013A2004194754E");
-                xbee.ReceiveConnAck += (o, eventArgs) =>
+                //construct xbee
+                Xbee = new Serial(Settings.CommPort, Settings.CommBaud);
+                Xbee.EscapeToken = new byte[] { 253, 254, 255 };
+                Links.Add("XBee", Xbee);
+                //define callback
+                Xbee.PackageReceived = (bytes =>
                 {
-                    boardcastTimer.Start();
-                }; // start sending update messages 
-                xbee.ReceiveAddMission += (o, eventArgs) =>
-                {
-                    Waypoints.Enqueue(xbee.AddUGVWaypoint());
-                    State = xbee.SetUGVState();
-                }; // start task 
-                xbee.ReceivePause += (o, eventArgs) =>
-                {
-                    xbee.GetUGVState(State);
-                    State = DriveState.Idle;
-                }; // pause 
-                xbee.ReceiveResume += (o, eventArgs) =>
-                {
-                    State = xbee.ReturnFromPause();
-                }; // resume 
-                xbee.ReceiveStop += (o, eventArgs) => { }; // stop mission 
+                    Thread.CurrentThread.Priority = ThreadPriority.BelowNormal;
+                    if (bytes.Length != 4)
+                        return;
+                    if (bytes[0] != 0 || bytes[3] != 0)
+                        return;
+                    CommWheel = bytes[1];
+                    CommSteering = bytes[2];
+                });
+                //start                
+                Xbee.Start();
             }
-
 
             #endregion Communication Connection
 
@@ -1089,7 +1083,7 @@ namespace NGCP.UGV
             boardcastTimer.Interval = Settings.BoardCastRate;
             //start timers
             controlTimer.Start();
-
+            boardcastTimer.Start();
             //start do work in a separate thread
             ThreadPool.QueueUserWorkItem(new WaitCallback(StartBehavior));
             Thread dowork = new Thread(new ThreadStart(DoWork));
@@ -1415,7 +1409,35 @@ namespace NGCP.UGV
         void BoardCast()
         {
             //capture current state
-            xbee.SendUpdate(Latitude, Longitude, Heading);
+            UGVState state = UGVState.Capture(this);
+            if (Settings.UseVision && GPSLock)
+            {
+                SystemState sysState = state.ToSystemState(this);
+                //serialize state and send out
+                //@TODO I have no idea what this is trying to do it doesn't work on my compueter
+                /*
+                string xml = Serialize.XmlSerialize<SystemState>(sysState);
+                udp_lidar.Send(Encoding.ASCII.GetBytes(xml));
+                */
+            }
+            if (Settings.UseCommProtocol)
+            {
+                if (dividerCount % Settings.PositionRate == 0)
+                {
+                    commProtocol.SendState(state);
+                    commProtocol.sendMode(Settings.DriveMode);
+                    //@TODO ARM replace the arguments and delete the dummy variables
+                    //int position1 = 0;
+                    //int position2 = 0;
+                    //int position3 = 0;
+                    //int position4 = 0;
+                    //byte UGV_ARM_CONTROLER = 100;//define some where else should be changed to a settings value michael wallace 5/12/2017
+                    //commProtocol.SendArmPosition(position1, position2, position3, position4, UGV_ARM_CONTROLER);
+                    // sending the Base, Shoulder, Elbow, and Gripper present positions
+                    //commProtocol.SendArmPosition(arm_ugv.Base.dxl_present_position, arm_ugv.Shoulder.dxl_present_position, arm_ugv.Elbow.dxl_present_position, arm_ugv.Gripper.dxl_present_position, UGV_ARM_CONTROLER);
+                }
+            }
+            //inc
             dividerCount++;
 
         }
@@ -1648,7 +1670,7 @@ namespace NGCP.UGV
             /// <summary>
             /// Rate of board cast in sequencial control in ms
             /// </summary>
-            public int BoardCastRate = 750;
+            public int BoardCastRate = 50;
 
             /// <summary>
             /// IMU Gain
@@ -1672,9 +1694,9 @@ namespace NGCP.UGV
             public string CommPort = "COM0";
             public int CommBaud = 57600;
             public int CommNode = 1;
-            public string CommAddress = "";
-            public bool UseUGVXbee = true;
-            public bool UseCommProtocol = false;
+            public string CommAddresses = "";
+            public bool UseXBeeComm = true;
+            public bool UseCommProtocol = true;
             public byte SteeringLimit = 127; //94
             public bool UseVision = true;
             public bool UseCamera = true;
