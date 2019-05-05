@@ -128,7 +128,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CommProtocol.cs" />
     <Compile Include="ConsoleDisplay.cs" />
     <Compile Include="IniFile.cs" />
     <Compile Include="MainWindow.xaml.cs">

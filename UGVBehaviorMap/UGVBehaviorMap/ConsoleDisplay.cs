@@ -72,7 +72,6 @@ namespace UGVBehaviorMap
                 {"FPGAPort", "COM7"},
                 {"FPGABaud", "9600"},
                 {"UseXBeeComm", "False"},
-                {"UseCommProtocol", "False"},
                 {"CommPort", "COM3"},
                 {"CommBaud", "57600"},
                 {"CommNode", "5"},
@@ -109,7 +108,6 @@ namespace UGVBehaviorMap
             //read configuration
             ugv.Settings.UseFPGA = Boolean.Parse(Settings["UseFPGA"]);
             ugv.Settings.UseXBeeComm = Boolean.Parse(Settings["UseXBeeComm"]);
-            ugv.Settings.UseCommProtocol = Boolean.Parse(Settings["UseCommProtocol"]);
             ugv.Settings.UseNav = Boolean.Parse(Settings["UseNav"]);
             ugv.Settings.UseVision = Boolean.Parse(Settings["UseVision"]);
             ugv.Settings.UseCamera = Boolean.Parse(Settings["UseCamera"]);

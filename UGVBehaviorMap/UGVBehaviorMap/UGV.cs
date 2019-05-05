@@ -530,16 +530,6 @@ namespace NGCP.UGV
         Serial Nav { get; set; }
 
 
-        #region CommPorotcol
-        ///<sumary>
-        ///Commprotocol Comm Info
-        ///</sumary>        
-        CommProtocol commProtocol;
-
-        ///<sumary>
-        ///Commprotocol callbacks
-        ///</sumary>    
-        #region CommProtocol callbacks
         public int VehicleWaypointCommandCallback(Comnet.Header header, Comnet.ABSPacket packet, Comnet.CommNode node)
         {
             //validate who the packet is from 1 is gcs
@@ -573,13 +563,13 @@ namespace NGCP.UGV
             {
                 NGCP.VehicleModeCommand twc = Comnet.ABSPacket.GetValue<NGCP.VehicleModeCommand>(packet);
                 Settings.DriveMode = (DriveMode)twc.vehicle_mode;
-                commProtocol.sendMode((DriveMode)twc.vehicle_mode, 100);
+                //commProtocol.sendMode((DriveMode)twc.vehicle_mode, 100);
             }
             else if (header.GetSourceID() == 100)
             {
                 NGCP.VehicleModeCommand vmc = Comnet.ABSPacket.GetValue<NGCP.VehicleModeCommand>(packet);
                 Settings.DriveMode = (DriveMode)vmc.vehicle_mode;
-                commProtocol.sendMode((DriveMode)vmc.vehicle_mode, 100);
+                //commProtocol.sendMode((DriveMode)vmc.vehicle_mode, 100);
             }
 
             //make sure you return this way to declare succes and destory the pointer(c++)
@@ -619,8 +609,6 @@ namespace NGCP.UGV
             return (Int32)(Comnet.CallBackCodes.CALLBACK_SUCCESS | Comnet.CallBackCodes.CALLBACK_DESTROY_PACKET);
         }
 
-        #endregion CommProtocol callbacks
-        #endregion CommProtocol
 
         #endregion Private Properties
 
@@ -1028,34 +1016,7 @@ namespace NGCP.UGV
             #region Communication Connection
             // commented out the snippen of code until required libraries are included
             ////open communication port
-            if (Settings.UseCommProtocol)
-            {
-
-
-                commProtocol = new CommProtocol(Settings.CommNode);
-                commProtocol.initializeConnection(Settings.CommPort, Settings.CommBaud);
-                //parse address to add
-                //this is a bad way to do this should be changed michael wallace 5/12/2017
-                string[] words = Settings.CommAddresses.Split(null);
-                int[] destNode = Array.ConvertAll(words.Where((str, ix) => ix % 2 == 0).ToArray(), int.Parse);//even
-                string[] destAddress = words.Where((str, ix) => ix % 2 == 1).ToArray();//odd
-                if (destNode.Length == destAddress.Length)
-                {
-                    for (int x = 0; x < destNode.Length; x++)
-                    {
-                        commProtocol.addAddress(destNode[x], destAddress[x]);
-                    }
-                }
-                //link call backs
-                commProtocol.LinkCallback(new NGCP.VehicleWaypointCommand(), new Comnet.CallBack(VehicleWaypointCommandCallback));
-                commProtocol.LinkCallback(new NGCP.VehicleModeCommand(), new Comnet.CallBack(VehicleModeCommandCallback));
-                commProtocol.LinkCallback(new NGCP.ArmCommand(), new Comnet.CallBack(ArmCommandCallback));
-                commProtocol.LinkCallback(new NGCP.VehicleSystemStatus(), new Comnet.CallBack(VehicleSystemStatusCallback)); 
-                commProtocol.LinkCallback(new NGCP.SpeedSteeringCommand(), new Comnet.CallBack(SpeedSteeringCallback));
-
-                commProtocol.start();
-            }
-            else if(Settings.UseXBeeComm)
+            if(Settings.UseXBeeComm)
             {
                 //construct xbee
                 Xbee = new Serial(Settings.CommPort, Settings.CommBaud);
@@ -1420,23 +1381,6 @@ namespace NGCP.UGV
                 udp_lidar.Send(Encoding.ASCII.GetBytes(xml));
                 */
             }
-            if (Settings.UseCommProtocol)
-            {
-                if (dividerCount % Settings.PositionRate == 0)
-                {
-                    commProtocol.SendState(state);
-                    commProtocol.sendMode(Settings.DriveMode);
-                    //@TODO ARM replace the arguments and delete the dummy variables
-                    //int position1 = 0;
-                    //int position2 = 0;
-                    //int position3 = 0;
-                    //int position4 = 0;
-                    //byte UGV_ARM_CONTROLER = 100;//define some where else should be changed to a settings value michael wallace 5/12/2017
-                    //commProtocol.SendArmPosition(position1, position2, position3, position4, UGV_ARM_CONTROLER);
-                    // sending the Base, Shoulder, Elbow, and Gripper present positions
-                    //commProtocol.SendArmPosition(arm_ugv.Base.dxl_present_position, arm_ugv.Shoulder.dxl_present_position, arm_ugv.Elbow.dxl_present_position, arm_ugv.Gripper.dxl_present_position, UGV_ARM_CONTROLER);
-                }
-            }
             //inc
             dividerCount++;
 
@@ -1696,7 +1640,6 @@ namespace NGCP.UGV
             public int CommNode = 1;
             public string CommAddresses = "";
             public bool UseXBeeComm = true;
-            public bool UseCommProtocol = true;
             public byte SteeringLimit = 127; //94
             public bool UseVision = true;
             public bool UseCamera = true;
