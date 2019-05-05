@@ -153,6 +153,8 @@ namespace NGCP.UGV
         bool goToObject = false;
         double Yaw = 0;
         int oneTime = 1;
+        bool swap = false;
+        int DistanceLessCount = 0;
 
         #region Properties for SearchTarget() Behaivor
 
@@ -494,6 +496,7 @@ namespace NGCP.UGV
                 {
                     CenterUGV();
                 }
+                // we need to get the proper distance to the 
                 //calculate waypoint based on camera angle and distance to target waypoint
                 double TempDistance = WayPoint.GetDistance(this.Latitude, this.Longitude, TargetWaypoint.Lat, TargetWaypoint.Long);
                 WayPoint TempWaypoint = WayPoint.Projection(new WayPoint(Latitude, Longitude, 0), Heading - TempAngle, TempDistance);
@@ -858,7 +861,7 @@ namespace NGCP.UGV
             WayPoint center = WayPoint.GetCenter(Boundary);
             nextWayPoint = center;
             map.Add(nextWayPoint);
-            double distance = 0.5; //meters
+            double distance = sonardistance/100; //meters
 
             // ===== spiral pattern ======
             /*double[] bearing = new double[8] { 0, Math.PI / 4, Math.PI / 2, 3 * Math.PI / 4, Math.PI, -3 * Math.PI / 4, -Math.PI / 2, -Math.PI / 4 };
@@ -1262,9 +1265,18 @@ namespace NGCP.UGV
             //    State = DriveState.GotoBall;
             //    return;
             //}
-            if (Waypoints.Count == 0 && usePathGen && !goToSafe)
-            {
 
+            if (sonardistance >=400 )//centameters
+            {
+                DistanceLessCount++;
+                if (DistanceLessCount == 5)
+                { 
+                    TestObjectFound();
+                    DistanceLessCount = 0;
+                }
+            }
+            else if (Waypoints.Count == 0 && usePathGen && !goToSafe)
+            {
                 State = DriveState.GenerateSearchPath;
                 Speed = 0;
                 Steering = 0;
@@ -1282,6 +1294,11 @@ namespace NGCP.UGV
             {
                 if (nextWaypoint != null)
                 {
+                    if(TargetbitBottle == 1)
+                    {
+                        State = DriveState.TestObjectFound;
+                        TestObjectFound();
+                    }
                     WayPoint currentLocation = new WayPoint(Latitude, Longitude, 0);
                     WaypointVector = new Vector2d(currentLocation, nextWaypoint);
                     NextWaypointDistance = WayPoint.GetDistance(this.Latitude, this.Longitude, nextWaypoint.Lat, nextWaypoint.Long);
@@ -1366,7 +1383,7 @@ namespace NGCP.UGV
         #region Test Object Found
         void TestObjectFound()
         {
-            if (TargetbitBottle == 1)
+            if (TargetbitBottle == 1 || TargetbitBall == 1)
             {
                 // use camera angle to guide the UGV to object
                 if (gimbalyaw <= 160)
@@ -1402,6 +1419,10 @@ namespace NGCP.UGV
                 {
                     steering = 0;
                 }
+                if(TargetbitBall == 1)
+                {
+                    State = DriveState.Test;
+                }
             }
         }
         void ArmMove(int direction) // if the arm is in the way of the camera move it out of the way
@@ -1425,11 +1446,36 @@ namespace NGCP.UGV
 
         #endregion
         const double Alpha = 1.0;
+        #region CamSweap
+        void CamSweap()
+        {
+            if(TargetbitBall == 1)
+            {
+                State = DriveState.Test;
+            }
+            if(Yaw <= 180 && Yaw > 10 && swap == false)
+            {
+                Yaw -= 5;
+                if (Yaw < 10)
+                {
+                    swap = true;
+                }
+            }
+            else if (swap == true && Yaw < 360)
+            {
+                Yaw += 5;
+            }
+            
+           
+            
+            
 
-      /// <summary>
-      /// code for combining the obstacle avoidance vector with the waypoint vector
-      /// </summary>
-      Vector2d temp = new Vector2d(0, 0);
+        }
+        #endregion
+        /// <summary>
+        /// code for combining the obstacle avoidance vector with the waypoint vector
+        /// </summary>
+        Vector2d temp = new Vector2d(0, 0);
 
       WayPoint obstacleAvoidance(WayPoint nextWaypoint, WayPoint currentLocation)
       {
