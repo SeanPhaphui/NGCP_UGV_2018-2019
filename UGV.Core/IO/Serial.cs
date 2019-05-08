@@ -51,7 +51,11 @@ namespace UGV.Core.IO
             /// <summary>
             /// true if recieving FPGA data, false if not
             /// </summary>
-            UseFPGA
+            UseFPGA,
+            /// <summary>
+            /// Used for temporary Solution for FPGA
+            /// </summary>
+            UseTempFPGA
         }
 
         /// <summary>
@@ -174,12 +178,6 @@ namespace UGV.Core.IO
         {
 
             //count++;
-            byte ReadPack = (byte)COM.ReadByte();
-            byte[] SendPack = new byte[1];
-            SendPack[0] = ReadPack;
-            PackageReceived(SendPack);
-            COM.DiscardInBuffer();
-            /* OLD UGV CODE PLEASE USE RETURN 
             while (COM.BytesToRead > 0)
             {
                 //read byte from port
@@ -235,6 +233,14 @@ namespace UGV.Core.IO
                     }
                     else message.RemoveAt(0);
                 }
+                else if(PackageMode == PackageModes.UseTempFPGA)
+                {
+                    byte[] package = new byte[1];
+                    package[0] = message[0];
+                    PackageReceived(package);
+                    message.Clear();
+                    count++;
+                }
                 // else if not using FPGA
                 else
                 {
@@ -268,7 +274,7 @@ namespace UGV.Core.IO
                         catch (IndexOutOfRangeException) { }
                     }
                 }
-            }*/
+            }
         }
         //reading a package
         void OnTick(object sender, System.Timers.ElapsedEventArgs e)

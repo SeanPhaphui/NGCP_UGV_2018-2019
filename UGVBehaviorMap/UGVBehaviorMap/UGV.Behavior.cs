@@ -1460,7 +1460,7 @@ namespace NGCP.UGV
         }
 
         #endregion
-        const double Alpha = 1.0;
+
         #region CamSweap
         void CamSweep()
         {
@@ -1491,10 +1491,14 @@ namespace NGCP.UGV
 
         }
         #endregion
+
+        #region Collision Avoidance
         /// <summary>
         /// code for combining the obstacle avoidance vector with the waypoint vector
         /// </summary>
-        Vector2d temp = new Vector2d(0, 0);
+
+        const double Alpha = 1.0;
+      Vector2d temp = new Vector2d(0, 0);
 
       WayPoint obstacleAvoidance(WayPoint nextWaypoint, WayPoint currentLocation)
       {
@@ -1517,6 +1521,8 @@ namespace NGCP.UGV
          }
          return nextWaypoint;
       }
-      #endregion
-   }
+        #endregion
+
+        #endregion
+    }
 }

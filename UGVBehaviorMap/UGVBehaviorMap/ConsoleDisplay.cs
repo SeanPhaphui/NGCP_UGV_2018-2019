@@ -430,7 +430,6 @@ namespace UGVBehaviorMap
             output.Append(String.Format("\nLocal: Speed {0, 7} Steer {1, 7} ", ugv.LocalSpeed, ugv.LocalSteering));
             output.Append(String.Format("\nAuton: Speed {0, 7} Steer {1, 7} ", ugv.Speed, ugv.Steering));
             output.Append(String.Format("\nFinal: Speed {0, 7} Steer {1, 7} ", ugv.FinalFrontWheel, ugv.FinalSteering));
-            output.Append(String.Format("\nSonar Distance {0, 7}", ugv.SonarDistance));
          //output.Append(String.Format("\nPayload X coor  {0, 7} Payload Y coor {1, 7} ", ugv.payloadx, ugv.payloady));
 
 

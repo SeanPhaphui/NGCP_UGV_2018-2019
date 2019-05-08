@@ -622,8 +622,8 @@ namespace NGCP.UGV
             fpga = new Serial(Settings.FPGAPort, Settings.FPGABaud);
             // for temp solution
             tempfpga = new Serial("COM15", 115200);
-           // tempfpga.PackageMode = Serial.PackageModes.;
             //
+            tempfpga.PackageMode = Serial.PackageModes.UseTempFPGA;
             fpga.EscapeToken = new byte[] { 251, 252, 253, 254, 255 };
             Links.Add("FPGA FTDI", fpga);//change back to FPGA
             //define callback
@@ -640,8 +640,7 @@ namespace NGCP.UGV
             });
             tempfpga.PackageReceived = (bytes =>
             {
-                Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
-                sonardistance = (int)bytes[0] * 2;
+                sonardistance = bytes[0];
             });
             //start
             if (Settings.UseFPGA)
@@ -972,7 +971,6 @@ namespace NGCP.UGV
             boardcastTimer.Interval = Settings.BoardCastRate;
             //start timers
             controlTimer.Start();
-         //   boardcastTimer.Start();
             //start do work in a separate thread
             ThreadPool.QueueUserWorkItem(new WaitCallback(StartBehavior));
             Thread dowork = new Thread(new ThreadStart(DoWork));
