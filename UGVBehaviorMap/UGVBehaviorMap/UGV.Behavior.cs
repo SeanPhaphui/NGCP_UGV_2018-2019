@@ -1243,8 +1243,6 @@ namespace NGCP.UGV
         {
             Speed = 0;
             Steering = 0;
-            LocalSpeed = 0;
-            LocalSteering = 0;
             armrotation = 90;
             //Enabled = false;
             if (Waypoints.Count > 0)
