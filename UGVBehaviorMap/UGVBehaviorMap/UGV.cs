@@ -611,7 +611,7 @@ namespace NGCP.UGV
             gimbalyaw = 180;
             dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, GIMBALPITCH, ADDR_MX_GOAL_POSITION, GIMBALPITCHSTART);
             dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, GIMBALYAW, ADDR_MX_GOAL_POSITION, GIMBALYAWSTART);
-            dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, TURRENT, ADDR_MX_GOAL_POSITION, TURRENTSTART);
+           // dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, TURRENT, ADDR_MX_GOAL_POSITION, TURRENTSTART);
             dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, FRONTWHEEL, ADDR_MX_GOAL_POSITION, FRONTWHEELSTART);
             dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, BACKWHEEL, ADDR_MX_GOAL_POSITION, BACKWHEELSTART);
             #endregion Dynamixel Start up 
@@ -621,7 +621,7 @@ namespace NGCP.UGV
             //open a fpga serial port
             fpga = new Serial(Settings.FPGAPort, Settings.FPGABaud);
             // for temp solution
-            tempfpga = new Serial("COM15", 115200);
+            tempfpga = new Serial("COM16", 115200);
             //
             tempfpga.PackageMode = Serial.PackageModes.UseTempFPGA;
             fpga.EscapeToken = new byte[] { 251, 252, 253, 254, 255 };
@@ -640,13 +640,14 @@ namespace NGCP.UGV
             });
             tempfpga.PackageReceived = (bytes =>
             {
-                sonardistance = bytes[0];
+               Thread.CurrentThread.Priority = ThreadPriority.Normal;
+               sonardistance = bytes[0] * 2;
             });
             //start
             if (Settings.UseFPGA)
                 fpga.Start();
             //For temporary solution
-            //tempfpga.Start();
+            tempfpga.Start();
             //
             #endregion FPGA Connection
 

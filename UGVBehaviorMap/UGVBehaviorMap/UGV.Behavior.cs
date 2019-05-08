@@ -1482,11 +1482,6 @@ namespace NGCP.UGV
                     swap = false; 
                 }
             }
-            
-           
-            
-            
-
         }
         #endregion
 

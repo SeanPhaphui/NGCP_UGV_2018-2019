@@ -313,7 +313,7 @@ namespace UGVBehaviorMap
             ugv.DefaultLocation = EMDefault;
 
             // added this line to change state of the ugv and start in the grabPayloadManual method
-            ugv.State = NGCP.UGV.UGV.DriveState.WaitForStart;
+            ugv.State = NGCP.UGV.UGV.DriveState.CameraSweep;
 
             //check for enable
             do
@@ -430,6 +430,7 @@ namespace UGVBehaviorMap
             output.Append(String.Format("\nLocal: Speed {0, 7} Steer {1, 7} ", ugv.LocalSpeed, ugv.LocalSteering));
             output.Append(String.Format("\nAuton: Speed {0, 7} Steer {1, 7} ", ugv.Speed, ugv.Steering));
             output.Append(String.Format("\nFinal: Speed {0, 7} Steer {1, 7} ", ugv.FinalFrontWheel, ugv.FinalSteering));
+            output.Append(String.Format("\nSonar Distance {0, 7}", ugv.GimbalYaw));
          //output.Append(String.Format("\nPayload X coor  {0, 7} Payload Y coor {1, 7} ", ugv.payloadx, ugv.payloady));
 
 
