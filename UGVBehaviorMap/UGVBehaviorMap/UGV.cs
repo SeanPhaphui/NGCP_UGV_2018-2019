@@ -1125,6 +1125,8 @@ namespace NGCP.UGV
         private int BottleYtemp = -2000;//^^
         private int WheelSpeedtemp = -2000;//^^
         private int ArmRotationtemp = -50000; //^^
+        private float gimbalpitchtemp = -50000;//^^
+        private float gimbalyawtemp = -50000;//^^
         void SendControl()
         {
             //Compute Control
@@ -1192,7 +1194,21 @@ namespace NGCP.UGV
                     GimbalTracking(BottleX, BottleY);
                 }
             }
-            if(armrotation != ArmRotationtemp)
+            if(gimbalyaw != gimbalyawtemp)
+            {
+               gimbalyawtemp = gimbalyaw;
+               int DynamixelgimbalX = Remap(gimbalyaw, 360, 0, 4000, 0);
+               //dynamixel stuff
+               dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, GIMBALYAW, ADDR_MX_GOAL_POSITION, (ushort)DynamixelgimbalX);
+               //Dynamixel stuff
+            }
+            if(gimbalpitch != gimbalpitchtemp)
+            { 
+               gimbalpitchtemp = gimbalpitch;
+               int DynamixelgimbalY = Remap(gimbalpitch, 100, 0, 512, 1655);
+               dynamixel.write2ByteTxRx(port_num, PROTOCOL_VERSION, GIMBALPITCH, ADDR_MX_GOAL_POSITION, (ushort)DynamixelgimbalY);
+            }
+            if (armrotation != ArmRotationtemp)
             {
                 ArmRotationtemp = armrotation;
                 int DynamixelArmRotation = Remap((float)armrotation, 180, 0, 4000, -4000);

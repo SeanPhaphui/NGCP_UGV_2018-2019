@@ -1437,6 +1437,10 @@ namespace NGCP.UGV
                     steering = 0;
                 }
             }
+            else
+            {
+               State = DriveState.Test;
+            }
         }
         void ArmMove(int direction) // if the arm is in the way of the camera move it out of the way
         {
